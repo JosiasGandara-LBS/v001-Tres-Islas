@@ -1,0 +1,60 @@
+<div class="fixed flex flex-col bottom-0 left-0 w-full h-screen bg-white z-40 fadeInLeft" [ngClass]="{ 'fadeOutLeft': isFadingOut }">
+
+	<nav class="h-16 w-full">
+		<div class="h-16 px-4 flex flex-row justify-between items-center">
+
+			<!-- Return Button -->
+			<div (click)="returnToMenu()" class="space-x-2 p-2 rounded-full shadow-xl">
+				<svg class="size-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg>
+			</div>
+
+			<!-- Shared Button -->
+			<div class="space-x-2 p-2 rounded-full shadow-xl">
+				<svg class="size-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><path d="M352 224l-46.5 0c-45 0-81.5 36.5-81.5 81.5c0 22.3 10.3 34.3 19.2 40.5c6.8 4.7 12.8 12 12.8 20.3c0 9.8-8 17.8-17.8 17.8l-2.5 0c-2.4 0-4.8-.4-7.1-1.4C210.8 374.8 128 333.4 128 240c0-79.5 64.5-144 144-144l80 0 0-61.3C352 15.5 367.5 0 386.7 0c8.6 0 16.8 3.2 23.2 8.9L548.1 133.3c7.6 6.8 11.9 16.5 11.9 26.7s-4.3 19.9-11.9 26.7l-139 125.1c-5.9 5.3-13.5 8.2-21.4 8.2l-3.7 0c-17.7 0-32-14.3-32-32l0-64zM80 96c-8.8 0-16 7.2-16 16l0 320c0 8.8 7.2 16 16 16l320 0c8.8 0 16-7.2 16-16l0-48c0-17.7 14.3-32 32-32s32 14.3 32 32l0 48c0 44.2-35.8 80-80 80L80 512c-44.2 0-80-35.8-80-80L0 112C0 67.8 35.8 32 80 32l48 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L80 96z"/></svg>
+			</div>
+
+		</div>
+	</nav>
+
+	<section class="p-6 flex flex-col items-center relative">
+		<!-- Imagen envuelta en un div para mejor control -->
+		<div class="relative">
+			<img [src]="item.image ? item.image : 'assets/img/no-image.svg'" alt="image" class="w-52 rounded-2xl mb-4">
+			<!-- Precio -->
+			<span class="absolute top-2 right-2 bg-c-beige-100 px-3 py-1 rounded-lg nunito-extra-bold text-sm text-[#E55204]">
+				MX {{ item.price | currency }}
+			</span>
+		</div>
+		<!-- Texto -->
+		<h3 class="nunito-extra-bold uppercase text-[16px]">{{ item.name }}</h3>
+		<p class="text-gray-600 nunito-regular text-center px-8 mb-4 text-sm">
+			{{ item.description }}
+		</p>
+		<!-- Cantidad -->
+		<div class="w-full flex flex-row p-4 mb-4 rounded-lg justify-between bg-gray-200">
+			<p class="text-sm">Cantidad</p>
+			<div class="flex flex-row items-center justify-between fill-gray-700">
+				<div (click)="decrementQuantity()" class="flex justify-center items-center h-6 w-6 rounded-full bg-gray-300">
+					<svg class="size-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z"/></svg>
+				</div>
+				<p class="mx-5 text-sm">{{ quantity }}</p>
+				<div (click)="incrementQuantity()" class="flex justify-center items-center h-6 w-6 rounded-full bg-gray-300">
+					<svg class="size-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 144L48 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l144 0 0 144c0 17.7 14.3 32 32 32s32-14.3 32-32l0-144 144 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-144 0 0-144z"/></svg>
+				</div>
+			</div>
+		</div>
+		<!-- Comentarios extras -->
+		<div class="w-full flex flex-col p-4 rounded-lg bg-gray-200">
+			<p class="nunito-extra-bold uppercase text-center pb-4">Instrucciones adicionales</p>
+			<textarea [(ngModel)]="additionalInstructions" placeholder="Sin comentarios..." id="txtarea" rows="4" class="rounded-md py-2 px-3 placeholder-gray-400 border-2 border-transparent focus:border-gray-400 focus:ring-0 focus:outline-none"></textarea>
+		</div>
+
+		<div class="fixed h-16 w-full px-6 flex justify-center items-center bg-transparent bottom-4">
+			<p (click)="addToCart(item, quantity)" class="bg-c-orange-100 text-white text-lg w-full h-full rounded-xl flex justify-center items-center nunito-extra-bold">
+				<span><svg class="size-6 fill-white mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><path d="M0 24C0 10.7 10.7 0 24 0L69.5 0c22 0 41.5 12.8 50.6 32l411 0c26.3 0 45.5 25 38.6 50.4l-41 152.3c-8.5 31.4-37 53.3-69.5 53.3l-288.5 0 5.4 28.5c2.2 11.3 12.1 19.5 23.6 19.5L488 336c13.3 0 24 10.7 24 24s-10.7 24-24 24l-288.3 0c-34.6 0-64.3-24.6-70.7-58.5L77.4 54.5c-.7-3.8-4-6.5-7.9-6.5L24 48C10.7 48 0 37.3 0 24zM128 464a48 48 0 1 1 96 0 48 48 0 1 1 -96 0zm336-48a48 48 0 1 1 0 96 48 48 0 1 1 0-96zM252 160c0 11 9 20 20 20l44 0 0 44c0 11 9 20 20 20s20-9 20-20l0-44 44 0c11 0 20-9 20-20s-9-20-20-20l-44 0 0-44c0-11-9-20-20-20s-20 9-20 20l0 44-44 0c-11 0-20 9-20 20z"/></svg></span>
+				Añadir {{ quantity }} por {{ item.price * quantity | currency }}
+			</p>
+		</div>
+	</section>
+
+</div>

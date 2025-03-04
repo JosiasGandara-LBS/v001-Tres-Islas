@@ -1,0 +1,40 @@
+<!-- Contenedor Hero -->
+<section class="h-screen bg-cover bg-center flex items-end pb-16 justify-center" style="background-image: url('assets/img/fondo_tres_islas.png');">
+	<!-- Botón para ir al Menú -->
+	<div class="h-12 w-12 bg-c-beige-100 rounded-full flex justify-center items-center animate-bounce">
+		<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" fill="#E55204" class="size-5"><path d="M169.4 470.6c12.5 12.5 32.8 12.5 45.3 0l160-160c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 370.8 224 64c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 306.7L54.6 265.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l160 160z"/></svg>
+	</div>
+</section>
+
+<section id="menuSection" class="bg-white">
+
+	<!-- Seccion de Menú -->
+	@if (_menuService()) {
+		<section *ngFor="let category of organizeByCategory(_menuService()) | keyvalue; let i = index" class="p-6 flex flex-col items-start justify-center text-gray-800 bg-inherit" [ngClass]="{ 'border-t-4': i != 0, 'border-gray-300': i != 0 }">
+
+			<!-- Titulo de sección de comida -->
+			<p class="text-center nunito-extra-bold mb-2 uppercase" style="font-size: 24px;">{{ category.key | titlecase }}</p>
+
+			<!-- Card de platillo -->
+			<div *ngFor="let item of category.value" (click)="insertarComponente(item.id)" class="flex items-start w-full py-2 bg-inherit relative">
+
+				<!-- Contenido -->
+				<div class="h-32 flex-1 flex flex-col items-start justify-between">
+					<h3 class="nunito-extra-bold uppercase" style="font-size: 16px;">{{ item.name }}</h3>
+					<p class="text-gray-600 nunito-regular line-clamp-3" style="font-size: 12px;">{{ item.description }}</p>
+					<span class="inline-flex items-center rounded-md bg-c-beige-100 px-4 py-1 nunito-extra-bold" style="font-size: 14px; color: #E55204;">MX {{ item.price | currency }}</span>
+				</div>
+
+				@if(item.image != '') {
+					<img src="{{ item.image }}" alt="{{ item.name }}" class="w-32 order-1 rounded-xl ml-4">
+				} @else {
+					<img src="assets/img/no-image.svg" alt="no-image" class="w-32 order-1 rounded-xl ml-4">
+				}
+
+			</div>
+
+		</section>
+	}
+</section>
+
+<div #modalContainer></div>

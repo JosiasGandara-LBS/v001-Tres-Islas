@@ -1,0 +1,96 @@
+<div class="h-16 flex flex-row items-center px-4 text-gray-800 fill-gray-800">
+	<svg (click)="goToShoppingCart()" class="size-5 mr-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg>
+	<p class="nunito-extra-bold" style="font-size: 20px;">Detalles del pedido</p>
+</div>
+
+<form [formGroup]="form" class="px-4 pb-28 pt-2">
+    <div class="grid gap-3 mb-6">
+        <div>
+            <label for="client" class="block mb-2 text-sm font-medium text-gray-800 ">¿Cuál es tu nombre?</label>
+            <input
+				type="text"
+				id="client"
+				formControlName="client"
+				class="text-gray-800 text-sm rounded-lg block w-full p-2.5 shadow-lg border-2 border-gray-200 focus:outline-none focus:border-orange-600"
+				[ngClass]="{'border-orange-600': form.get('client')?.valid}"
+				placeholder="Ej. Juan José"
+				required
+			/>
+        </div>
+        <div>
+            <label for="phone_number" class="block mb-2 text-sm font-medium text-gray-800 ">¿Cuál es tu número de teléfono?</label>
+            <input
+				formControlName="phoneNumber"
+				type="text" id="phone_number"
+				class="text-gray-800 text-sm rounded-lg block w-full p-2.5 shadow-lg border-2 border-gray-200 focus:outline-none focus:border-orange-600"
+				[ngClass]="{'border-orange-600': form.get('phoneNumber')?.valid}"
+				placeholder="Ej. 6691220932"
+				required
+			/>
+        </div>
+        <div class="max-w-full">
+            <app-dropdown formControlName="assignedToTable"></app-dropdown>
+        </div>
+		<div>
+			<label for="paymentMethod" class="block my-4 text-gray-800 nunito-extra-bold" style="font-size: 20px;">Método de pago:</label>
+			<ul class="grid w-full gap-4 md:grid-cols-2">
+				<li>
+					<input
+						id="cash"
+						type="radio"
+						class="hidden peer"
+						formControlName="paymentMethod"
+						value="Efectivo u transferencia"
+						required
+					/>
+					<label for="cash" class="inline-flex items-center justify-between w-full p-5 text-gray-500 bg-white border-2 border-gray-200 rounded-lg cursor-pointer shadow-lg outline-2 fill-gray-300 peer-checked:border-orange-600 peer-checked:text-orange-600 peer-checked:fill-orange-600">
+						<div class="flex flex-row items-center">
+							<svg class="size-6 mr-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><path d="M0 112.5L0 422.3c0 18 10.1 35 27 41.3c87 32.5 174 10.3 261-11.9c79.8-20.3 159.6-40.7 239.3-18.9c23 6.3 48.7-9.5 48.7-33.4l0-309.9c0-18-10.1-35-27-41.3C462 15.9 375 38.1 288 60.3C208.2 80.6 128.4 100.9 48.7 79.1C25.6 72.8 0 88.6 0 112.5zM288 352c-44.2 0-80-43-80-96s35.8-96 80-96s80 43 80 96s-35.8 96-80 96zM64 352c35.3 0 64 28.7 64 64l-64 0 0-64zm64-208c0 35.3-28.7 64-64 64l0-64 64 0zM512 304l0 64-64 0c0-35.3 28.7-64 64-64zM448 96l64 0 0 64c-35.3 0-64-28.7-64-64z"/></svg>
+							<div class="w-full text-sm font-semibold">Efectivo u transferencia</div>
+						</div>
+						<svg class="size-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"/></svg>
+					</label>
+				</li>
+				@if(form.get('paymentMethod')?.value === 'Efectivo u transferencia'){
+					<li>
+						<label for="money_change" class="block mb-2 text-sm font-medium text-gray-800 ">¿Necesitas cambio?</label>
+						<input
+							type="number"
+							id="money_change"
+							formControlName="moneyChange"
+							class="text-gray-800 text-sm rounded-lg block w-full p-2.5 shadow-lg border-2 border-gray-200 focus:outline-none focus:border-orange-600"
+							[ngClass]="{'border-orange-600': form.get('client')?.valid}"
+							placeholder="Tu cambio en $MXN o $USD"
+							required
+						/>
+					</li>
+				}
+				<li>
+					<input
+						type="radio"
+						id="card"
+						formControlName="paymentMethod"
+						value="Tarjeta débito / crédito"
+						class="hidden peer"
+						required
+					/>
+					<label for="card" class="inline-flex items-center justify-between w-full p-5 text-gray-500 bg-white border-2 border-gray-200 rounded-lg cursor-pointer shadow-lg fill-gray-300 peer-checked:border-orange-600 peer-checked:text-orange-600 peer-checked:fill-orange-600">
+						<div class="flex flex-row items-center">
+							<svg class="size-6 mr-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><path d="M64 32C28.7 32 0 60.7 0 96l0 32 576 0 0-32c0-35.3-28.7-64-64-64L64 32zM576 224L0 224 0 416c0 35.3 28.7 64 64 64l448 0c35.3 0 64-28.7 64-64l0-192zM112 352l64 0c8.8 0 16 7.2 16 16s-7.2 16-16 16l-64 0c-8.8 0-16-7.2-16-16s7.2-16 16-16zm112 16c0-8.8 7.2-16 16-16l128 0c8.8 0 16 7.2 16 16s-7.2 16-16 16l-128 0c-8.8 0-16-7.2-16-16z"/></svg>
+							<div class="w-full text-sm font-semibold">Tarjeta débito / crédito</div>
+						</div>
+						<svg class="size-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"/></svg>
+					</label>
+				</li>
+			</ul>
+		</div>
+    </div>
+</form>
+
+<footer class="flex flex-row items-center justify-between bg-c-beige-100 h-24 px-6 fixed bottom-0 left-0 right-0 z-50 rounded-t-3xl">
+	<div class="nunito-extra-bold">
+		<p class="text-gray-800" style="font-size: 24px;">MX {{ totalPriceSignal() | currency }}</p>
+		<p class="text-c-orange-100" style="font-size: 12px;">Total del pedido + IVA(16%)</p>
+	</div>
+	<button (click)="submitForm()" type="button" class="w-32 py-3 bg-c-orange-100 rounded-xl nunito-extra-bold text-white" style="font-size: 14px;">Ordenar</button>
+</footer>
