@@ -1,0 +1,8 @@
+<div class="h-screen flex flex-col items-center justify-start py-4 px-1">
+	<img src="../../../../../assets/img/logo_tres_islas-nobg.png" alt="logo" class="w-2/3 mb-4 drop-shadow-xl"/>
+	<div class="flex flex-col gap-4 w-full h-full px-3">
+		<div *ngFor="let item of navItems">
+			<app-nav-bar-item [icon]="item.icon" [name]="item.name" [route]="item.route"></app-nav-bar-item>
+		  </div>
+	</div>
+</div>

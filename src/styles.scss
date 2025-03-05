@@ -1,7 +1,11 @@
 /* You can add global styles to this file, and also import other style files */
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@import 'primeng/resources/themes/lara-light-blue/theme.css';
+@import 'primeng/resources/primeng.css';
+@import "primeicons/primeicons.css";
 
 // Tipografías globales
 .nunito-regular {
@@ -68,9 +72,23 @@
 .border-c-beige-100 { border-color:#F3E3BF; }
 .border-c-brown-100 { border-color: #5B5548; }
 .border-c-beige-200 { border-color: #D5C7A7; }
+.border-c-gray-100 { border-color: #6B7280; }
 
 .fill-c-orange-100 { fill: #E55204; }
 
 .text-c-beige-100 { color: #F3E3BF; }
 .text-c-orange-100 { color: #E55204; }
 .text-c-brown-100 { color: #433e35; }
+
+
+:root{
+	--primary-color: #E55204;
+}
+
+.p-inputswitch.p-inputswitch-checked .p-inputswitch-slider {
+	background-color: var(--primary-color);
+}
+
+:root {
+	--focus-ring: 0 0 0 0.2rem #e29b74 !important;
+}

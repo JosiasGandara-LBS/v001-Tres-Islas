@@ -1,0 +1,86 @@
+<div id="default-modal" class="fixed inset-0 z-50 flex justify-center items-center bg-black bg-opacity-50">
+
+	<div class="relative p-2 w-full max-w-5xl max-h-full">
+
+		<!-- Modal content -->
+		<div class="relative bg-white shadow dark:bg-gray-700 rounded-lg">
+
+			<!-- Modal header -->
+			<div class="flex flex-row items-center justify-between p-2 md:p-5 border-b rounded-t">
+				<div class="flex flex-col items-start justify-center">
+					<p class="text-sm font-bold text-gray-900 mb-2">{{ order.client }}</p>
+					<p class="text-sm font-bold text-gray-900 inline-flex justify-center uppercase">
+						#{{ order.id | truncate:5 }}
+						<span
+							[ngClass]="[
+							'text-' + statuses[order.status].color,
+							'border-' + statuses[order.status].color,
+							'w-auto text-xs font-medium inline-flex items-center justify-center px-3.5 py-0.5 rounded border lowercase ml-4'
+						]">
+							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="currentColor" class="size-1 mr-2">
+								<path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512z" />
+							</svg>
+							<p class="nunito-extra-bold truncate" style="font-size: 10px;">
+								{{ statuses[order.status].text }}
+							</p>
+						</span>
+					</p>
+				</div>
+				<p class="text-sm text-gray-500">{{ order.createdDate }}</p>
+			</div>
+
+			<!-- Modal body -->
+			<div class="py-3 px-4 flex flex-row justify-between items-center">
+				<p class="text-sm font-bold leading-relaxed dark:text-gray-400">{{ order.foodDishes | keysLength }} Platillos</p>
+				<p class="text-xs font-bold px-8 py-1 rounded-full bg-gray-300">Mesa {{ order.assignedToTable }}</p>
+			</div>
+
+			<!-- Modal Order Details - Food Dishes -->
+			<div class="h-80 overflow-y-auto">
+				<div *ngFor="let plateFood of order.foodDishes" class="items-center border-t border-gray-200">
+					<div class="py-3 px-4 flex flex-row justify-between items-center h-12">
+						<div class="flex flex-row items-center">
+							<p class="text-lg font-bold inline-flex justify-center items-center">{{ plateFood.quantity }}<span class="text-sm">x</span></p>
+							<p class="ml-10 text-sm font-bold">{{ plateFood.name }}</p>
+						</div>
+						<p class="text-sm font-bold">MX {{ plateFood.price * plateFood.quantity | currency }}</p>
+					</div>
+					<div class="flex flex-row items-center h-12 bg-red-200 border-b-2 border-red-400 py-3 px-4">
+						<p class="text-xs font-bold ml-16 text-red-600">** Sin comentarios y/o especificaciones.</p>
+					</div>
+				</div>
+
+				<div class="flex justify-end items-center border-t border-gray-200">
+					<div class="py-3 px-4 flex flex-col justify-end items-center h-auto w-auto">
+						<div class="flex flex-row items-center justify-between mb-2 min-w-40">
+							<p class="text-xs inline-flex justify-end items-center">Subtotal</p>
+							<p class="text-xs">MX {{ order.totalAmount | currency }}</p>
+						</div>
+						<div class="flex flex-row items-center justify-between min-w-40">
+							<p class="text-sm font-bold inline-flex justify-between items-center">Total</p>
+							<p class="text-sm font-bold">MX {{ order.totalAmount | currency }}</p>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Modal footer -->
+			<div class="flex items-center p-4 md:p-5 rounded-b">
+				<button (click)="closeModal()" type="button"
+					class="text-slate-800 border-2 border-slate-800 focus:outline-none rounded-lg text-sm p-[14px] text-center box-border hover:bg-slate-800 hover:text-white">
+					<svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 512 512"><path d="M128 0C92.7 0 64 28.7 64 64l0 96 64 0 0-96 226.7 0L384 93.3l0 66.7 64 0 0-66.7c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0L128 0zM384 352l0 32 0 64-256 0 0-64 0-16 0-16 256 0zm64 32l32 0c17.7 0 32-14.3 32-32l0-96c0-35.3-28.7-64-64-64L64 192c-35.3 0-64 28.7-64 64l0 96c0 17.7 14.3 32 32 32l32 0 0 64c0 35.3 28.7 64 64 64l256 0c35.3 0 64-28.7 64-64l0-64zM432 248a24 24 0 1 1 0 48 24 24 0 1 1 0-48z"/></svg>
+				</button>
+				<button (click)="updateStatus(order.id)" type="button"
+					class="p-4 ml-4 w-full text-sm font-bold text-white focus:outline-none bg-slate-800 rounded-lg hover:bg-slate-700">
+					{{ statuses[order.status].textToChangeStatus }}
+				</button>
+			</div>
+		</div>
+
+		<div (click)="closeModal()" class="absolute inline-flex items-center justify-center w-6 h-6 font-bold text-gray-400 bg-white rounded-full -top-0.5 -end-0.5 nunito-extra-bold shadow-lg hover:text-slate-800 hover:cursor-pointer" style="font-size: 10px;">
+			<svg class="w-2 h-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 14 14">
+				<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+			</svg>
+		</div>
+	</div>
+</div>

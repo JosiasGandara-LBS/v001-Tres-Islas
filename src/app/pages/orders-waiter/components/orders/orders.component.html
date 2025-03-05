@@ -1,0 +1,51 @@
+<div *ngFor="let order of orders" class="w-full h-16 mb-4 flex flex-row justify-between items-center nunito-regular" style="box-shadow: 0px 4px 20px 1px rgba(0, 0, 0, 0.10);">
+
+	<!-- Mesa -->
+	<p class="w-1/6 text-slate-800 nunito-extra-bold px-6 text-start truncate" style="font-size: 14px;">
+		Mesa {{ order.assignedToTable }}
+	</p>
+
+	<!-- Cliente -->
+	<p class="w-1/6 text-gray-500 text-start truncate" style="font-size: 12px;">
+		{{ order.client }}
+	</p>
+
+	<!-- Fecha -->
+	<p class="w-1/6 text-gray-500 text-start truncate" style="font-size: 12px;">
+		{{ order.createdDate }}
+	</p>
+
+	<!-- Platillos -->
+	<p class="w-1/6 text-gray-500 text-start truncate" style="font-size: 12px;">
+		{{ order.foodDishes | keysLength }} Platillos
+	</p>
+
+	<!-- Total -->
+	<p class="w-1/6 text-gray-500 text-start truncate" style="font-size: 12px;">
+		MX {{ order.totalAmount | currency }}
+	</p>
+
+	<!-- Estado -->
+	<div class="w-1/6">
+		<span
+			[ngClass]="[
+			'text-' + statuses[order.status].color,
+			'border-' + statuses[order.status].color,
+			'w-auto text-xs font-medium inline-flex items-center justify-center px-3.5 py-0.5 rounded border'
+		]">
+			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="currentColor" class="size-1 mr-2">
+				<path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512z" />
+			</svg>
+			<p class="nunito-extra-bold truncate" style="font-size: 10px;">
+				{{ statuses[order.status].text }}
+			</p>
+		</span>
+	</div>
+
+	<!-- Botón -->
+	<button type="button" (click)="openOrderDetail(order.id)" class="h-full w-1/6 bg-slate-800 inline-flex items-center justify-center nunito-extra-bold py-2 text-white" style="font-size: 14px;">
+		Ver pedido
+	</button>
+</div>
+
+<app-order-detail *ngIf="showModal" [order]="selectedOrder" [orderStatus]="orderStatus" (close)="closeModal()"></app-order-detail>

@@ -1,0 +1,32 @@
+<div class="custom-dialog w-full h-full nunito-regular flex flex-col justify-between">
+	<form class="p-fluid flex flex-col gap-5" [formGroup]="categoryForm">
+		<div class="p-field flex flex-col">
+			<label for="categoryName">Nombre de la Categoría</label>
+			<input id="categoryName" type="text" pInputText formControlName="name" [style]="{'border-width': '1px'}" class="border-c-gray-100 rounded-md py-2 px-1 focus:border-orange-500 focus:shadow-md focus:shadow-orange-300 focus:outline-none focus:ring-0 outline-none"/>
+			<div *ngIf="categoryForm.get('name')?.invalid && categoryForm.get('name')?.touched" class="p-error">
+				Nombre es requerido
+			</div>
+		</div>
+	</form>
+	<div class="p-field">
+		<table class="w-full">
+			<thead>
+				<tr>
+					<th>Nombre de la Categoría</th>
+					<th>Acciones</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr *ngFor="let category of categories">
+					<td>{{ category.name }}</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	<div class="ui-dialog-footer">
+		<div class="flex justify-end gap-4 mt-4">
+			<button class="bg-red-500 text-white px-4 py-2 rounded-md" (click)="ref.close()">Cancelar</button>
+			<button class="bg-green-500 text-white px-4 py-2 rounded-md" (click)="saveCategory()">Guardar</button>
+		</div>
+	</div>
+</div>

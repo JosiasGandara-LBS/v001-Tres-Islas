@@ -1,0 +1,9 @@
+<div class="bg-c-beige-100 w-full h-16 rounded-md flex items-center"><div class="bg-c-beige-100 w-full h-12 rounded-md">
+  <a [routerLink]="route" routerLinkActive="active" #rla="routerLinkActive" class="flex items-center h-full w-full px-3 gap-2 justify-between">
+    <div class="flex items-center gap-2">
+		<i class="pi text-c-orange-100 text-lg" [ngClass]="icon"></i>
+		<span class="text-c-orange-100 text-lg" [ngClass]="{'underline': rla.isActive}">{{ name }}</span>
+	</div>
+    <i class="pi pi-arrow-right text-c-orange-100 text-lg" *ngIf="rla.isActive"></i>
+  </a>
+</div>
