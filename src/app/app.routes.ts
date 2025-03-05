@@ -46,8 +46,12 @@ export const routes: Routes = [
 				canActivate: [adminGuard],
 				loadComponent: () => import('./pages/admin/employees/employees.component').then(m => m.EmployeesComponent),
 			},
-			{path: '', redirectTo: 'products', pathMatch: 'full'},
-			{path: '**', redirectTo: 'products', pathMatch: 'full'}
+			{
+				path: '', redirectTo: 'products', pathMatch: 'full'
+			},
+			{
+				path: '**', redirectTo: 'products', pathMatch: 'full'
+			}
 		]
 
 	},

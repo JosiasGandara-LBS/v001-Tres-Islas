@@ -3,6 +3,7 @@ import { Component, EventEmitter, inject, Input, OnInit, Output } from '@angular
 import { FormsModule } from '@angular/forms';
 import { CartService } from '../../../../core/services/cart.service';
 import { MenuItem } from '../../../../core/models/menu-item';
+import { CartItem } from '../../../../core/models/cart-item';
 
 @Component({
   selector: 'app-modal-item',
@@ -20,21 +21,26 @@ export class ModalItemComponent implements OnInit {
 
   	isFadingOut = false;
 
-	cartItems: any[] = [];
-
 	item !: MenuItem;
-	quantity : number = 1;
-	additionalInstructions : string = '';
+	cartItem !: CartItem;
+
+	quantity !: number;
+	additionalInstructions !: string;
 
 	ngOnInit(): void {
 		if (this.itemId) {
-			this.cartService.getItemById(this.itemId).subscribe((data) => {
-			  this.item = data;
-			});
+			this.cartService.getItemById(this.itemId).subscribe((data) => this.item = data);
+
+			const foundCartItem = this.cartService.getCartItemById(this.itemId);
+			if (foundCartItem) {
+				this.cartItem = foundCartItem;
+				this.quantity = this.cartItem.quantity;
+				this.additionalInstructions = this.cartItem.additionalInstructions;
+			}
 		}
 	}
 
-	returnToMenu() {
+	returnToShoppingCart() {
 		this.isFadingOut = true;
 		setTimeout(() => this.cerrar.emit(), 400);
 	}
@@ -50,9 +56,12 @@ export class ModalItemComponent implements OnInit {
 	}
 
 	// Método para agregar al carrito
-	addToCart(item: MenuItem, quantity: number): void {
-		this.cartService.addToCart(item.id, item.name, item.description, item.price, quantity, this.additionalInstructions);
-		this.returnToMenu();
+	updateCart(cartItem: any): void {
+		cartItem.quantity = this.quantity
+		cartItem.additionalInstructions = this.additionalInstructions;
+
+		this.cartService.updateCartItem(cartItem);
+		this.returnToShoppingCart();
 	}
 
 }

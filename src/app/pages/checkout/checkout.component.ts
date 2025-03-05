@@ -28,13 +28,14 @@ export class CheckoutComponent {
 	) {
 		// Configuración del formulario reactivo
 		this.form = this.fb.group({
-			client: ['', Validators.required],
-			phoneNumber: ['', Validators.required],
+			client:          ['', [Validators.required, Validators.pattern('^[a-zA-ZÀ-ÿ\\s]+$')]],
+  			phoneNumber:     ['', [Validators.required, Validators.pattern('^[0-9]{1,10}$')]],
 			assignedToTable: ['', Validators.required],
-			paymentMethod: ['', Validators.required],
-			totalAmount: [0, Validators.required],
-			createdDate: ['01/01/1800, 00:00 a.m.'],
-			status: [1]
+			paymentMethod:   ['', Validators.required],
+			moneyChange:     [],
+			totalAmount:     [0, Validators.required],
+			createdDate:     ['01/01/1800, 00:00 a.m.'],
+			status:          [1]
 		});
 	}
 
@@ -47,16 +48,10 @@ export class CheckoutComponent {
 
 			// Añadir datos derivados como fecha y precio total
 			const now = new Date();
-			const formattedDate = new Intl.DateTimeFormat('es-MX', {
-				dateStyle: 'short',
-				timeStyle: 'short',
-			}).format(now);
+			const formattedDate = new Intl.DateTimeFormat('es-MX', { dateStyle: 'short', timeStyle: 'short' }).format(now);
 
 			// Actualizar valores en el formulario
-			this.form.patchValue({
-				createdDate: formattedDate,
-				totalAmount: this.totalPriceSignal(),
-			});
+			this.form.patchValue({ createdDate: formattedDate, totalAmount: this.totalPriceSignal() });
 
 			this.ordersService.addOrder({...this.form.value, foodDishes: cartItems})
 			.then(() => {
@@ -74,5 +69,28 @@ export class CheckoutComponent {
 
 	goToShoppingCart() {
 		this.router.navigate(['shopping-cart']);
+	}
+
+	// Eventos para Inputs
+	onlyLettersAndSpaces(event: KeyboardEvent) {
+		const regex = /^[a-zA-ZÀ-ÿ\s]+$/;
+		const key = event.key;
+		if (!regex.test(key)) {
+		  	event.preventDefault();
+		}
+	}
+
+	onlyNumbers(event: KeyboardEvent) {
+		const regex = /^[0-9]+$/;
+		if (!regex.test(event.key)) {
+		  	event.preventDefault();
+		}
+	}
+
+	  limitPhoneNumberLength() {
+		let phoneControl = this.form.get('phoneNumber');
+		if (phoneControl?.value.length > 10) {
+		  	phoneControl?.setValue(phoneControl.value.slice(0, 10));
+		}
 	}
 }

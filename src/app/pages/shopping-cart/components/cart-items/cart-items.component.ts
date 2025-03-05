@@ -1,7 +1,8 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, computed, inject, Injector, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { CartService } from '../../../../core/services/cart.service';
+import { ModalItemComponent } from '../modal-item/modal-item.component';
 
 @Component({
   selector: 'app-cart-items',
@@ -12,36 +13,43 @@ import { CartService } from '../../../../core/services/cart.service';
 })
 export class CartItemsComponent implements OnInit {
 
-	cartItems: any[] = [];
+	private cartService = inject(CartService);
 
 	totalPriceSignal = inject(CartService).getTotalPriceSignal();
 	cartItemsCount = inject(CartService).getCartItemsCount();
 	_menuService = inject(CartService).getMenu;
 
-	private cartService = inject(CartService);
+	cartItems = computed(() => this.cartService.cartItemsValue);
 
-	constructor(private router : Router) {}
+	@ViewChild('modalContainer', { read: ViewContainerRef }) container!: ViewContainerRef;
+
+	constructor(private router : Router, private injector : Injector) {}
 
 	ngOnInit() {
-		// Acceder al Signal a través del getter
-		this.cartItems = this.cartService.cartItemsValue;
-
-		// Actualizar las imágenes de los cartItems con el menú
 		this.cartService.updateCartItemsWithImage();
 	}
 
+	insertarComponente(cartItemID: string){
+		const componentRef = this.container.createComponent(ModalItemComponent, { injector: this.injector });
+		componentRef.instance.itemId = cartItemID;
+		componentRef.instance.cerrar.subscribe(() => componentRef?.destroy());
+	}
+
+	deleteCartItem(cartItemID: string) {
+		this.cartService.deleteCartItem(cartItemID);
+	}
+
 	// Llamar a la función de incrementar cantidad
-	incrementQuantity(id: string): void {
-		this.cartService.incrementQuantity(id);
-		this.cartItems = this.cartService.getCartItems();  // Actualizar el carrito después de incrementar
+	incrementQuantity(cartItemID: string): void {
+		this.cartService.incrementQuantity(cartItemID);
 	}
 
 	// Llamar a la función de decrementar cantidad
-	decrementQuantity(id: string): void {
-		this.cartService.decrementQuantity(id);
-		this.cartItems = this.cartService.getCartItems();  // Actualizar el carrito después de decrementar
-
-		if(this.cartItemsCount() < 1) this.router.navigate(['/home']);
+	decrementQuantity(cartItemID: string): void {
+		this.cartService.decrementQuantity(cartItemID);
+		if (this.cartService.getCartItemsCount()() < 1) {
+			this.router.navigate(['/home']);
+		}
 	}
 
 }

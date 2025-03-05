@@ -4,6 +4,7 @@ import { collection, collectionData, doc, docData, Firestore, getDocs, query, wh
 import { Observable } from 'rxjs';
 import { Storage } from '@angular/fire/storage';
 import { MenuItem } from '../models/menu-item';
+import { CartItem } from '../models/cart-item';
 
 @Injectable({
   providedIn: 'root'
@@ -31,9 +32,19 @@ export class CartService {
 		return this.cartItems();
 	}
 
+	// Devuelve el cartItemsCount como Signal
+	getCartItemsCount() {
+		return computed(() => this.cartItemsCount());
+	}
+
+	// Devuelve el totalPrice como Signal
+	getTotalPriceSignal() {
+		return computed(() => this.totalPrice());
+	}
+
 	// Método para obtener un item por ID
-	getItemById(itemId: string): Observable<any> {
-		const itemRef = doc(this._firestore, `menu/${itemId}`);
+	getItemById(itemID: string): Observable<any> {
+		const itemRef = doc(this._firestore, `menu/${itemID}`);
 		return docData(itemRef, { idField: 'id' });
 	}
 
@@ -50,9 +61,14 @@ export class CartService {
 	}
 
 	// Método para obtener los elementos del carrito desde el localStorage
-	getCartItems(): any[] {
+	getCartItems(): CartItem[] {
 		const cart = localStorage.getItem('cart');
 		return cart ? JSON.parse(cart) : [];
+	}
+
+	getCartItemById(cartItemID: string): CartItem | undefined {
+		const cartItems = this.getCartItems();
+		return cartItems.find(item => item.id === cartItemID);
 	}
 
 	getCartItemsToOrder(): { id: string, name: string, quantity: number }[] {
@@ -66,7 +82,7 @@ export class CartService {
 	}
 
 	// Método para guardar el carrito en el localStorage
-	saveCartItems(cartItems: any[]): void {
+	saveCartItems(cartItems: CartItem[]): void {
 		localStorage.setItem('cart', JSON.stringify(cartItems));
 		this.cartItems.set(cartItems);
 		this.cartItemsCount.set(this.getTotalItems());
@@ -95,6 +111,27 @@ export class CartService {
 		this.saveCartItems(cartItems); // Guardar los cartItems actualizados con las imágenes
 	}
 
+	updateCartItem(cartItem: CartItem): void {
+		const cart = this.getCartItems();
+		const index = cart.findIndex(item => item.id === cartItem.id);
+
+		if (index !== -1) {
+			cart[index] = { ...cart[index], ...cartItem };
+			this.saveCartItems(cart);
+		}
+	}
+
+	deleteCartItem(cartItemID: string): void {
+		const cart = this.getCartItems();
+		const index = cart.findIndex(item => item.id === cartItemID);
+
+		if (index !== -1) {
+			cart.splice(index, 1);
+			this.saveCartItems(cart);
+			console.log("Objeto del carrito eliminado");
+		}
+	}
+
 	clearCart() {
 		localStorage.removeItem('cart');
 		this.cartItems.set([]);
@@ -103,9 +140,9 @@ export class CartService {
 	}
 
 	// Método para incrementar la cantidad de un platillo
-	incrementQuantity(id: string): void {
+	incrementQuantity(cartItemID: string): void {
 		const cartItems = this.getCartItems();
-		const item = cartItems.find(item => item.id === id);
+		const item = cartItems.find(item => item.id === cartItemID);
 
 		if (item) {
 			item.quantity += 1;
@@ -114,28 +151,19 @@ export class CartService {
 	}
 
 	// Método para disminuir la cantidad de un platillo
-	decrementQuantity(id: string): void {
+	decrementQuantity(cartItemID: string): void {
 		const cartItems = this.getCartItems();
-		const item = cartItems.find(item => item.id === id);
+		const item = cartItems.find(item => item.id === cartItemID);
 
 		if (item) {
-			item.quantity = Math.max(0, item.quantity - 1);  // Disminuir, pero no menos que 0
+			item.quantity = Math.max(0, item.quantity - 1);
 			if (item.quantity === 0) {
-				const index = cartItems.indexOf(item); // Eliminar el producto si la cantidad es 0
+				const index = cartItems.indexOf(item);
 				if (index > -1) {
-					cartItems.splice(index, 1);  // Eliminar el artículo del carrito
+					cartItems.splice(index, 1);
 				}
 			}
 			this.saveCartItems(cartItems);
 		}
-	}
-
-	// Método para obtener el contador de items como Signal
-	getCartItemsCount() {
-		return computed(() => this.cartItemsCount()); // Devuelve el cartItemsCount como Signal
-	}
-
-	getTotalPriceSignal() {
-		return computed(() => this.totalPrice());  // Devuelve el totalPrice como Signal
 	}
 }
