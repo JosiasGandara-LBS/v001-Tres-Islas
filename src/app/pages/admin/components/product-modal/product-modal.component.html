@@ -30,17 +30,33 @@
 		</div>
 		<div class="p-field flex flex-col">
 			<label for="productCategory">Categoría</label>
-			<p-dropdown [options]="categories" emptyFilterMessage="No hay categorias que coincidan" emptyMessage="No hay categorias" formControlName="category" [style]="{'border-width': '1px'}" styleClass="border-c-gray-100 rounded-md focus:border-orange-500 focus:shadow-md focus:shadow-orange-300 focus:outline-none focus:ring-0 outline-none"></p-dropdown>
+			<p-dropdown [options]="categories" optionLabel="name" optionValue="name" emptyFilterMessage="No hay categorias que coincidan" emptyMessage="No hay categorias" formControlName="category" [style]="{'border-width': '1px'}" styleClass="border-c-gray-100 rounded-md focus:border-orange-500 focus:shadow-md focus:shadow-orange-300 focus:outline-none focus:ring-0 outline-none"></p-dropdown>
 			<div *ngIf="productForm.get('category')?.invalid && productForm.get('category')?.touched" class="p-error">
 				{{ getErrorMessage('category') }}
 			</div>
 		</div>
-		<div class="p-field flex flex-col">
-			<label for="productImage">Imagen</label>
-			<p-fileUpload mode="basic" accept="image/*" maxFileSize="1000000" customUpload="true" (uploadHandler)="uploadImage($event)" chooseLabel="Seleccionar" uploadLabel="Subir" cancelLabel="Cancelar"></p-fileUpload>
-			<img *ngIf="imagePreview" [src]="imagePreview" alt="Product Image" class="w-32 mt-2 rounded-xl">
-			<div *ngIf="!imagePreview" class="w-32 mt-2 rounded-xl bg-gray-200 flex items-center justify-center h-32">
-				<span class="text-gray-500">No Image</span>
+		<div class="p-field flex flex-col items-center">
+			<div class="w-full flex flex-col items-center">
+				<img *ngIf="imagePreview || productForm.get('image')?.value" [src]="imagePreview ? imagePreview : productForm.get('image')?.value" alt="Product Image" class="w-72 h-72 mt-2 rounded-xl">
+				<div *ngIf="!imagePreview && !productForm.get('image')?.value" class="w-72 mt-2 rounded-xl bg-gray-200 flex items-center justify-center h-72">
+					<span class="text-gray-500">No Image</span>
+				</div>
+				<label for="productImage" class="mt-2 text-orange-500 cursor-pointer">Imagen</label>
+				<div class="hidden">
+					<input id="productImage" type="file" accept="image/*" (change)="onFileSelected($event)" class="hidden">
+				</div>
+				<div *ngIf="!imagePreview && !productForm.get('image')?.value" class="mt-2">
+					<button class="bg-orange-500 text-white px-4 py-2 rounded-md" (click)="changeImage()">Seleccionar Imagen</button>
+				</div>
+				<div *ngIf="imagePreview" class="mt-2">
+					<button class="bg-red-500 text-white px-4 py-2 rounded-md" (click)="cancelImage()">Cancelar</button>
+				</div>
+				<div *ngIf="!imagePreview && productForm.get('image')?.value" class="mt-2">
+					<button class="bg-orange-500 text-white px-4 py-2 rounded-md" (click)="changeImage()">Cambiar Imagen</button>
+				</div>
+				<div class="w-full mt-2 border-dashed border-2 border-orange-500 rounded-md p-4 text-center" (drop)="onDrop($event)" (dragover)="onDragOver($event)">
+					<span class="text-orange-500">Arrastra y suelta una imagen aquí</span>
+				</div>
 			</div>
 		</div>
 

@@ -13,12 +13,20 @@
 			<thead>
 				<tr>
 					<th>Nombre de la Categoría</th>
-					<th>Acciones</th>
 				</tr>
 			</thead>
-			<tbody>
-				<tr *ngFor="let category of categories">
-					<td>{{ category.name }}</td>
+			<tbody class="flex flex-col gap-2">
+				<tr *ngFor="let category of categories" class="flex justify-between border-c-gray-100 border-b-2">
+					<td *ngIf="editingCategoryId !== category.id">{{ category.name }}</td>
+					<td *ngIf="editingCategoryId === category.id">
+						<form [formGroup]="editCategoryForm" (ngSubmit)="updateCategory()">
+							<input type="text" pInputText formControlName="name" (blur)="updateCategory()" (keydown.enter)="updateCategory()" [style]="{'border-width': '1px'}" class="border-c-gray-100 rounded-md py-2 px-1 focus:border-orange-500 focus:shadow-md focus:shadow-orange-300 focus:outline-none focus:ring-0 outline-none"/>
+						</form>
+					</td>
+					<td class="flex gap-2">
+						<button *ngIf="editingCategoryId !== category.id" class="bg-yellow-500 text-white px-4 py-2 rounded-md" (click)="editCategory(category)"><i class="pi pi-pencil"></i></button>
+						<button class="bg-red-500 text-white px-4 py-2 rounded-md" (click)="deleteCategory(category)"><i class="pi pi-trash"></i></button>
+					</td>
 				</tr>
 			</tbody>
 		</table>

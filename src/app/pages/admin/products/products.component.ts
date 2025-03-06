@@ -8,12 +8,14 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { CategoryModalComponent } from '../components/category-modal/category-modal.component';
+import { TooltipModule } from 'primeng/tooltip';
+import { KitchenStatusService } from 'src/app/services/kitchen-status.service'; // Import the service
 
 @Component({
   selector: 'app-products',
   templateUrl: './products.component.html',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, TooltipModule],
   providers: [DialogService],
   styleUrls: []
 })
@@ -21,11 +23,16 @@ export class ProductsComponent implements OnInit {
 	private dialogService = inject(DialogService);
 	private productsService = inject(ProductsService);
 	private fb = inject(FormBuilder);
+	private kitchenStatusService = inject(KitchenStatusService);
 
 	private _products = signal<Product[]>([]);
 	public products = computed(() => this._products());
+	public filteredProducts = signal<Product[]>([]);
 	private _selectedProduct = signal<Product | null>(null);
 	public selectedProduct = computed(() => this._selectedProduct());
+
+	public _isKitchenOpen = signal<boolean>(false);
+	public isKitchenOpen = computed(() => this._isKitchenOpen());
 
 	public searchForm: FormGroup;
 
@@ -40,21 +47,24 @@ export class ProductsComponent implements OnInit {
 	ngOnInit(): void {
 		this.productsService.getProducts().subscribe((products) => {
 			this._products.set(products);
+			this.filteredProducts.set(products);
 		});
 
-		this.searchForm.get('searchTerm')?.valueChanges.subscribe((searchTerm) => {
+		this.searchForm.get('query')?.valueChanges.subscribe((searchTerm) => {
 			this.filterProducts(searchTerm);
+		});
+
+		this.kitchenStatusService.getKitchenStatus().subscribe(status => {
+			this._isKitchenOpen.set(status);
 		});
 	}
 
 	filterProducts(searchTerm: string) {
-		const filteredProducts = this._products().filter(product =>
-			product.name.toLowerCase().includes(searchTerm.toLowerCase())
+		const filteredProducts = this.products().filter(product =>
+			product.name.toLowerCase().includes(searchTerm.toLowerCase()) || product.category.toLowerCase().includes(searchTerm.toLowerCase()) || product.description?.toLowerCase().includes(searchTerm.toLowerCase())
 		);
-		this._products.set(filteredProducts);
+		this.filteredProducts.set(filteredProducts);
 	}
-
-	isKitchenOpen = true;
 
 	openAddProductModal() {
 		this.productsService.selectedProduct.set(null);
@@ -74,8 +84,8 @@ export class ProductsComponent implements OnInit {
 			header: 'Editar producto',
 			modal: true,
 			keepInViewport: true,
-			width: '70%',
-			height: '80%',
+			width: '80%',
+			style: { 'max-height': '80%', 'height': 'auto' },
 			contentStyle: { overflow: 'auto' },
 			
 		});
@@ -93,7 +103,7 @@ export class ProductsComponent implements OnInit {
 	}
 
 	toggleKitchenStatus() {
-		this.isKitchenOpen = !this.isKitchenOpen;
+		this.kitchenStatusService.setKitchenStatus(!this.isKitchenOpen());
 	}
 
 	setSelectedProduct(product: Product) {
