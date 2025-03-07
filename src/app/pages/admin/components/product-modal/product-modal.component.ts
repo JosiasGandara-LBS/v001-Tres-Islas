@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, inject, Input, OnInit, Output, signal } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Product } from '@shared/interfaces/product.interface';
 import { ProductsService } from '@core/services/products.service';
 import { DialogModule } from 'primeng/dialog';
@@ -16,7 +16,7 @@ import { MessageService } from 'primeng/api';
 @Component({
   selector: 'products-product-modal',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, DialogModule, InputSwitchModule, FileUploadModule, DropdownModule, InputNumberModule, InputTextareaModule, InputTextModule],	
+  imports: [CommonModule, ReactiveFormsModule, DialogModule, InputSwitchModule, FileUploadModule, DropdownModule, InputNumberModule, InputTextareaModule, InputTextModule],
   templateUrl: './product-modal.component.html',
   styleUrl: './product-modal.component.scss',
   providers: [MessageService]
@@ -31,30 +31,33 @@ export class ProductModalComponent implements OnInit {
 	imagePreview: string | ArrayBuffer | null = null;
 	public product = this.productsService.selectedProduct() ?? { id: '', name: '', price: 0, description: '', available: true, category: '', image: '' };
 
-	ngOnInit() {
-		if (this.product) {
-			this.productForm.patchValue({
-				...this.product,
-				price: this.product?.price,
-				available: this.product?.available
-			});
-			
-		}
-		console.log(this.productForm.get('image')?.value);
-		this.fetchCategories();
-	}
-
-	public productForm = this.fb.group({
+	public productForm = signal(this.fb.group({
 		name: [this.product?.name ?? '', [Validators.required, Validators.minLength(3)]],
 		price: [this.product?.price ?? '', [Validators.required, Validators.min(0)]],
 		description: [this.product?.description ?? '', [Validators.required, Validators.minLength(3)]],
 		available: [this.product?.available ?? true],
 		category: [this.product?.category ?? '', [Validators.required, Validators.minLength(3)]],
 		image: [this.product?.image ?? '', Validators.required],
-	});
+	}));
+
+	ngOnInit() {
+		if (this.product) {
+			console.log(this.product);
+			this.productForm().patchValue({
+				...this.product,
+				price: this.product?.price,
+				available: this.product?.available
+			});
+
+		}
+		console.log(this.productForm().get('image')?.value);
+		this.fetchCategories();
+	}
+
+
 
 	getErrorMessage(field: string): string {
-		const control = this.productForm.get(field);
+		const control = this.productForm().get(field);
 		if (control?.hasError('required')) {
 			return 'Este campo es obligatorio';
 		} else if (control?.hasError('minlength')) {
@@ -68,28 +71,32 @@ export class ProductModalComponent implements OnInit {
 	}
 
 	public closeModal() {
-		this.productsService.selectedProduct.set(null);
+		this.productsService.closeProductModal();
 	}
 
 	public saveProduct() {
-		if (this.productForm.valid) {
-			const formValues = this.productForm.value;
+		if (this.productForm().valid) {
+			const formValues = this.productForm().value;
 			const updatedProduct: Product = {
 				id: this.productsService.selectedProduct()?.id ?? '',
 				name: formValues.name as string,
-				price: formValues.price as number,	
+				price: formValues.price as number,
 				description: formValues.description as string,
 				available: formValues.available === true,
 				category: formValues.category as string,
 				image: formValues.image as string
 			};
 			this.productsService.updateProduct(updatedProduct).then(() => {
-				this.closeModal();
+				this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Producto guardado' });
+				this.productsService.selectedProduct.set(null);
+				this.productForm().reset();
+				this.imagePreview = null;
+
 			}).catch((error) => {
 				this.messageService.add({ severity: 'error', summary: 'Error', detail: `Error al guardar el producto: ${error}` });
 			});
 		} else {
-			this.productForm.markAllAsTouched();
+			this.productForm().markAllAsTouched();
 			this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Formulario inválido' });
 		}
 	}
@@ -99,7 +106,7 @@ export class ProductModalComponent implements OnInit {
 		if (file) {
 			this.productsService.uploadImage(file).subscribe((url) => {
 				this.imagePreview = url;
-				this.productForm.patchValue({ image: url });
+				this.productForm().patchValue({ image: url });
 			}, (error) => {
 				this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al subir la imagen' });
 			});
@@ -127,7 +134,7 @@ export class ProductModalComponent implements OnInit {
 
 	public cancelImage() {
 		this.imagePreview = null;
-		this.productForm.patchValue({ image: '' });
+		this.productForm().patchValue({ image: '' });
 	}
 
 	public changeImage() {

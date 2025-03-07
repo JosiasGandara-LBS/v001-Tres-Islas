@@ -6,6 +6,9 @@ import { collection, doc, getDoc, writeBatch } from 'firebase/firestore';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { Observable } from 'rxjs';
 import { finalize } from 'rxjs/operators';
+import { DialogService } from 'primeng/dynamicdialog';
+import { ProductModalComponent } from 'src/app/pages/admin/components/product-modal/product-modal.component';
+import { CategoryModalComponent } from 'src/app/pages/admin/components/category-modal/category-modal.component';
 
 @Injectable({
   providedIn: 'root'
@@ -15,6 +18,10 @@ export class ProductsService {
 	constructor() {}
 
 	public selectedProduct = signal<Product | null>(null);
+
+	private dialogService = inject(DialogService);
+
+	private ref: any;
 
 	getProducts() {
 		return collectionData(collection(this.firestore, 'menu'), { idField: 'id' }).pipe(
@@ -26,7 +33,8 @@ export class ProductsService {
 						price: product.price,
 						description: product.description,
 						image: product.image,
-						category: product.category
+						category: product.category,
+						available: product.available
 					};
 				});
 			}
@@ -94,5 +102,40 @@ export class ProductsService {
 
 	getCategories() {
 		return collectionData(collection(this.firestore, 'categories'), { idField: 'id' });
+	}
+
+
+	openProductModal() {
+		this.ref = this.dialogService.open(ProductModalComponent, {
+			header: 'Editar producto',
+			modal: true,
+			keepInViewport: true,
+			width: '80%',
+			style: { 'max-height': '80%', 'height': 'auto' },
+			contentStyle: { overflow: 'auto' },
+		});
+
+		this.ref.onClose.subscribe(() => {
+			this.selectedProduct.set(null);
+		});
+	}
+
+	closeProductModal() {
+		this.ref.close();
+	}
+
+	openCategoriesModal() {
+		this.ref = this.dialogService.open(CategoryModalComponent, {
+			header: 'Categorías',
+			modal: true,
+			keepInViewport: true,
+			width: '50%',
+			height: '50%',
+			contentStyle: { overflow: 'auto' },
+		});
+	}
+
+	closeCategoriesModal() {
+		this.ref.close();
 	}
 }

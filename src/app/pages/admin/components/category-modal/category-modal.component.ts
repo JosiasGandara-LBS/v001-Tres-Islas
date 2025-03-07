@@ -37,6 +37,10 @@ export class CategoryModalComponent implements OnInit {
 		this.getCategories();
 	}
 
+	closeModal() {
+		this.productsService.closeCategoriesModal();
+	}
+
 	getCategories() {
 		this.productsService.getCategories().subscribe((categories) => this.categories = categories);
 	}

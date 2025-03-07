@@ -9,7 +9,8 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { CategoryModalComponent } from '../components/category-modal/category-modal.component';
 import { TooltipModule } from 'primeng/tooltip';
-import { KitchenStatusService } from 'src/app/services/kitchen-status.service'; // Import the service
+import { KitchenStatusService } from '@core/services/kitchen-status.service'; // Import the service
+
 
 @Component({
   selector: 'app-products',
@@ -68,38 +69,20 @@ export class ProductsComponent implements OnInit {
 
 	openAddProductModal() {
 		this.productsService.selectedProduct.set(null);
-		this.ref = this.dialogService.open(ProductModalComponent, {
-			header: 'Agregar producto',
-			modal: true,
-			keepInViewport: true,
-			width: '70%',
-			height: '80%',
-			contentStyle: { overflow: 'auto' },
-		});
+		this.productsService.openProductModal();
 	}
 
 	openEditProductModal(product: any) {
 		this.productsService.selectedProduct.set(product);
-		this.ref = this.dialogService.open(ProductModalComponent, {
-			header: 'Editar producto',
-			modal: true,
-			keepInViewport: true,
-			width: '80%',
-			style: { 'max-height': '80%', 'height': 'auto' },
-			contentStyle: { overflow: 'auto' },
-			
-		});
+		this.productsService.openProductModal();
+	}
+
+	closeProductModal() {
+		this.productsService.closeProductModal();
 	}
 
 	openCategoriesModal() {
-		this.ref = this.dialogService.open(CategoryModalComponent, {
-			header: 'Categorías',
-			modal: true,
-			keepInViewport: true,
-			width: '50%',
-			height: '50%',
-			contentStyle: { overflow: 'auto' },
-		});
+		this.productsService.openCategoriesModal();
 	}
 
 	toggleKitchenStatus() {

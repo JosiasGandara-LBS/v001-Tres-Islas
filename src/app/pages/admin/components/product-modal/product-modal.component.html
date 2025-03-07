@@ -1,57 +1,57 @@
 <div class="custom-dialog w-full py-4 h-full nunito-regular flex flex-col justify-between">
-	<form class="p-fluid flex flex-col gap-5" [formGroup]="productForm">
+	<form class="p-fluid flex flex-col gap-5" [formGroup]="productForm()">
 		<div class="flex gap-8 justify-between w-full">
 			<div class="p-field grid-cols-9 flex flex-col w-1/2">
 				<label for="productName">Nombre</label>
 				<input id="productName" type="text" pInputText formControlName="name" [style]="{'border-width': '1px'}" class="border-c-gray-100 rounded-md py-2 px-1 focus:border-orange-500 focus:shadow-md focus:shadow-orange-300 focus:outline-none focus:ring-0 outline-none"/>
-				<div *ngIf="productForm.get('name')?.invalid && productForm.get('name')?.touched" class="p-error">
+				<div *ngIf="productForm().get('name')?.invalid && productForm().get('name')?.touched" class="p-error">
 					{{getErrorMessage('name')}}
 				</div>
 			</div>
 			<div class="p-field grid-cols-3 flex w-1/4 gap-2 items-center justify-center">
-				<p-inputSwitch formControlName="available" class="h-full flex items-center"></p-inputSwitch>
-				<label for="productAvailable" class="flex w-auto text-center h-full text-nowrap items-center"><span class="text-center flex items-center text-nowrap text text-sm">{{ productForm.get('available')?.getRawValue() ? 'Disponible' : 'No Disponible' }}</span></label>
+				<p-inputSwitch formControlName="available" [ngModel]="productForm().get('available')?.value" class="h-full flex items-center"></p-inputSwitch>
+				<label for="productAvailable" class="flex w-auto text-center h-full text-nowrap items-center"><span class="text-center flex items-center text-nowrap text text-sm">{{ productForm().get('available')?.getRawValue() ? 'Disponible' : 'No Disponible' }}</span></label>
 			</div>
 		</div>
 
 		<div class="p-field flex flex-col">
 			<label for="productDescription">Descripción</label>
 			<textarea id="productDescription" pInputTextarea formControlName="description" [style]="{'border-width': '1px'}" class="border-c-gray-100 rounded-md py-2 px-1 focus:border-orange-500 focus:shadow-md focus:shadow-orange-300 focus:outline-none focus:ring-0 outline-none"></textarea>
-			<div *ngIf="productForm.get('description')?.invalid && productForm.get('description')?.touched" class="p-error">
+			<div *ngIf="productForm().get('description')?.invalid && productForm().get('description')?.touched" class="p-error">
 				{{ getErrorMessage('description') }}
 			</div>
 		</div>
 		<div class="p-field flex flex-col">
 			<label for="productPrice">Precio</label>
 			<p-inputNumber inputId="productPrice" formControlName="price" mode="currency" [allowEmpty]="false" format="true" currency="MXN" currencyDisplay="symbol" [inputStyle]="{'border-width': '1px'}" inputStyleClass="border-c-gray-100 rounded-md py-2 px-1 focus:border-orange-500 focus:shadow-md focus:shadow-orange-300 focus:outline-none focus:ring-0 outline-none" [locale]="'en-US'"></p-inputNumber>
-			<div *ngIf="productForm.get('price')?.invalid && productForm.get('price')?.touched" class="p-error">
+			<div *ngIf="productForm().get('price')?.invalid && productForm().get('price')?.touched" class="p-error">
 				{{ getErrorMessage('price') }}
 			</div>
 		</div>
 		<div class="p-field flex flex-col">
 			<label for="productCategory">Categoría</label>
 			<p-dropdown [options]="categories" optionLabel="name" optionValue="name" emptyFilterMessage="No hay categorias que coincidan" emptyMessage="No hay categorias" formControlName="category" [style]="{'border-width': '1px'}" styleClass="border-c-gray-100 rounded-md focus:border-orange-500 focus:shadow-md focus:shadow-orange-300 focus:outline-none focus:ring-0 outline-none"></p-dropdown>
-			<div *ngIf="productForm.get('category')?.invalid && productForm.get('category')?.touched" class="p-error">
+			<div *ngIf="productForm().get('category')?.invalid && productForm().get('category')?.touched" class="p-error">
 				{{ getErrorMessage('category') }}
 			</div>
 		</div>
 		<div class="p-field flex flex-col items-center">
 			<div class="w-full flex flex-col items-center">
-				<img *ngIf="imagePreview || productForm.get('image')?.value" [src]="imagePreview ? imagePreview : productForm.get('image')?.value" alt="Product Image" class="w-72 h-72 mt-2 rounded-xl">
-				<div *ngIf="!imagePreview && !productForm.get('image')?.value" class="w-72 mt-2 rounded-xl bg-gray-200 flex items-center justify-center h-72">
+				<img *ngIf="imagePreview || productForm().get('image')?.value" [src]="imagePreview ? imagePreview : productForm().get('image')?.value" alt="Product Image" class="w-72 h-72 mt-2 rounded-xl">
+				<div *ngIf="!imagePreview && !productForm().get('image')?.value" class="w-72 mt-2 rounded-xl bg-gray-200 flex items-center justify-center h-72">
 					<span class="text-gray-500">No Image</span>
 				</div>
 				<label for="productImage" class="mt-2 text-orange-500 cursor-pointer">Imagen</label>
 				<div class="hidden">
 					<input id="productImage" type="file" accept="image/*" (change)="onFileSelected($event)" class="hidden">
 				</div>
-				<div *ngIf="!imagePreview && !productForm.get('image')?.value" class="mt-2">
+				<div *ngIf="!imagePreview && !productForm().get('image')?.value" class="mt-2">
 					<button class="bg-orange-500 text-white px-4 py-2 rounded-md" (click)="changeImage()">Seleccionar Imagen</button>
 				</div>
 				<div *ngIf="imagePreview" class="mt-2">
 					<button class="bg-red-500 text-white px-4 py-2 rounded-md" (click)="cancelImage()">Cancelar</button>
 				</div>
-				<div *ngIf="!imagePreview && productForm.get('image')?.value" class="mt-2">
+				<div *ngIf="!imagePreview && productForm().get('image')?.value" class="mt-2">
 					<button class="bg-orange-500 text-white px-4 py-2 rounded-md" (click)="changeImage()">Cambiar Imagen</button>
 				</div>
 				<div class="w-full mt-2 border-dashed border-2 border-orange-500 rounded-md p-4 text-center" (drop)="onDrop($event)" (dragover)="onDragOver($event)">

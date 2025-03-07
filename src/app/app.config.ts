@@ -9,7 +9,7 @@ import { getStorage, provideStorage } from '@angular/fire/storage';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { importProvidersFrom } from '@angular/core';
 import { HttpClientModule, provideHttpClient, withFetch } from '@angular/common/http';
-import { DynamicDialogModule } from 'primeng/dynamicdialog';
+import { DialogService, DynamicDialogModule } from 'primeng/dynamicdialog';
 import { firebaseConfig } from 'src/environment/firebase.config';
 
 export const appConfig: ApplicationConfig = {
@@ -21,8 +21,9 @@ export const appConfig: ApplicationConfig = {
 		provideFirestore(() => getFirestore()),
 		provideFirebaseApp(() => initializeApp(firebaseConfig)),
 		provideStorage(() => getStorage()),
-			importProvidersFrom(BrowserAnimationsModule),
-			importProvidersFrom(HttpClientModule),
-			importProvidersFrom(DynamicDialogModule)
+		importProvidersFrom(BrowserAnimationsModule),
+		importProvidersFrom(HttpClientModule),
+		importProvidersFrom(DynamicDialogModule),
+		DialogService
 	]
 };
