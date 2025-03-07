@@ -1,57 +1,62 @@
 <div class="bg-white nunito-regular">
-	<div class="status-bar h-16 flex justify-between items-center px-5" [ngClass]="{'bg-red-500': !isKitchenOpen, 'bg-green-500': isKitchenOpen}">
-		<div class="flex items-center gap-2">
-			<i class="pi text-white" [ngClass]="{'pi-ban ': !isKitchenOpen, 'pi-check-circle': isKitchenOpen}"></i>
-			<h2 class="text-xl text-white">{{ isKitchenOpen ? 'Cocina Abierta' : 'Cocina Cerrada' }}</h2>
-		</div>
-		<button class="text-lg rounded-lg h-2/3 px-2 gap-2 flex text-white items-center align-middle"
-				[ngClass]="{'bg-red-500': isKitchenOpen, 'bg-green-500': !isKitchenOpen}" (click)="toggleKitchenStatus()">
-			<i class="pi" [ngClass]="{'pi-ban': isKitchenOpen, 'pi-check-circle': !isKitchenOpen}"></i>
-			{{ isKitchenOpen ? 'Cerrar Cocina' : 'Abrir Cocina' }}
-		</button>
-	</div>
-	<div class="flex justify-center items-center gap-4 p-4 sticky top-0 bg-transparent z-10">
-		<button class="bg-blue-500 rounded-full text-lg text-white px-4 py-2" (click)="openAddProductModal()">
-			<i class="pi pi-plus"></i>
-		</button>
-		<button class="bg-yellow-400 rounded-full text-lg text-white px-4 py-2" (click)="openCategoriesModal()">
-			<i class="pi pi-objects-column"></i>
-		</button>
-	</div>
-	<form [formGroup]="searchForm" class="w-full h-16 flex justify-center items-center p-4 my-5">
-		<input type="text" placeholder="Buscar productos..." pInputText formControlName="query" [style]="{'border-width': '1px'}" class="w-full border-c-gray-100 rounded-md py-2 px-1 focus:border-orange-500 focus:shadow-md focus:shadow-orange-300 focus:outline-none focus:ring-0 outline-none"/>
-	</form>
+    <div class="status-bar h-16 flex justify-between items-center px-5" [ngClass]="{'bg-red-500': !isKitchenOpen(), 'bg-green-500': isKitchenOpen()}">
+        <div class="flex items-center gap-2">
+            <i class="pi text-white" [ngClass]="{'pi-ban ': !isKitchenOpen(), 'pi-check-circle': isKitchenOpen()}"></i>
+            <h2 class="text-xl text-white">{{ isKitchenOpen() ? 'Cocina Abierta' : 'Cocina Cerrada' }}</h2>
+        </div>
+        <button class="text-lg rounded-lg h-2/3 px-2 gap-2 flex text-white items-center align-middle"
+                [ngClass]="{'bg-red-500': isKitchenOpen(), 'bg-green-500': !isKitchenOpen()}" (click)="toggleKitchenStatus()">
+            <i class="pi" [ngClass]="{'pi-ban': isKitchenOpen(), 'pi-check-circle': !isKitchenOpen()}"></i>
+            {{ isKitchenOpen() ? 'Cerrar Cocina' : 'Abrir Cocina' }}
+        </button>
+    </div>
+    <div class="flex justify-center items-center gap-4 p-4 sticky top-0 bg-transparent z-10">
+        <button pTooltip="Agregar Producto" tooltipPosition="bottom" class="bg-blue-500 rounded-full text-lg text-white px-4 py-2" aria-label="agregar producto" (click)="openAddProductModal()">
+            <i class="pi pi-plus"></i>
+        </button>
+        <button pTooltip="Gestionar Categorias" tooltipPosition="bottom" class="bg-yellow-400 rounded-full text-lg text-white px-4 py-2" aria-label="gestionar categorias" (click)="openCategoriesModal()">
+            <i class="pi pi-objects-column"></i>
+        </button>
+    </div>
+    <form [formGroup]="searchForm" class="w-full h-16 flex justify-center items-center p-4 my-5">
+        <input type="text" id="query" placeholder="Buscar productos..." pInputText formControlName="query" [style]="{'border-width': '1px'}" class="w-full border-c-gray-100 rounded-md py-2 px-1 focus:border-orange-500 focus:shadow-md focus:shadow-orange-300 focus:outline-none focus:ring-0 outline-none"/>
+    </form>
   <div  class="w-full h-auto flex flex-col gap-4 p-4">
-	<section *ngFor="let category of organizeByCategory(products()) | keyvalue; let i = index" lass="p-6 flex flex-col items-start justify-center text-gray-800 bg-white gap-4" [ngClass]="{ 'border-t-4': i != 0, 'border-gray-300': i != 0 }">
-		<!-- Titulo de sección de comida -->
-		<p class="text-center nunito-extra-bold mb-2 uppercase" style="font-size: 24px;">{{ category.key | titlecase }}</p>
-
-		<div *ngFor="let product of category.value" (click)="openEditProductModal(product)"
-			class="w-full h-auto md:min-h-44 flex flex-col md:flex-row items-center gap-4 bg-c-beige-100 rounded-md p-4 my-4 shadow-md cursor-pointer hover:shadow-lg"
-		>
-			<div class="md:grid-cols-9 grid-cols-12 w-full h-full flex flex-col md:flex-row gap-6 px-4 items-center">
-				<div class="md:grid-cols-2 grid-cols-12 h-full object-contain flex items-center justify-center">
-					@if(product.image != '') {
-						<img src="{{ product.image }}" alt="{{ product.name }}" class="w-32 order-1 rounded-xl">
-					} @else {
-						<img src="assets/img/no-image.svg" alt="no-image" class="w-32 order-1 rounded-xl">
-					}
-				</div>
-				<div class="md:grid-cols-10 grid-cols-12 w-full h-full flex flex-col md:flex-row gap-2 items-center justify-between">
-					<div class="md:grid-cols-10 grid-cols-12 h-full flex flex-col gap-2 text-wrap justify-center">
-						<h3 class="text-lg"><strong>{{ product.name }}</strong></h3>
-						<p>{{ product.description }}</p>
-					</div>
-					<div class="md:grid-cols-2 grid-cols-12 h-fit flex justify-end items-center p-2 bg-c-orange-100 rounded-md text-lg text-c-beige-100">
-						<p>${{ product.price }}</p>
-					</div>
-				</div>
-			</div>
-			<div class="md:grid-cols-3 grid-cols-12 h-full flex gap-4 items-center justify-center">
-				<button class="bg-c-orange-100 rounded-full text-beige-100 px-4 py-3"><i class="pi pi-pencil text-c-beige-100"></i></button>
-				<button class="bg-yellow-500 rounded-full text-beige-100 px-4 py-3"><i class="pi pi-pause text-c-beige-100"></i></button>
-			</div>
-		</div>
-	</section>
+    <div *ngIf="filteredProducts().length === 0" class="text-center text-gray-500">
+        No hay productos disponibles.
+    </div>
+    <div *ngIf="filteredProducts().length > 0">
+        <section *ngFor="let category of organizeByCategory(filteredProducts()) | keyvalue; let i = index" class="p-6 flex flex-col items-start justify-center text-gray-800 bg-white gap-4" [ngClass]="{ 'border-t-4': i != 0, 'border-gray-300': i != 0 }">
+            <!-- Titulo de sección de comida -->
+            <p class="text-center nunito-extra-bold mb-2 uppercase" style="font-size: 24px;">{{ category.key | titlecase }}</p>
+    
+            <div *ngFor="let product of category.value" (click)="openEditProductModal(product)"
+                class="w-full h-auto md:min-h-44 flex flex-col md:flex-row items-center gap-4 bg-c-beige-100 rounded-md p-4 my-4 shadow-md cursor-pointer hover:shadow-lg"
+            >
+                <div class="md:grid-cols-9 grid-cols-12 w-full h-full flex flex-col md:flex-row gap-6 px-4 items-center">
+                    <div class="md:grid-cols-2 grid-cols-12 h-full object-contain flex items-center justify-center">
+                        @if(product.image != '') {
+                            <img src="{{ product.image }}" alt="{{ product.name }}" class="w-32 order-1 rounded-xl">
+                        } @else {
+                            <img src="assets/img/no-image.svg" alt="no-image" class="w-32 order-1 rounded-xl">
+                        }
+                    </div>
+                    <div class="md:grid-cols-10 grid-cols-12 w-full h-full flex flex-col md:flex-row gap-2 items-center justify-between">
+                        <div class="md:grid-cols-10 grid-cols-12 h-full flex flex-col gap-2 text-wrap justify-center">
+                            <h3 class="text-lg"><strong>{{ product.name }}</strong></h3>
+                            <p>{{ product.description }}</p>
+                        </div>
+                        <div class="md:grid-cols-2 grid-cols-12 h-fit flex justify-end items-center p-2 bg-c-orange-100 rounded-md text-lg text-c-beige-100">
+                            <p>${{ product.price }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="md:grid-cols-3 grid-cols-12 h-full flex gap-4 items-center justify-center">
+                    <button class="bg-c-orange-100 rounded-full text-beige-100 px-4 py-3"><i class="pi pi-pencil text-c-beige-100"></i></button>
+                    <button class="bg-yellow-500 rounded-full text-beige-100 px-4 py-3"><i class="pi pi-pause text-c-beige-100"></i></button>
+                </div>
+            </div>
+        </section>
+    </div>
   </div>
 </div>
