@@ -13,16 +13,16 @@ import { DynamicDialogModule } from 'primeng/dynamicdialog';
 import { firebaseConfig } from 'src/environment/firebase.config';
 
 export const appConfig: ApplicationConfig = {
-  providers: [
-    provideRouter(routes, withViewTransitions()),
-	provideHttpClient(withFetch()),
-    provideFirebaseApp(() => initializeApp(firebaseConfig)),
-    provideAuth(() => getAuth()),
-    provideFirestore(() => getFirestore()),
-    provideFirebaseApp(() => initializeApp(firebaseConfig)),
-    provideStorage(() => getStorage()),
-		importProvidersFrom(BrowserAnimationsModule),
-		importProvidersFrom(HttpClientModule),
-		importProvidersFrom(DynamicDialogModule)
-  ]
+	providers: [
+		provideRouter(routes, withViewTransitions()),
+		provideHttpClient(withFetch()),
+		provideFirebaseApp(() => initializeApp(firebaseConfig)),
+		provideAuth(() => getAuth()),
+		provideFirestore(() => getFirestore()),
+		provideFirebaseApp(() => initializeApp(firebaseConfig)),
+		provideStorage(() => getStorage()),
+			importProvidersFrom(BrowserAnimationsModule),
+			importProvidersFrom(HttpClientModule),
+			importProvidersFrom(DynamicDialogModule)
+	]
 };

@@ -92,21 +92,3 @@
 :root {
 	--focus-ring: 0 0 0 0.2rem #e29b74 !important;
 }
-
-@keyframes enter {
-	from { transform: translate3d(100%, 0, 0); visibility: visible; }
-	to { transform: translate3d(0, 0, 0); }
-}
-
-@keyframes exit {
-	from { transform: translate3d(0, 0, 0); }
-	to { visibility: hidden; transform: translate3d(-100%, 0, 0); }
-}
-
-::view-transition-old(root) {
-	animation: exit 0.5s ease forwards;
-}
-
-::view-transition-new(root) {
-	animation: enter 0.5s ease forwards;
-}
