@@ -22,40 +22,35 @@
         <input type="text" id="query" placeholder="Buscar productos..." pInputText formControlName="query" [style]="{'border-width': '1px'}" class="w-full border-c-gray-100 rounded-md py-2 px-1 focus:border-orange-500 focus:shadow-md focus:shadow-orange-300 focus:outline-none focus:ring-0 outline-none"/>
     </form>
   <div  class="w-full h-auto flex flex-col gap-4 p-4">
-    <div *ngIf="filteredProducts().length === 0" class="text-center text-gray-500">
-        No hay productos disponibles.
-    </div>
-	<p-table [value]="products()" [tableStyle]="{'min-width': '60rem'}" styleClass="p-datatable-striped"  class="w-full h-auto">
+	<p-table [value]="filteredProducts()" scrollable="true" [loading]="loadingProducts()" loadingIcon="pi pi-spinner" tableStyleClass="w-full" styleClass="p-datatable-striped" class="w-full h-auto">
 		<ng-template pTemplate="caption" class="w-full h-auto">
-            <div class="flex w-full items-center justify-between">
-                Products
-                <p-button icon="pi pi-refresh" (onClick)="getProducts()" />
-            </div>
-        </ng-template>
+			<div class="flex w-full items-center justify-between">
+				Products
+				<p-button icon="pi pi-refresh" (onClick)="getProducts()" />
+			</div>
+		</ng-template>
 
 		<ng-template pTemplate="header">
-            <tr>
+			<tr>
+				<th></th>
 				<th>Nombre</th>
 				<th>Descripción</th>
-				<th>Precio</th>
-				<th>Imagen</th>
-				<th>Acciones</th>
-            </tr>
-        </ng-template>
+				<th class="text-center">Precio</th>
+				<th class="text-center">Acciones</th>
+			</tr>
+		</ng-template>
+
 		<ng-template pTemplate="body" let-product>
-            <tr>
+			<tr>
 				<td>
-					<div class="md:grid-cols-2 grid-cols-12 h-full object-contain flex items-center justify-center">
-						@if(product.image != '') {
-							<img src="{{ product.image }}" alt="{{ product.name }}" class="w-32 order-1 rounded-xl">
-						} @else {
-							<img src="assets/img/no-image.svg" alt="no-image" class="w-32 order-1 rounded-xl">
-						}
+					<div class="w-28 h-32 object-contain flex items-center justify-center">
+						<img *ngIf="product.image" [src]="product.image" [alt]="product.name" class="w-32 order-1 rounded-xl">
+						<img *ngIf="!product.image" src="assets/img/no-image.svg" alt="no-image" class="w-32 order-1 rounded-xl">
 					</div>
 				</td>
 				<td>{{ product.name }}</td>
 				<td>{{ product.description }}</td>
-				<td>{{ product.price }}</td>
+				<td class="text-center">${{ product.price }}</td>
 				<td>
 					<div class="flex gap-4 items-center justify-center">
 						<p-button icon="pi pi-pencil" (onClick)="openEditProductModal(product)" styleClass="bg-c-orange-100 rounded-full text-white px-4 py-3"></p-button>
@@ -65,6 +60,11 @@
 				</td>
             </tr>
         </ng-template>
+		<ng-template pTemplate="emptymessage">
+			<tr>
+				<td colspan="5" class="text-center">No hay productos disponibles.</td>
+			</tr>
+		</ng-template>
 	</p-table>
 
 

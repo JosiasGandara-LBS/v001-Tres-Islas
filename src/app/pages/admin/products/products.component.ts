@@ -38,6 +38,8 @@ export class ProductsComponent implements OnInit {
 
 	public searchForm: FormGroup;
 
+	public loadingProducts = signal<boolean>(false);
+
 	private ref: DynamicDialogRef | undefined;
 
 	constructor() {
@@ -60,10 +62,12 @@ export class ProductsComponent implements OnInit {
 	}
 
 	getProducts() {
+		this.loadingProducts.set(true);
 		this.productsService.getProducts().subscribe((products) => {
 			this._products.set(products);
 			this.filteredProducts.set(products);
 		});
+		this.loadingProducts.set(false);
 	}
 
 	filterProducts(searchTerm: string) {
