@@ -1,22 +1,23 @@
-import { ref } from 'firebase/storage';
-import { ProductModalComponent } from './../components/product-modal/product-modal.component';
 import { Component, OnInit, signal, computed, Inject, inject } from '@angular/core';
-import { ProductsService } from '@core/services/products.service'; // Adjust the path as necessary
 import { CommonModule } from '@angular/common';
-import { Product } from '@shared/interfaces/product.interface'; // Adjust the path as necessary
-import { ReactiveFormsModule } from '@angular/forms';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
+
+import { ProductsService } from '@core/services/products.service';
+import { KitchenStatusService } from '@core/services/kitchen-status.service';
+
+import { Product } from '@shared/interfaces/product.interface';
+
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
-import { CategoryModalComponent } from '../components/category-modal/category-modal.component';
 import { TooltipModule } from 'primeng/tooltip';
-import { KitchenStatusService } from '@core/services/kitchen-status.service'; // Import the service
+import { TableModule } from 'primeng/table';
+import { ButtonModule } from 'primeng/button';
 
 
 @Component({
   selector: 'app-products',
   templateUrl: './products.component.html',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, TooltipModule],
+  imports: [CommonModule, ReactiveFormsModule, TooltipModule, TableModule, ButtonModule],
   providers: [DialogService],
   styleUrls: []
 })
@@ -46,10 +47,8 @@ export class ProductsComponent implements OnInit {
 	}
 
 	ngOnInit(): void {
-		this.productsService.getProducts().subscribe((products) => {
-			this._products.set(products);
-			this.filteredProducts.set(products);
-		});
+
+		this.getProducts();
 
 		this.searchForm.get('query')?.valueChanges.subscribe((searchTerm) => {
 			this.filterProducts(searchTerm);
@@ -57,6 +56,13 @@ export class ProductsComponent implements OnInit {
 
 		this.kitchenStatusService.getKitchenStatus().subscribe(status => {
 			this._isKitchenOpen.set(status);
+		});
+	}
+
+	getProducts() {
+		this.productsService.getProducts().subscribe((products) => {
+			this._products.set(products);
+			this.filteredProducts.set(products);
 		});
 	}
 
