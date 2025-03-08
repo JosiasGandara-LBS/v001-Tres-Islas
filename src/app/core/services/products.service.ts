@@ -138,4 +138,14 @@ export class ProductsService {
 	closeCategoriesModal() {
 		this.ref.close();
 	}
+
+	pauseProduct(product: Product) {
+		const productRef = doc(this.firestore, 'menu', product.id);
+		return updateDoc(productRef, { available: false });
+	}
+
+	enableProduct(product: Product) {
+		const productRef = doc(this.firestore, 'menu', product.id);
+		return updateDoc(productRef, { available: true });
+	}
 }

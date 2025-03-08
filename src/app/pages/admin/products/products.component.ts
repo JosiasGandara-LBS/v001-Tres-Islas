@@ -115,4 +115,12 @@ export class ProductsComponent implements OnInit {
 		return acc;
 	  }, {});
 	}
+
+	pauseProduct(product: Product) {
+		this.productsService.pauseProduct(product);
+	}
+
+	enableProduct(product: Product) {
+		this.productsService.enableProduct(product);
+	}
 }
