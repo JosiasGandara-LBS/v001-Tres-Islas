@@ -1,0 +1,18 @@
+<p-dataView #dv [value]="orders()">
+    <ng-template pTemplate="list" let-orders>
+        <div class="grid grid-nogutter">
+            <div class="col-12" *ngFor="let item of orders; let first = first" class="col-12">
+                <div class="flex flex-column sm:flex-row sm:align-items-center p-4 gap-3" [ngClass]="{ 'border-top-1 surface-border': !first }">
+
+					
+
+                </div>
+            </div>
+        </div>
+    </ng-template>
+	<ng-template pTemplate="emptymessage">
+		<div class="flex flex-column items-center justify-center">
+			<p>Aún no hay ordenes</p>
+		</div>
+	</ng-template>
+</p-dataView>

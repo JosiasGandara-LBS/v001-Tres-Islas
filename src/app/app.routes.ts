@@ -25,6 +25,20 @@ export const routes: Routes = [
 		canActivate: [authGuard],
 	},
 	{
+		path: 'orders-client',
+		loadComponent: () => import('./pages/orders-client/orders-client.component').then(m => m.OrdersClientComponent),
+		children: [
+			{
+				path: '', pathMatch: 'full',
+				loadComponent: () => import('./pages/orders-client/components/orders-client-list/orders-client-list.component').then(m => m.OrdersClientListComponent)
+			},
+			{
+				path:':id',
+				loadComponent: () => import('./pages/orders-client/components/orders-client-detail/orders-client-detail.component').then(m => m.OrdersClientDetailComponent)
+			},
+		]
+	},
+	{
 		path: 'orders-waiter', component: OrdersWaiterComponent,
 		canActivate: [waiterGuard],
 		children: [
