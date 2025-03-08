@@ -1,12 +1,33 @@
-<!-- <div>
-  <input type="text" placeholder="Buscar usuarios..." (input)="filterUsers($event)">
-  <button (click)="openAddUserModal()">Agregar Usuario</button>
-  <div *ngFor="let user of filteredUsers" (click)="openEditUserModal(user)">
-    {{ user.name }}
+<div class="w-full h-full bg-white">
+  <div class="flex justify-center items-center gap-4 p-4 sticky top-0 bg-transparent z-10">
+    <p-button rounded="true" icon="pi pi-plus" (onClick)="openAddEmployeeModal()" styleClass="mb-4 bg-blue-500"></p-button>
   </div>
-  <!-- Modal de agregar/editar usuario --
-  <div *ngIf="isModalOpen">
-    <!-- Modal content --
-    <button (click)="closeModal()">Cerrar</button>
-  </div>
-</div> -->
+  <p-table [value]="filteredEmployees()" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[5,10,20]" [responsive]="true" [showCurrentPageReport]="true" showPaginator="true" paginatorPosition="bottom">
+    <ng-template pTemplate="header">
+      <tr>
+        <th class="text-center">Email</th>
+        <th class="text-center">Nombre</th>
+        <th class="text-center">Rol</th>
+        <th class="text-center">Actions</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-employee>
+      <tr>
+        <td class="text-center">{{employee.email}}</td>
+        <td class="text-center">{{employee.name}}</td>
+        <td class="text-center">{{employee.role}}</td>
+        <td>
+					<div class="flex gap-4 items-center justify-center">
+						<p-button pTooltip="Editar empleado"  (onClick)="openEditEmployeeModal(employee)" icon="pi pi-pencil" styleClass="bg-c-orange-100 rounded-full text-white px-4 py-3"></p-button>
+						<p-button pTooltip="Eliminar empleado" (onClick)="deleteEmployee(employee)" icon="pi pi-trash" styleClass="bg-red-500 rounded-full text-white px-4 py-3"></p-button>
+					</div>
+				</td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="5">No employees found</td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>

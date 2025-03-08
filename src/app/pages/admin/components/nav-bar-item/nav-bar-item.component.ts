@@ -13,10 +13,12 @@ export class NavBarItemComponent {
 	@Input() route: string;
 	@Input() name: string;
 	@Input() icon: string;
+	@Input() isCollapsed: boolean;
 
 	constructor() {
 		this.route = '';
 		this.name = '';
 		this.icon = '';
+		this.isCollapsed = false;
 	}
 }

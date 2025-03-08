@@ -11,7 +11,7 @@ import { DropdownModule } from 'primeng/dropdown';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextareaModule } from 'primeng/inputtextarea';
 import { InputTextModule } from 'primeng/inputtext';
-import { MessageService } from 'primeng/api';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'products-product-modal',
@@ -19,13 +19,11 @@ import { MessageService } from 'primeng/api';
   imports: [CommonModule, ReactiveFormsModule, DialogModule, InputSwitchModule, FileUploadModule, DropdownModule, InputNumberModule, InputTextareaModule, InputTextModule],
   templateUrl: './product-modal.component.html',
   styleUrl: './product-modal.component.scss',
-  providers: [MessageService]
 })
 export class ProductModalComponent implements OnInit {
 
 	private productsService = inject(ProductsService)
 	private fb = inject(FormBuilder)
-	private messageService = inject(MessageService)
 
 	categories: any[] = [];
 	imagePreview: string | ArrayBuffer | null = null;
@@ -37,7 +35,7 @@ export class ProductModalComponent implements OnInit {
 		description: [this.product?.description ?? '', [Validators.required, Validators.minLength(3)]],
 		available: [this.product?.available ?? true],
 		category: [this.product?.category ?? '', [Validators.required, Validators.minLength(3)]],
-		image: [this.product?.image ?? '', Validators.required],
+		image: [this.product?.image ?? ''],
 	}));
 
 	ngOnInit() {
@@ -87,17 +85,14 @@ export class ProductModalComponent implements OnInit {
 				image: formValues.image as string
 			};
 			this.productsService.updateProduct(updatedProduct).then(() => {
-				this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Producto guardado' });
-				this.productsService.selectedProduct.set(null);
-				this.productForm().reset();
-				this.imagePreview = null;
-
+				Swal.fire({ icon: 'success', title: 'Éxito', text: 'Producto guardado' });
+				this.productsService.closeProductModal();
 			}).catch((error) => {
-				this.messageService.add({ severity: 'error', summary: 'Error', detail: `Error al guardar el producto: ${error}` });
+				Swal.fire({ icon: 'error', title: 'Error', text: `Error al guardar el producto: ${error}` });
 			});
 		} else {
 			this.productForm().markAllAsTouched();
-			this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Formulario inválido' });
+			Swal.fire({ icon: 'error', title: 'Error', text: `Formulario Inválido` });
 		}
 	}
 
@@ -108,7 +103,7 @@ export class ProductModalComponent implements OnInit {
 				this.imagePreview = url;
 				this.productForm().patchValue({ image: url });
 			}, (error) => {
-				this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al subir la imagen' });
+				Swal.fire({ icon: 'error', title: 'Error', text: `Error al subir la imágen` });
 			});
 		}
 	}
