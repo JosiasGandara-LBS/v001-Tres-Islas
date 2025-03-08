@@ -1,8 +1,16 @@
-<div class="h-16 flex flex-row items-center px-4 text-gray-800 fill-gray-800">
+<form (ngSubmit)="onSubmit()" #pagoForm="ngForm">
+	<input type="text" placeholder="Nombre del titular" [(ngModel)]="holderName" name="holderName" required>
+	<input type="text" placeholder="Número de tarjeta" [(ngModel)]="cardNumber" name="cardNumber" required>
+	<input type="text" placeholder="Mes de expiración" [(ngModel)]="expirationMonth" name="expirationMonth" required>
+	<input type="text" placeholder="Año de expiración" [(ngModel)]="expirationYear" name="expirationYear" required>
+	<input type="text" placeholder="CVV" [(ngModel)]="cvv2" name="cvv2" required>
+	<button type="submit" [disabled]="pagoForm.invalid">Procesar Pago</button>
+</form>
+
+<!-- <div class="h-16 flex flex-row items-center px-4 text-gray-800 fill-gray-800">
 	<div (click)="goToShoppingCart()" class="space-x-2 p-2 rounded-full shadow-xl">
 		<svg class="size-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg>
 	</div>
-	<!-- <svg (click)="goToShoppingCart()" class="size-5 mr-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg> -->
 	<p class="nunito-extra-bold ml-4 w-full text-[20px]">Detalles del pedido</p>
 </div>
 
@@ -100,4 +108,4 @@
 		<p class="text-c-orange-100" style="font-size: 12px;">Total del pedido + IVA(16%)</p>
 	</div>
 	<button (click)="submitForm()" type="button" class="w-32 py-3 bg-c-orange-100 rounded-xl nunito-extra-bold text-white" style="font-size: 14px;">Ordenar</button>
-</footer>
+</footer> -->

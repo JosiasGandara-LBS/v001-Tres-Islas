@@ -1,0 +1,7 @@
+{
+	"/api": {
+		"target": "https://procesarpago-wjc3vrdlna-uc.a.run.app",
+		"secure": false,
+		"changeOrigin": true
+	}
+}
