@@ -79,11 +79,11 @@ export class AuthService {
 			this._router.navigate(['/login']);
 			return false;
 		}
-		if (payload.exp < Date.now() / 1000) {
-			localStorage.removeItem('accessToken');
-			this._router.navigate(['/login']);
-			return false;
-		}
+		// if (payload.exp < Date.now() / 1000) {
+		// 	localStorage.removeItem('accessToken');
+		// 	this._router.navigate(['/login']);
+		// 	return false;
+		// }
 		const userDoc = await doc(this._firestore, `employees/${payload.user_id}`);
 		if (!userDoc) {
 			localStorage.removeItem('accessToken');
