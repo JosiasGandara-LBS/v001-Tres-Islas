@@ -12,7 +12,7 @@ import { ModalItemComponent } from './components/modal-item/modal-item.component
 	standalone: true,
 	imports: [CommonModule, CartItemsComponent],
 	templateUrl: './shopping-cart.component.html',
-	styleUrl: './shopping-cart.component.scss'
+	styleUrl: './shopping-cart.component.scss',
 })
 export class ShoppingCartComponent implements OnInit {
 	title = 'Tu pedido'
@@ -22,11 +22,14 @@ export class ShoppingCartComponent implements OnInit {
 
 	@ViewChild(CheckoutComponent) checkoutComponent?: CheckoutComponent;
 
-	constructor( private route: ActivatedRoute, private router : Router, private injector : Injector ) {}
+	constructor( private route: ActivatedRoute, private router : Router, private injector : Injector) {}
+	
 
 	ngOnInit(): void {}
 
 	goToHome() { this.router.navigate(['/home']) }
 
 	goToCheckout() { this.router.navigate(['/checkout']) }
+
+	
 }
