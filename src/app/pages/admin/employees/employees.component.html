@@ -1,14 +1,22 @@
 <div class="w-full h-full bg-white">
   <div class="flex justify-center items-center gap-4 p-4 sticky top-0 bg-transparent z-10">
-    <p-button rounded="true" icon="pi pi-plus" (onClick)="openAddEmployeeModal()" styleClass="mb-4 bg-blue-500"></p-button>
+    <p-button rounded="true" icon="pi pi-plus" (onClick)="openAddEmployeeModal()" styleClass="mb-4 bg-blue-500 text-white"></p-button>
   </div>
+  <form [formGroup]="searchForm" class="w-full h-16 flex justify-center items-center py-4 my-5">
+    <input type="text" id="query" placeholder="Buscar empleados..." pInputText formControlName="query" [style]="{'border-width': '1px'}" class="w-2/3 border-c-gray-100 rounded-md py-2 px-1 focus:border-orange-500 focus:shadow-md focus:shadow-orange-300 focus:outline-none focus:ring-0 outline-none"/>
+  </form>
   <p-table [value]="filteredEmployees()" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[5,10,20]" [responsive]="true" [showCurrentPageReport]="true" showPaginator="true" paginatorPosition="bottom">
+    <ng-template pTemplate="caption" class="w-full h-auto">
+			<div class="flex w-full items-center justify-center text-2xl">
+				Empleados
+			</div>
+		</ng-template>
     <ng-template pTemplate="header">
       <tr>
         <th class="text-center">Email</th>
         <th class="text-center">Nombre</th>
         <th class="text-center">Rol</th>
-        <th class="text-center">Actions</th>
+        <th class="text-center">Acciones</th>
       </tr>
     </ng-template>
     <ng-template pTemplate="body" let-employee>
@@ -24,10 +32,10 @@
 				</td>
       </tr>
     </ng-template>
-    <ng-template pTemplate="emptymessage">
-      <tr>
-        <td colspan="5">No employees found</td>
-      </tr>
+    <ng-template pTemplate="emptymessage" class="!w-full flex justify-center items-center">
+      <div class="!w-full flex justify-center items-center">
+        <div class="text-center text-xl !w-full flex align-center justify-center">No se encontraron empleados</div>
+      </div>
     </ng-template>
   </p-table>
 </div>

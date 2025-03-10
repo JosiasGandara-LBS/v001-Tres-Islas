@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { EmployeesService } from '@core/services/employees.service';
 import { ButtonModule } from 'primeng/button';
 import { DynamicDialogRef } from 'primeng/dynamicdialog';
@@ -10,7 +10,7 @@ import { TableModule } from 'primeng/table';
 @Component({
   selector: 'app-users',
   standalone: true,
-  imports: [CommonModule, ButtonModule, TableModule],
+  imports: [CommonModule, ButtonModule, TableModule, ReactiveFormsModule],
   templateUrl: './employees.component.html',
   styleUrls: []
 })

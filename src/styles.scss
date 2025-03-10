@@ -92,3 +92,8 @@
 :root {
 	--focus-ring: 0 0 0 0.2rem #e29b74 !important;
 }
+
+.swal2-container {
+	font-family: "Nunito", serif;
+	z-index: 50000;
+}

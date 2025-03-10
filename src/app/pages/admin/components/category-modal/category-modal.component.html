@@ -1,4 +1,4 @@
-<div class="custom-dialog w-full h-full nunito-regular flex flex-col justify-between">
+<div class="w-full h-full nunito-regular flex flex-col justify-between py-3">
 	<form class="p-fluid flex flex-col gap-5" [formGroup]="categoryForm">
 		<div class="p-field flex flex-col">
 			<label for="categoryName">Nombre de la Categoría</label>
@@ -7,17 +7,19 @@
 				Nombre es requerido
 			</div>
 		</div>
+		<button class="bg-green-500 text-white px-4 py-2 rounded-md" (click)="saveCategory()">Guardar</button>
 	</form>
-	<div class="p-field">
-		<table class="w-full">
-			<thead>
-				<tr>
-					<th>Nombre de la Categoría</th>
+	<p-divider></p-divider>
+	<div class="mt-3">
+		<table class="w-full mt-3">
+			<thead class="">
+				<tr class="">
+					<th class="text-xl nunito-extra-bold">Nombre de la Categoría</th>
 				</tr>
 			</thead>
 			<tbody class="flex flex-col gap-2">
-				<tr *ngFor="let category of categories" class="flex justify-between border-c-gray-100 border-b-2">
-					<td *ngIf="editingCategoryId !== category.id">{{ category.name }}</td>
+				<tr *ngFor="let category of categories" class="flex justify-between border-c-gray-100 items-center h-full border-b-2 mb-2 pb-1">
+					<td *ngIf="editingCategoryId !== category.id" class="flex items-center h-full text-lg nunito-regular">{{ category.name }}</td>
 					<td *ngIf="editingCategoryId === category.id">
 						<form [formGroup]="editCategoryForm" (ngSubmit)="updateCategory()">
 							<input type="text" pInputText formControlName="name" (blur)="updateCategory()" (keydown.enter)="updateCategory()" [style]="{'border-width': '1px'}" class="border-c-gray-100 rounded-md py-2 px-1 focus:border-orange-500 focus:shadow-md focus:shadow-orange-300 focus:outline-none focus:ring-0 outline-none"/>
@@ -31,10 +33,9 @@
 			</tbody>
 		</table>
 	</div>
-	<div class="ui-dialog-footer">
+	<div class="ui-dialog-footer pb-3">
 		<div class="flex justify-end gap-4 mt-4">
-			<button class="bg-red-500 text-white px-4 py-2 rounded-md" (click)="ref.close()">Cancelar</button>
-			<button class="bg-green-500 text-white px-4 py-2 rounded-md" (click)="saveCategory()">Guardar</button>
+			<button class="bg-orange-500 text-white px-4 py-2 rounded-md" (click)="ref.close()">Cerrar</button>
 		</div>
 	</div>
 </div>

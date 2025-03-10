@@ -4,12 +4,15 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { DynamicDialogRef } from 'primeng/dynamicdialog';
 import { ProductsService } from '@core/services/products.service';
 import Swal from 'sweetalert2';
+import { DividerModule } from 'primeng/divider';
+
+
 
 @Component({
 	selector: 'app-category-modal',
 	templateUrl: './category-modal.component.html',
 	standalone: true,
-	imports: [CommonModule, ReactiveFormsModule],
+	imports: [CommonModule, ReactiveFormsModule, DividerModule],
 	styleUrls: []
 })
 export class CategoryModalComponent implements OnInit {
@@ -47,7 +50,6 @@ export class CategoryModalComponent implements OnInit {
 
 	saveCategory() {
 		if (this.categoryForm.valid) {
-			this.ref.close(this.categoryForm.value);
 			this.productsService.addCategory(this.categoryForm.value);
 		}
 	}
@@ -72,7 +74,7 @@ export class CategoryModalComponent implements OnInit {
 			showCancelButton: true,
 			confirmButtonColor: '#3085d6',
 			cancelButtonColor: '#d33',
-			confirmButtonText: 'Sí, eliminarlo!'
+			confirmButtonText: 'Sí, eliminarlo!',
 		}).then((result) => {
 			if (result.isConfirmed) {
 				this.productsService.deleteCategory(category.id).then(() => {

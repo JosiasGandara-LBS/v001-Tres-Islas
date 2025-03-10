@@ -1,4 +1,4 @@
-import { collectionData, collection, Firestore, doc, deleteDoc, addDoc, updateDoc } from '@angular/fire/firestore';
+import { collectionData, collection, Firestore, doc, deleteDoc, addDoc, updateDoc, setDoc } from '@angular/fire/firestore';
 import { Auth, createUserWithEmailAndPassword } from '@angular/fire/auth';
 import { inject, Injectable, signal } from '@angular/core';
 import { Employee } from '@shared/interfaces/employee.interface';
@@ -80,17 +80,17 @@ export class EmployeesService {
   }
 
   addEmployee(employee: Employee, password: string) {
-	const { email, ...employeeData } = employee;
+    const employeeData = { email: employee.email, name: employee.name, role: employee.role };
 
-	createUserWithEmailAndPassword(this.auth, email, password)
-	  .then((userCredential) => {
-		const userId = userCredential.user.uid;
-		return addDoc(collection(this.firestore, 'employees'), { ...employeeData, id: userId });
-	  })
-	  .catch((error) => {
-		Swal.fire('Error', 'Ocurrió un error al agregar el empleado', 'error');
-	  });
-    return addDoc(collection(this.firestore, 'employees'), employee);
+    createUserWithEmailAndPassword(this.auth, employeeData.email, password)
+      .then((userCredential) => {
+        const userId = userCredential.user.uid;
+        const employeeRef = doc(this.firestore, 'employees', userId);
+        return setDoc(employeeRef, { ...employeeData, id: userId });
+      })
+      .catch((error) => {
+        Swal.fire('Error', 'Ocurrió un error al agregar el empleado', 'error');
+      });
   }
 
   updateEmployee(employee: Employee) {

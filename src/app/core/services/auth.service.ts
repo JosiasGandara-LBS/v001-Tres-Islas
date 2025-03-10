@@ -18,11 +18,40 @@ export class AuthService {
 		const auth = getAuth();
 		return await signInWithEmailAndPassword(auth, email, password)
 			.then(async (userCredential) => {
-				const user = { email: userCredential.user.email, uid: userCredential.user.uid, role: '' };
-				const token = await userCredential.user.getIdToken();
-				localStorage.setItem('accessToken', token);
-				const userDoc = doc(this._firestore, `employees/${user.uid}`);
-				if (!userDoc) {
+				try {
+					const user = { email: userCredential.user.email, uid: userCredential.user.uid, role: '' };
+					const token = await userCredential.user.getIdToken();
+					localStorage.setItem('accessToken', token);
+					const userDoc = doc(this._firestore, `employees/${user.uid}`);
+					if (!userDoc) {
+						Swal.fire({
+							icon: 'error',
+							title: 'Inicio de sesión incorrecto',
+							text: 'Usuario o contraseña incorrectos',
+							showConfirmButton: false,
+							timer: 1500
+						});
+						return false;
+					}
+					const userDocData = await getDoc(userDoc);
+					this.user.set({ email: user.email!, name: userDocData.get('name'),role: userDocData.get('role') });
+					Swal.fire({
+						icon: 'success',
+						title: 'Inicio de sesión correcto',
+						text: 'Bienvenido',
+						showConfirmButton: false,
+						timer: 1500
+					});
+					await new Promise(resolve => setTimeout(resolve, 1000));
+					if (this.user()?.role === 'ADMIN' || this.user()?.role === 'TI') {
+						this._router.navigate(['/admin']);
+					}
+					else {
+						this._router.navigate(['/orders-waiter']);
+					}
+					return true;
+				} catch (error) {
+					console.error("Error getting user data:", error);
 					Swal.fire({
 						icon: 'error',
 						title: 'Inicio de sesión incorrecto',
@@ -32,23 +61,6 @@ export class AuthService {
 					});
 					return false;
 				}
-				const userDocData = await getDoc(userDoc);
-				this.user.set({ email: user.email!, name: userDocData.get('name'),role: userDocData.get('role') });
-				Swal.fire({
-					icon: 'success',
-					title: 'Inicio de sesión correcto',
-					text: 'Bienvenido',
-					showConfirmButton: false,
-					timer: 1500
-				});
-				await new Promise(resolve => setTimeout(resolve, 1000));
-				if (this.user()?.role === 'ADMIN' || this.user()?.role === 'TI') {
-					this._router.navigate(['/admin']);
-				}
-				else {
-					this._router.navigate(['/orders-waiter']);
-				}
-				return true;
 			})
 			.catch((error) => {
 				console.error("Authentication failed:", error);
@@ -65,6 +77,7 @@ export class AuthService {
 
 	logout() {
 		this.user.set(null);
+		localStorage.removeItem('accessToken');
 		this._router.navigate(['/login']);
 	}
 
