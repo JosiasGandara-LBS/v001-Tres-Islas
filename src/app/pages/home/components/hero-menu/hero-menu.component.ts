@@ -1,16 +1,17 @@
-import { Component, effect, inject, Injector, signal, ViewChild, ViewContainerRef } from '@angular/core';
+import { Component, computed, effect, inject, Injector, signal, ViewChild, ViewContainerRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { ModalItemComponent } from '../modal-item/modal-item.component';
 import { MenuItem } from '../../../../core/models/menu-item';
 import { CartService } from '../../../../core/services/cart.service';
+import { ButtonModule } from 'primeng/button';
 
 @Component({
-  selector: 'app-hero-menu',
-  standalone: true,
-  imports: [CommonModule],
-  templateUrl: './hero-menu.component.html',
-  styleUrl: './hero-menu.component.scss'
+	selector: 'app-hero-menu',
+	standalone: true,
+	imports: [CommonModule, ButtonModule],
+	templateUrl: './hero-menu.component.html',
+	styleUrl: './hero-menu.component.scss'
 })
 export class HeroMenuComponent {
 
@@ -31,7 +32,7 @@ export class HeroMenuComponent {
 		this.updateCartItemsCount();
 	}
 
-	insertarComponente(itemId: string){
+	insertarComponente(itemId: string) {
 
 		const componentRef = this.container.createComponent(ModalItemComponent, {
 			injector: this.injector,
@@ -56,11 +57,25 @@ export class HeroMenuComponent {
 	}
 
 	goToOrders() {
-		this.router.navigate(['/orders']);
+		this.router.navigate(['/orders-client']);
 	}
 
 	updateCartItemsCount(): void {
 		this.cartItemsCount = this.cartService.getTotalItems(); // Llama al servicio para obtener el total de items
 	}
+
+	get hasOrders(): boolean{
+		return localStorage.getItem('currentOrders') !== null;
+	}
+
+	scrollToMenu() {
+		const menuSection = document.getElementById('menuSection');
+		const headerHeight = 64;
+
+		if (menuSection) {
+		  const menuPosition = menuSection.getBoundingClientRect().top + window.scrollY - headerHeight;
+		  window.scrollTo({ top: menuPosition, behavior: 'smooth' });
+		}
+	  }
 
 }
