@@ -40,10 +40,10 @@
             </ng-template>
 
             <ng-template pTemplate="body" let-product>
-                <tr [ngClass]="{'bg-gray-300': !product.available}">
+                <tr [ngClass]="{'bg-gray-300': !product.available}" class="h-fit">
                     <td [ngClass]="{'opacity-55': !product.available}">
-                        <div class="w-28 h-32 object-contain flex flex-col items-center justify-center gap-2">
-                            <div>
+                        <div class="w-28 object-contain h-fit flex flex-col items-center justify-center gap-2">
+                            <div class="h-fit">
                                 <img *ngIf="product.image" [src]="product.image" [alt]="product.name" class="w-32 order-1 rounded-xl">
                                 <img *ngIf="!product.image" src="assets/img/no-image.svg" alt="no-image" class="w-32 order-1 rounded-xl">
                             </div>
