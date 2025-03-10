@@ -6,18 +6,15 @@ import { Pipe, PipeTransform } from '@angular/core';
 })
 export class StatusToTextPipe implements PipeTransform {
 
-	transform(value: unknown, ...args: unknown[]): unknown {
-		if (typeof value !== 'string') {
-			return value;
-		}
+	transform(value: number, ...args: unknown[]): unknown {
 
 		switch (value) {
-			case 'delivered':
-				return 'Entregado';
-			case 'payment-pending':
+			case 1:
 				return 'Pago pendiente';
-			case 'pending':
+			case 2:
 				return 'Pendiente';
+			case 3:
+				return 'Entregado';
 			default:
 				return value;
 		}

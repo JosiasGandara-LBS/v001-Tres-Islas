@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, inject, Signal, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, Signal, signal } from '@angular/core';
 import { OrdersService } from '@core/services/orders.service';
 import { DataViewModule } from 'primeng/dataview';
 import { DividerModule } from 'primeng/divider';
@@ -8,54 +8,47 @@ import { CardModule } from 'primeng/card';
 
 import { StatusToTextPipe } from '@shared/pipes/status-to-text.pipe';
 import { Router } from '@angular/router';
+import { TruncatePipe } from '@shared/pipes/truncate.pipe';
 
 
 @Component({
   selector: 'app-orders-client-list',
   standalone: true,
-  imports: [CommonModule, DataViewModule, ButtonModule, DividerModule, CardModule, StatusToTextPipe],
+  imports: [CommonModule, DataViewModule, ButtonModule, DividerModule, CardModule, StatusToTextPipe, TruncatePipe],
   templateUrl: './orders-client-list.component.html',
   styleUrl: './orders-client-list.component.scss'
 })
-export class OrdersClientListComponent {
+export class OrdersClientListComponent implements OnInit {
 
 	private ordersService = inject(OrdersService);
 	private router = inject(Router);
 
+	private ordersIds: string[] = [];
 	private _orders = signal<any[]>([]);
 	public orders = computed(() => this._orders());
 
+	public loadingOrders = signal<boolean>(true);
+
 	ngOnInit(): void {
-		this._orders.set([
-			{
-				id: 1,
-				name: 'Order 1',
-				total: 500,
-				status: 'pending',
-				time_estimate: '12:35',
-				items: [{ name: 'veggie', qty: 2 }],
-			},
-			{
-				id: 2,
-				name: 'Order 2',
-				total: 1200,
-				status: 'payment-pending',
-				time_estimate: '12:05',
-				items: [{ name: 'pasta', qty: 2 }],
-			},
-			{
-				id: 3,
-				name: 'Order 3',
-				total: 800,
-				status: 'delivered',
-				time_estimate: '11:15',
-				items: [{ name: 'pizza', qty: 2 }],
-			}
-		]);
+		this.loadingOrders.set(true);
+		const storedOrders = localStorage.getItem('currentOrders');
+		if (storedOrders) {
+			this.ordersIds = JSON.parse(storedOrders);
+			this.getOrders();
+		}
+		this.loadingOrders.set(false);
+	}
+
+	private getOrders(): void {
+		for (const orderId of this.ordersIds) {
+			this.ordersService.getOrderById(orderId).then(order => {
+				this._orders.set([...this._orders(), order]);
+			});
+		}
+		console.log('Orders: ', this.orders());
 	}
 
 	public viewOrder(orderId: number): void {
-		this.router.navigate(['/orders-client/', orderId]);
 	}
 
 }
