@@ -36,5 +36,29 @@ export class KitchenStatusService {
             status: status
         });
     }
+
+    getOrdersEstimatedTime() {
+        const kitchenStatusCollection = collection(this.firestore, 'kitchenStatus');
+        return collectionData(kitchenStatusCollection, { idField: 'id' }).pipe(
+            map((status: any) => {
+                return status.map((status: {id: string, estimatedTime: number}) => {
+                    return {
+                        estimatedTime: status.estimatedTime
+                    };
+                });
+            }
+            )
+        ).pipe(
+            map((statusArray: any[]) => statusArray[0]?.estimatedTime)
+        );
+    }
+
+    setOrdersEstimatedTime(estimatedTime: number) {
+        const kitchenStatusCollection = collection(this.firestore, 'kitchenStatus');
+        const kitchenStatusRef = doc(kitchenStatusCollection, 'kitchenStatus');
+        return updateDoc(kitchenStatusRef, {
+            estimatedTime: estimatedTime
+        });
+    }
 }
 
