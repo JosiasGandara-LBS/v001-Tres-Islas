@@ -11,7 +11,7 @@
 .nunito-regular {
 	font-family: "Nunito", serif;
 	font-optical-sizing: auto;
-	font-weight: 400;
+	font-weight: 400; 	
 	font-style: normal;
 }
 
@@ -30,6 +30,7 @@
 }
 
 // Animaciones globales
+
 @keyframes slideInLeft {
 	from {
 	  	transform: translate3d(-100%, 0, 0);
@@ -43,7 +44,8 @@
 
 .slideInLeft {
 	animation-name: slideInLeft;
-	animation-duration: 1s;
+	animation-duration: .3s;
+	animation-timing-function: ease-out;
 }
 
 @keyframes slideInRight {
@@ -59,7 +61,8 @@
 
 .slideInRight {
 	animation-name: slideInRight;
-	animation-duration: 1s;
+	animation-duration: .3s;
+	animation-timing-function: ease-out;
 }
 
 // Colores personalizados globales

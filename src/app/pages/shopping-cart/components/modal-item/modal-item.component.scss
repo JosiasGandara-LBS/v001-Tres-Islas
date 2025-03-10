@@ -1,3 +1,4 @@
+// CLASE PARA LAS ANIMACIONES DE LA PARTE MODIFICAR (ARRIBA Y ABAJO)
 @keyframes fadeInUp {
 	from {
 	  	opacity: 0;
@@ -13,6 +14,7 @@
 .fadeInUp {
 	animation-name: fadeInUp;
 	animation-duration: .5s;
+
 }
 
 @keyframes fadeOutDown {
