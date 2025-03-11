@@ -10,7 +10,7 @@
         </div>
         <div class="p-field col-span-6 flex flex-col">
             <label for="employeeRole">Rol</label>
-            <p-dropdown [options]="roles" formControlName="role" [style]="{'border-width': '1px'}" styleClass="border-c-gray-100 rounded-md focus:border-orange-500 focus:shadow-md focus:shadow-orange-300 focus:outline-none focus:ring-0 outline-none"></p-dropdown>
+            <p-dropdown [options]="roles" formControlName="role" optionLabel="name" optionValue="name" [style]="{'border-width': '1px'}" styleClass="border-c-gray-100 rounded-md focus:border-orange-500 focus:shadow-md focus:shadow-orange-300 focus:outline-none focus:ring-0 outline-none"></p-dropdown>
             <div *ngIf="employeeForm.get('role')?.invalid && employeeForm.get('role')?.touched" class="p-error">
                 {{ getErrorMessage('role') }}
             </div>

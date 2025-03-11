@@ -1,7 +1,7 @@
 <!-- Contenedor Hero -->
 <section class="h-screen bg-cover bg-center flex items-end pb-16 justify-center" style="background-image: url('assets/img/fondo_tres_islas.png');">
 	<!-- Botón para ir al Menú -->
-	<div class="h-12 w-12 bg-c-beige-100 rounded-full flex justify-center items-center animate-bounce">
+	<div (click)="scrollToMenu()" class="h-12 w-12 bg-c-beige-100 rounded-full flex justify-center items-center animate-bounce">
 		<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" fill="#E55204" class="size-5"><path d="M169.4 470.6c12.5 12.5 32.8 12.5 45.3 0l160-160c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 370.8 224 64c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 306.7L54.6 265.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l160 160z"/></svg>
 	</div>
 </section>
@@ -36,5 +36,7 @@
 		</section>
 	}
 </section>
-
+@if (hasOrders) {
+	<p-button class="orders-fab-button" icon="pi pi-receipt" size="large" [rounded]="true" severity="secondary" (onClick)="goToOrders()"/>
+}
 <div #modalContainer></div>

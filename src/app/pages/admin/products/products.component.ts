@@ -11,13 +11,14 @@ import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { TooltipModule } from 'primeng/tooltip';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
+import { TruncateLongTextPipe } from '@shared/pipes/truncate-long-text.pipe';
 
 
 @Component({
   selector: 'app-products',
   templateUrl: './products.component.html',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, TooltipModule, TableModule, ButtonModule],
+  imports: [CommonModule, ReactiveFormsModule, TooltipModule, TableModule, ButtonModule, TruncateLongTextPipe],
   providers: [DialogService],
   styleUrls: []
 })

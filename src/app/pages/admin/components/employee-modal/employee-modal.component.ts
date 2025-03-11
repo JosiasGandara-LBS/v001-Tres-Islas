@@ -32,8 +32,6 @@ export class EmployeeModalComponent implements OnInit {
     this.employeeForm = this.fb.group({
       name: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
-      phone: ['', Validators.required],
-      address: ['', Validators.required],
       role: ['', Validators.required],
       password: [''],
     });

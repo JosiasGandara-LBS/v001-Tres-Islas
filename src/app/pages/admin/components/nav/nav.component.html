@@ -5,7 +5,10 @@
 	<img src="https://firebasestorage.googleapis.com/v0/b/v001-tres-islas.firebasestorage.app/o/staticImages%2Flogo_tres_islas-nobg.png?alt=media&token=0921fece-f464-4068-b43a-b88a3bc0a7a1" alt="logo" class="mb-4 drop-shadow-xl transition-all duration-300 ease-out" [ngClass]="{'w-16': isCollapsed, 'w-2/3': !isCollapsed}"/>
 	<div class="flex flex-col gap-4 w-full h-full px-3">
 		<div *ngFor="let item of navItems">
-		<app-nav-bar-item [isCollapsed]="isCollapsed" [icon]="item.icon" [name]="item.name" [route]="item.route"></app-nav-bar-item>
+			<app-nav-bar-item [isCollapsed]="isCollapsed" [icon]="item.icon" [name]="item.name" [route]="item.route"></app-nav-bar-item>
 		</div>
+	</div>
+	<div class="w-full flex justify-center">
+		<p-button rounded size="large" icon="pi pi-power-off" text="true" [label]="!isCollapsed ? 'Cerrar Sesión' : ''" (click)="logout()" styleClass="bg-c-beige-100 text-c-orange-100 p-4 transition-all duration-300 ease-out"></p-button>
 	</div>
 </div>
