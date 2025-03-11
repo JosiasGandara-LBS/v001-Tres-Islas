@@ -3,7 +3,7 @@
 	<div class="relative p-2 w-full max-w-5xl max-h-full">
 
 		<!-- Modal content -->
-		<div class="relative bg-white shadow dark:bg-gray-700 rounded-lg">
+		<div class="relative bg-white shadow rounded-lg">
 
 			<!-- Modal header -->
 			<div class="flex flex-row items-center justify-between p-2 md:p-5 border-b rounded-t">
@@ -31,7 +31,7 @@
 
 			<!-- Modal body -->
 			<div class="py-3 px-4 flex flex-row justify-between items-center">
-				<p class="text-sm font-bold leading-relaxed dark:text-gray-400">{{ order.foodDishes | keysLength }} Platillos</p>
+				<p class="text-sm font-bold leading-relaxed">{{ order.foodDishes | keysLength }} Platillos</p>
 				<p class="text-xs font-bold px-8 py-1 rounded-full bg-gray-300">Mesa {{ order.assignedToTable }}</p>
 			</div>
 

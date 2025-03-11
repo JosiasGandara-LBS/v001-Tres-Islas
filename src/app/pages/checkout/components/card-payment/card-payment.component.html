@@ -1,0 +1,158 @@
+<section class="fixed top-0 left-0 p-4 w-full h-screen bg-white z-50 overflow-y-auto fadeInUp" [ngClass]="{ 'fadeOutDown': isFadingOut }">
+	<div class="rounded-t-xl px-8 border-r-2 border-l-2 border-t-2 border-gray-200 shadow-md">
+		<div class="py-4">
+            <!-- <img class="h-8" src="../../../../../assets/img/openpay-logo.webp" alt=""> -->
+            <img class="h-8" src="https://sandbox-api.openpay.mx/img/icons/logoOpenpayBlue.svg" alt="">
+        </div>
+	</div>
+	<div class="rounded-b-xl p-7 border-r-2 border-l-2 border-b-2 border-gray-200 shadow-md">
+		<div class="shadow-sm rounded-xl border-2 border-gray-200 mb-6">
+			<div class="bg-white px-6 py-10 text-base rounded-t-xl">
+				<p class="nunito-extra-bold">Cerveceria Tres Islas</p>
+			</div>
+			<div class="p-6 bg-gray-50 rounded-b-xl">
+				<p class="nunito-extra-bold text-xl">Detalle del pago</p>
+				<div class="my-4 h-[2px] w-6 bg-cyan-400"></div>
+				<p class="nunito-extra-bold text-base mb-2">Total a pagar</p>
+				<p class="text-3xl">{{ this.totalPriceSignal() | currency }}</p>
+				<div class="my-4 h-[2px] w-6 bg-cyan-400"></div>
+				<p class="nunito-extra-bold text-base mb-2">Concepto</p>
+				<p class="text-base text-gray-500">Pago de orden comida</p>
+			</div>
+		</div>
+		<div class="mb-6">
+			<p class="nunito-extra-bold text-[10px] text-green-700 flex flex-row justify-start items-center">
+				<svg class="size-4 mr-2 fill-green-700" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M144 144l0 48 160 0 0-48c0-44.2-35.8-80-80-80s-80 35.8-80 80zM80 192l0-48C80 64.5 144.5 0 224 0s144 64.5 144 144l0 48 16 0c35.3 0 64 28.7 64 64l0 192c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 256c0-35.3 28.7-64 64-64l16 0z"/></svg>
+				Pago seguro procesado por OpenPay by BBVA
+			</p>
+		</div>
+		<div class="flex flex-row justify-end mb-6">
+			<img class="pl-[10px] h-3" src="https://sandbox-api.openpay.mx/img/icons/Logo_Visa.svg" alt="visa">
+			<img class="pl-[10px] h-3" src="https://sandbox-api.openpay.mx/img/icons/logo-mastercard.svg" alt="mastercard">
+			<img class="pl-[10px] h-3" src="https://sandbox-api.openpay.mx/img/icons/card_ax.svg" alt="americanexpress">
+			<img class="pl-[10px] h-3" src="https://sandbox-api.openpay.mx/img/icons/logo-carnet.svg" alt="carnet">
+		</div>
+		<div class="mb-8">
+			<p class="nunito-extra-bold text-base mb-4">Datos de la tarjeta</p>
+			<form [formGroup]="cardPaymentForm" class="grid gap-4 mb-4" action="">
+				<div>
+					<input
+						type="text"
+						id="holderName"
+						formControlName="holder_name"
+						[(ngModel)]="holderName"
+						(keypress)="onlyLettersAndSpaces($event)"
+						class="text-gray-800 bg-gray-50 text-sm rounded-lg block w-full p-2.5 mb-1 border-2 border-gray-200 focus:outline-none focus:border-gray-400"
+						placeholder="Nombre del titular de la tarjeta"
+					/>
+					<label for="holderName" class="flex flex-row justify-start items-center text-[10px]">
+						<svg class="size-3 mr-2 fill-cyan-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM216 336l24 0 0-64-24 0c-13.3 0-24-10.7-24-24s10.7-24 24-24l48 0c13.3 0 24 10.7 24 24l0 88 8 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-80 0c-13.3 0-24-10.7-24-24s10.7-24 24-24zm40-208a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"/></svg>
+						Solo primer nombre y primer apellido
+					</label>
+				</div>
+				<div>
+					<input
+						type="text"
+						id="cardNumber"
+						formControlName="card_number"
+						inputmode="numeric"
+						[(ngModel)]="cardNumber"
+						[value]="cardNumber | creditCardFormat"
+						(keypress)="onlyNumbers($event)"
+						maxlength="22"
+						class="text-gray-800 bg-gray-50 text-sm rounded-lg block w-full p-2.5 border-2 border-gray-200 focus:outline-none focus:border-gray-400"
+						placeholder="Número de la tarjeta"
+					/>
+				</div>
+				<div>
+					<input
+						type="text"
+						id="expirationDate"
+						inputmode="numeric"
+						formControlName="expiration_date"
+						[(ngModel)]="expirationDate"
+						[value]="expirationDate | expirationDateFormat"
+						(keypress)="onlyNumbers($event)"
+						maxlength="5"
+						class="text-gray-800 bg-gray-50 text-sm rounded-lg block w-full p-2.5 border-2 border-gray-200 focus:outline-none focus:border-gray-400"
+						placeholder="Fecha de vencimiento (MM/AA)"
+					/>
+				</div>
+				<div>
+					<input
+						type="password"
+						id="cvv2"
+						formControlName="cvv2"
+						inputmode="numeric"
+						[(ngModel)]="cvv2"
+						(keypress)="onlyNumbers($event)"
+						maxlength="4"
+						class="text-gray-800 bg-gray-50 text-sm rounded-lg block w-full p-2.5 border-2 border-gray-200 focus:outline-none focus:border-gray-400"
+						placeholder="Código de seguridad (CVV)"
+					/>
+				</div>
+			</form>
+			<div>
+				<span class="text-sm">
+					Al pagar acepto que estoy de acuerdo con el <a class="text-blue-900 nunito-extra-bold" href="https://www.openpay.mx/terminos-condiciones" target="_blank" rel="noopener noreferrer">Aviso de privacidad.</a>
+				</span>
+			</div>
+		</div>
+		<div class="flex flex-row justify-between">
+			<button (click)="returnToCheckout()" class="p-2 text-blue-900 nunito-extra-bold" type="button">Regresar</button>
+			<button (click)="onSubmit()" class="px-10 py-2 bg-blue-900 rounded-xl text-white nunito-extra-bold" type="button">Pagar</button>
+		</div>
+	</div>
+</section>
+
+<div *ngIf="showing" class="fixed top-0 left-0 px-8 w-full h-screen bg-gray-100 bg-opacity-70 flex flex-col justify-center items-center" style="z-index: 60;">
+
+	<!-- Loading transaction -->
+	<div *ngIf="loadingTransaction" class="flex flex-col justify-center items-center">
+		<div role="status">
+			<svg class="inline w-10 h-10 text-gray-300 animate-spin fill-cyan-500 opacity-100" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"/><path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill"/></svg>
+		</div>
+		<span class="text-black text-base mt-2">Procesando transacción...</span>
+	</div>
+
+	<!-- Sucess transaction -->
+	<div *ngIf="transactionSuccess" class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl">
+		<div class="bg-white p-4">
+			<div>
+				<div class="mx-auto flex size-12 shrink-0 items-center justify-center rounded-full bg-green-100">
+					<svg class="size-6 text-green-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>
+				</div>
+				<div class="mt-3 text-center">
+					<h3 class="text-base font-semibold text-gray-900" id="modal-title">¡Pago realizado con éxito!</h3>
+					<div class="mt-2">
+						<p class="text-sm text-gray-500">Tu transacción se ha completado correctamente. Gracias por tu compra.</p>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="bg-gray-50 p-4">
+			<button type="button" class="inline-flex w-full justify-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-red-500">Volver al inicio</button>
+		</div>
+	</div>
+
+	<!-- Failed transaction -->
+	<div *ngIf="transactionError" class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl">
+		<div class="bg-white p-4">
+			<div>
+				<div class="mx-auto flex size-12 shrink-0 items-center justify-center rounded-full bg-red-100">
+					<svg class="size-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" /></svg>
+				</div>
+				<div class="mt-3 text-center">
+					<h3 class="text-base font-semibold text-gray-900" id="modal-title">¡Ocurrio un error!</h3>
+					<div class="mt-2">
+						<p class="text-sm text-gray-500">{{ errorMessage }}. Asegurate de que los datos ingresados sean correctos.</p>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="bg-gray-50 p-4">
+			<button (click)="returnToCheckout()" type="button" class="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-red-500">Regresar</button>
+			<button (click)="closeMessage()" type="button" class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 shadow-xs ring-gray-300 ring-inset hover:bg-gray-50">Volver a intentar</button>
+		</div>
+	</div>
+</div>
