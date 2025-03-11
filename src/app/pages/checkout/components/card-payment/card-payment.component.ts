@@ -1,18 +1,18 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, inject, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { CartService } from '@core/services/cart.service';
 import { PagoService } from '@core/services/pago.service';
 import { CreditCardFormatPipe } from '@shared/pipes/credit-card-format.pipe';
 import { ExpirationDateFormatPipe } from '@shared/pipes/expiration-date-format.pipe';
-import { LoadingTransactionComponent } from '../loading-transaction/loading-transaction.component';
 
 declare var OpenPay: any;
 
 @Component({
 	selector: 'app-card-payment',
 	standalone: true,
-	imports: [CommonModule, ReactiveFormsModule, FormsModule, CreditCardFormatPipe, ExpirationDateFormatPipe, LoadingTransactionComponent],
+	imports: [CommonModule, ReactiveFormsModule, FormsModule, CreditCardFormatPipe, ExpirationDateFormatPipe],
 	templateUrl: './card-payment.component.html',
 	styleUrl: './card-payment.component.scss'
 })
@@ -33,11 +33,16 @@ export class CardPaymentComponent implements OnInit {
 	deviceSessionId: string = '';
 
 	isFadingOut: boolean = false;
+	showing: boolean = false;
 	loadingTransaction: boolean = false;
+	transactionSuccess: boolean = false;
+	transactionError: boolean = false;
+	errorMessage: string = '';
 
 	constructor(
 		private pagoService: PagoService,
-		private fb: FormBuilder
+		private fb: FormBuilder,
+		private router: Router
 	) {
 		this.cardPaymentForm = this.fb.group({
 			holder_name : [Validators.required],
@@ -57,7 +62,14 @@ export class CardPaymentComponent implements OnInit {
 	onSubmit() {
 		if(this.cardPaymentForm.valid) {
 
+			console.log("Entro al metodo");
+
+			this.showing = true;
 			this.loadingTransaction = true;
+			this.transactionSuccess = false;
+			this.transactionError = false;
+
+			console.log("estado del loading: ", this.loadingTransaction);
 
 			const name = this.holderName.split(" ")[0];
 			const lastname = this.holderName.split(" ")[1];
@@ -68,17 +80,17 @@ export class CardPaymentComponent implements OnInit {
 			const expirationYear = this.expirationDate.split("/")[1];
 
 			if(!OpenPay.card.cardType(cardNumber)) {
-				console.log("Tipo de tarjeta no admitida");
+				this.setError("Tipo de tarjeta no admitida");
 				return;
 			}
 
 			if(!OpenPay.card.validateCardNumber(cardNumber)) {
-				console.log("Numero de tarjeta no admitido");
+				this.setError("Número de tarjeta no admitido");
 				return;
 			}
 
 			if(!OpenPay.card.validateCVC(this.cvv2)) {
-				console.log("CVC no admitido");
+				this.setError("CVC no admitido");
 				return;
 			}
 
@@ -107,14 +119,17 @@ export class CardPaymentComponent implements OnInit {
 				this.pagoService.procesarPago(tokenId, this.deviceSessionId, amount, 'Pago concepto orden', customer).subscribe(
 					response => {
 						console.log('Pago procesado exitosamente:', response);
+						this.loadingTransaction = false;
+						this.transactionSuccess = true;
 					},
 					error => {
 						console.error('Error al procesar el pago:', error);
+						this.setError('Ocurrió un error en tu tarjeta');
 					}
 				);
 
 			}, (error: any) => {
-			  	console.error('Error al generar el token:', error);
+				this.setError('Error al generar el token de pago.');
 			});
 		}
 	}
@@ -134,8 +149,27 @@ export class CardPaymentComponent implements OnInit {
 		}
 	}
 
+	setError(message: string) {
+		this.loadingTransaction = false;
+		this.transactionSuccess = false;
+		this.transactionError = true;
+		this.errorMessage = message;
+	}
+
 	returnToCheckout() {
+		this.closeMessage();
 		this.isFadingOut = true;
 		setTimeout(() => this.cerrar.emit(), 400);
+	}
+
+	returnToHome() {
+		this.closeMessage();
+		this.router.navigate(["/home"]);
+	}
+
+	closeMessage() {
+		this.transactionError = false;
+		this.transactionSuccess = false;
+		this.showing = false;
 	}
 }
