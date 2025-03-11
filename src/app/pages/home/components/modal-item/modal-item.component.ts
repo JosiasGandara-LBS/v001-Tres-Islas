@@ -18,7 +18,7 @@ export class ModalItemComponent implements OnInit {
 	@Input() itemId !: string;
 	@Output() cerrar = new EventEmitter<void>();
 
-  	isFadingOut = false;
+  	isFadingOut: boolean = false;
 
 	cartItems: any[] = [];
 

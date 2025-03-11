@@ -1,4 +1,4 @@
-<div class="fixed flex flex-col bottom-0 left-0 w-full h-screen bg-white z-40 fadeInUp" [ngClass]="{ 'fadeOutDown': isFadingOut }">
+<div class="fixed flex flex-col top-0 left-0 w-full h-screen bg-white z-40 fadeInUp overflow-y-auto" [ngClass]="{ 'fadeOutDown': isFadingOut }">
 
 	<nav class="h-16 w-full">
 		<div class="h-16 px-4 flex flex-row justify-between items-center">
@@ -17,7 +17,7 @@
 	</nav>
 
 	@if (item) {
-		<section class="p-6 flex flex-col items-center relative">
+		<section class="px-6 flex flex-col items-center relative">
 			<!-- Imagen envuelta en un div para mejor control -->
 			<div class="relative">
 				<img [src]="item.image ? item.image : 'assets/img/no-image.svg'" alt="image" class="w-52 rounded-2xl mb-4">

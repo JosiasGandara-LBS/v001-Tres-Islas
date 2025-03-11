@@ -1,20 +1,11 @@
-<form (ngSubmit)="onSubmit()" #pagoForm="ngForm">
-	<input type="text" placeholder="Nombre del titular" [(ngModel)]="holderName" name="holderName" required>
-	<input type="text" placeholder="Número de tarjeta" [(ngModel)]="cardNumber" name="cardNumber" required>
-	<input type="text" placeholder="Mes de expiración" [(ngModel)]="expirationMonth" name="expirationMonth" required>
-	<input type="text" placeholder="Año de expiración" [(ngModel)]="expirationYear" name="expirationYear" required>
-	<input type="text" placeholder="CVV" [(ngModel)]="cvv2" name="cvv2" required>
-	<button type="submit" [disabled]="pagoForm.invalid">Procesar Pago</button>
-</form>
-
-<!-- <div class="h-16 flex flex-row items-center px-4 text-gray-800 fill-gray-800">
+<div class="h-16 flex flex-row items-center px-4 text-gray-800 fill-gray-800">
 	<div (click)="goToShoppingCart()" class="space-x-2 p-2 rounded-full shadow-xl">
 		<svg class="size-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg>
 	</div>
 	<p class="nunito-extra-bold ml-4 w-full text-[20px]">Detalles del pedido</p>
 </div>
 
-<form [formGroup]="form" class="px-4 pb-28 pt-2">
+<form [formGroup]="orderDetailForm" class="px-4 pb-28 pt-2">
     <div class="grid gap-3 mb-6">
         <div>
             <label for="client" class="block mb-2 text-sm font-medium text-gray-800 ">¿Cuál es tu nombre?</label>
@@ -23,7 +14,7 @@
 				id="client"
 				formControlName="client"
 				class="text-gray-800 text-sm rounded-lg block w-full p-2.5 shadow-lg border-2 border-gray-200 focus:outline-none focus:border-orange-600"
-				[ngClass]="{'border-orange-600': form.get('client')?.valid}"
+				[ngClass]="{'border-orange-600': orderDetailForm.get('client')?.valid}"
 				(keypress)="onlyLettersAndSpaces($event)"
 				placeholder="Ej. Juan José"
 				required
@@ -36,7 +27,7 @@
 				id="phone_number"
 				formControlName="phoneNumber"
 				class="text-gray-800 text-sm rounded-lg block w-full p-2.5 shadow-lg border-2 border-gray-200 focus:outline-none focus:border-orange-600"
-				[ngClass]="{'border-orange-600': form.get('phoneNumber')?.valid}"
+				[ngClass]="{'border-orange-600': orderDetailForm.get('phoneNumber')?.valid}"
 				(keypress)="onlyNumbers($event)"
   				(input)="limitPhoneNumberLength()"
 				placeholder="Ej. 6691220932"
@@ -66,7 +57,7 @@
 						<svg class="size-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"/></svg>
 					</label>
 				</li>
-				@if(form.get('paymentMethod')?.value === 'Efectivo u transferencia'){
+				@if(orderDetailForm.get('paymentMethod')?.value === 'Efectivo u transferencia'){
 					<li>
 						<label for="money_change" class="block mb-2 text-sm font-medium text-gray-800">¿Necesitas cambio?</label>
 						<input
@@ -74,7 +65,7 @@
 							id="money_change"
 							formControlName="moneyChange"
 							class="text-gray-800 text-sm rounded-lg block w-full p-2.5 shadow-lg border-2 border-gray-200 focus:outline-none focus:border-orange-600"
-							[ngClass]="{'border-orange-600': form.get('client')?.valid}"
+							[ngClass]="{'border-orange-600': orderDetailForm.get('client')?.valid}"
 							placeholder="Tu cambio en $MXN"
 							required
 						/>
@@ -107,5 +98,7 @@
 		<p class="text-gray-800" style="font-size: 24px;">MX {{ totalPriceSignal() | currency }}</p>
 		<p class="text-c-orange-100" style="font-size: 12px;">Total del pedido + IVA(16%)</p>
 	</div>
-	<button (click)="submitForm()" type="button" class="w-32 py-3 bg-c-orange-100 rounded-xl nunito-extra-bold text-white" style="font-size: 14px;">Ordenar</button>
-</footer> -->
+	<button (click)="insertarComponente(orderDetailForm.get('phoneNumber')?.value)" type="button" class="w-32 py-3 bg-c-orange-100 rounded-xl nunito-extra-bold text-white" style="font-size: 14px;">Ordenar</button>
+</footer>
+
+<div #cardPaymentModal></div>

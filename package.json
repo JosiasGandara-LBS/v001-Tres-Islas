@@ -20,6 +20,7 @@
     "@angular/platform-browser": "^17.3.0",
     "@angular/platform-browser-dynamic": "^17.3.0",
     "@angular/router": "^17.3.0",
+    "dotenv-webpack": "^8.1.0",
     "firebase-admin": "^9.10.0",
     "firebase-functions": "^3.20.0",
     "openpay": "^1.0.5",

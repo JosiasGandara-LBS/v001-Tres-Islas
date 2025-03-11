@@ -1,0 +1,119 @@
+<!-- <form (ngSubmit)="onSubmit()" #pagoForm="ngForm">
+	<input type="text" placeholder="Nombre del titular" [(ngModel)]="holderName" name="holderName" required>
+	<input type="text" placeholder="Número de tarjeta" [(ngModel)]="cardNumber" name="cardNumber" required>
+	<input type="text" placeholder="Mes de expiración" [(ngModel)]="expirationMonth" name="expirationMonth" required>
+	<input type="text" placeholder="Año de expiración" [(ngModel)]="expirationYear" name="expirationYear" required>
+	<input type="text" placeholder="CVV" [(ngModel)]="cvv2" name="cvv2" required>
+	<button type="submit" [disabled]="pagoForm.invalid">Procesar Pago</button>
+</form> -->
+
+<section class="fixed top-0 left-0 p-4 w-full h-screen bg-white z-50 overflow-y-auto fadeInUp" [ngClass]="{ 'fadeOutDown': isFadingOut }">
+	<div class="rounded-t-xl px-8 border-r-2 border-l-2 border-t-2 border-gray-200 shadow-md">
+		<div class="py-4">
+            <!-- <img class="h-8" src="../../../../../assets/img/openpay-logo.webp" alt=""> -->
+            <img class="h-8" src="https://sandbox-api.openpay.mx/img/icons/logoOpenpayBlue.svg" alt="">
+        </div>
+	</div>
+	<div class="rounded-b-xl p-7 border-r-2 border-l-2 border-b-2 border-gray-200 shadow-md">
+		<div class="shadow-sm rounded-xl border-2 border-gray-200 mb-6">
+			<div class="bg-white px-6 py-10 text-base rounded-t-xl">
+				<p class="nunito-extra-bold">Cerveceria Tres Islas</p>
+			</div>
+			<div class="p-6 bg-gray-50 rounded-b-xl">
+				<p class="nunito-extra-bold text-xl">Detalle del pago</p>
+				<div class="my-4 h-[2px] w-6 bg-cyan-400"></div>
+				<p class="nunito-extra-bold text-base mb-2">Total a pagar</p>
+				<p class="text-3xl">{{ this.totalPriceSignal() | currency }}</p>
+				<div class="my-4 h-[2px] w-6 bg-cyan-400"></div>
+				<p class="nunito-extra-bold text-base mb-2">Concepto</p>
+				<p class="text-base text-gray-500">Pago de orden comida</p>
+			</div>
+		</div>
+		<div class="mb-6">
+			<p class="nunito-extra-bold text-[10px] text-green-700 flex flex-row justify-start items-center">
+				<svg class="size-4 mr-2 fill-green-700" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M144 144l0 48 160 0 0-48c0-44.2-35.8-80-80-80s-80 35.8-80 80zM80 192l0-48C80 64.5 144.5 0 224 0s144 64.5 144 144l0 48 16 0c35.3 0 64 28.7 64 64l0 192c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 256c0-35.3 28.7-64 64-64l16 0z"/></svg>
+				Pago seguro procesado por OpenPay by BBVA
+			</p>
+		</div>
+		<div class="flex flex-row justify-end mb-6">
+			<img class="pl-[10px] h-3" src="https://sandbox-api.openpay.mx/img/icons/Logo_Visa.svg" alt="visa">
+			<img class="pl-[10px] h-3" src="https://sandbox-api.openpay.mx/img/icons/logo-mastercard.svg" alt="mastercard">
+			<img class="pl-[10px] h-3" src="https://sandbox-api.openpay.mx/img/icons/card_ax.svg" alt="americanexpress">
+			<img class="pl-[10px] h-3" src="https://sandbox-api.openpay.mx/img/icons/logo-carnet.svg" alt="carnet">
+		</div>
+		<div class="mb-8">
+			<p class="nunito-extra-bold text-base mb-4">Datos de la tarjeta</p>
+			<form [formGroup]="cardPaymentForm" class="grid gap-4 mb-4" action="">
+				<div>
+					<input
+						type="text"
+						id="holderName"
+						formControlName="holder_name"
+						[(ngModel)]="holderName"
+						(keypress)="onlyLettersAndSpaces($event)"
+						class="text-gray-800 bg-gray-50 text-sm rounded-lg block w-full p-2.5 mb-1 border-2 border-gray-200 focus:outline-none focus:border-gray-400"
+						placeholder="Nombre del titular de la tarjeta"
+					/>
+					<label for="holderName" class="flex flex-row justify-start items-center text-[10px]">
+						<svg class="size-3 mr-2 fill-cyan-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM216 336l24 0 0-64-24 0c-13.3 0-24-10.7-24-24s10.7-24 24-24l48 0c13.3 0 24 10.7 24 24l0 88 8 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-80 0c-13.3 0-24-10.7-24-24s10.7-24 24-24zm40-208a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"/></svg>
+						Solo primer nombre y primer apellido
+					</label>
+				</div>
+				<div>
+					<input
+						type="text"
+						id="cardNumber"
+						formControlName="card_number"
+						inputmode="numeric"
+						[(ngModel)]="cardNumber"
+						[value]="cardNumber | creditCardFormat"
+						(keypress)="onlyNumbers($event)"
+						maxlength="22"
+						class="text-gray-800 bg-gray-50 text-sm rounded-lg block w-full p-2.5 border-2 border-gray-200 focus:outline-none focus:border-gray-400"
+						placeholder="Número de la tarjeta"
+					/>
+				</div>
+				<div>
+					<input
+						type="text"
+						id="expirationDate"
+						inputmode="numeric"
+						formControlName="expiration_date"
+						[(ngModel)]="expirationDate"
+						[value]="expirationDate | expirationDateFormat"
+						(keypress)="onlyNumbers($event)"
+						maxlength="5"
+						class="text-gray-800 bg-gray-50 text-sm rounded-lg block w-full p-2.5 border-2 border-gray-200 focus:outline-none focus:border-gray-400"
+						placeholder="Fecha de vencimiento (MM/AA)"
+					/>
+				</div>
+				<div>
+					<input
+						type="password"
+						id="cvv2"
+						formControlName="cvv2"
+						inputmode="numeric"
+						[(ngModel)]="cvv2"
+						(keypress)="onlyNumbers($event)"
+						maxlength="4"
+						class="text-gray-800 bg-gray-50 text-sm rounded-lg block w-full p-2.5 border-2 border-gray-200 focus:outline-none focus:border-gray-400"
+						placeholder="Código de seguridad (CVV)"
+					/>
+				</div>
+			</form>
+			<div>
+				<span class="text-sm">
+					Al pagar acepto que estoy de acuerdo con el <a class="text-blue-900 nunito-extra-bold" href="https://www.openpay.mx/terminos-condiciones" target="_blank" rel="noopener noreferrer">Aviso de privacidad.</a>
+				</span>
+			</div>
+		</div>
+		<div class="flex flex-row justify-between">
+			<button (click)="returnToCheckout()" class="p-2 text-blue-900 nunito-extra-bold" type="button">Regresar</button>
+			<button (click)="onSubmit()" class="px-10 py-2 bg-blue-900 rounded-xl text-white nunito-extra-bold" type="button">Pagar</button>
+		</div>
+	</div>
+</section>
+
+@if(loadingTransaction) {
+	<app-loading-transaction></app-loading-transaction>
+}
