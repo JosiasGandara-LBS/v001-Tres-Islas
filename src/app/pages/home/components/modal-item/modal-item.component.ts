@@ -1,8 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, inject, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, inject, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CartService } from '../../../../core/services/cart.service';
 import { MenuItem } from '../../../../core/models/menu-item';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-modal-item',
@@ -11,9 +12,10 @@ import { MenuItem } from '../../../../core/models/menu-item';
   templateUrl: './modal-item.component.html',
   styleUrl: './modal-item.component.scss'
 })
-export class ModalItemComponent implements OnInit {
+export class ModalItemComponent implements OnInit, OnDestroy {
 
 	private cartService = inject(CartService);
+	private subscription!: Subscription;
 
 	@Input() itemId !: string;
 	@Output() cerrar = new EventEmitter<void>();
@@ -28,9 +30,15 @@ export class ModalItemComponent implements OnInit {
 
 	ngOnInit(): void {
 		if (this.itemId) {
-			this.cartService.getItemById(this.itemId).subscribe((data) => {
-			  this.item = data;
+			this.subscription = this.cartService.getItemById(this.itemId).subscribe((data) => {
+			  	this.item = data;
 			});
+		}
+	}
+
+	ngOnDestroy(): void {
+		if (this.subscription) {
+			this.subscription.unsubscribe();
 		}
 	}
 

@@ -1,25 +1,80 @@
-<!-- <div class="flex items-ceter w-full h-full justify-center p-5 nunito-regular">
-    <p-card styleClass="w-full" class="w-full">
-        <ng-template pTemplate="header">
-            <div class="flex justify-between items-center p-3">
-                <h1 class="text-xl nunito-bold">Detalle de la orden</h1>
-                <button pRipple aria-label="Regresar" class="bg-c-orange-100 rounded-full shadow-md text-sm text-c-beige-100 py-2 px-2" (click)="closeDetail()"><i class="pi pi-times flex items-center justify-center"></i></button>
-            </div>
-        </ng-template>
-        <ng-template pTemplate="content">
-            <div class="flex flex-col items-center justify-center">
-                <div *ngFor="let item of orderItems()">
-                    <div class="flex items-center justify-between w-full p-3">
-                        <div class="flex items-center">
-                            <img [src]="item.product.image" alt="product" class="w-16 h-16 object-cover rounded-lg">
-                            <div class="ml-3">
-                                <h1 class="text-lg nunito-bold">{{ item.product.name }}</h1>
-                                <p class="text-sm nunito-regular">{{ item.product.description }}</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </ng-template>
-    </p-card>
-</div> -->
+<div class="fixed flex flex-col bottom-0 left-0 w-full h-screen bg-white z-50 fadeInUp" [ngClass]="{ 'fadeOutDown': isFadingOut }">
+
+	<nav class="h-16 w-full">
+		<div class="h-16 px-4 flex flex-row justify-between items-center">
+
+			<!-- Return Button -->
+			<div (click)="returnToOrdersClient()" class="space-x-2 p-2 rounded-full shadow-xl">
+				<svg class="size-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg>
+			</div>
+
+			<!-- Shared Button -->
+			<!-- <div class="space-x-2 p-2 rounded-full shadow-xl">
+				<svg class="size-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><path d="M352 224l-46.5 0c-45 0-81.5 36.5-81.5 81.5c0 22.3 10.3 34.3 19.2 40.5c6.8 4.7 12.8 12 12.8 20.3c0 9.8-8 17.8-17.8 17.8l-2.5 0c-2.4 0-4.8-.4-7.1-1.4C210.8 374.8 128 333.4 128 240c0-79.5 64.5-144 144-144l80 0 0-61.3C352 15.5 367.5 0 386.7 0c8.6 0 16.8 3.2 23.2 8.9L548.1 133.3c7.6 6.8 11.9 16.5 11.9 26.7s-4.3 19.9-11.9 26.7l-139 125.1c-5.9 5.3-13.5 8.2-21.4 8.2l-3.7 0c-17.7 0-32-14.3-32-32l0-64zM80 96c-8.8 0-16 7.2-16 16l0 320c0 8.8 7.2 16 16 16l320 0c8.8 0 16-7.2 16-16l0-48c0-17.7 14.3-32 32-32s32 14.3 32 32l0 48c0 44.2-35.8 80-80 80L80 512c-44.2 0-80-35.8-80-80L0 112C0 67.8 35.8 32 80 32l48 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L80 96z"/></svg>
+			</div> -->
+
+		</div>
+	</nav>
+
+	@if (order) {
+		<section class="w-full p-4 text-gray-700">
+			<div class="text-sm grid gap-4">
+				<p class="text-xl nunito-extra-bold">No. de pedido: <span class="uppercase">#{{ order.id | truncate:5 }}</span></p>
+				<p class="nunito-extra-bold" [ngClass]="{'text-yellow-500': order.status == 1, 'text-sky-700': order.status == 2, 'text-gray-400': (order.status == 3 || order.status == 4)}">
+					@switch (order.status) {
+						@case (1) {
+							Esperando pago
+						}
+						@case (2) {
+							Preparando tu pedido
+						}
+						@case (3) {
+							Completado
+						}
+						@case (4) {
+							Cancelado
+						}
+					}
+					<span class="text-black nunito-regular uppercase"> - {{ order.createdDate }}</span>
+				</p>
+				<p>Estimado: {{ order.estimatedOrdersTime }} minutos</p>
+				<p>Total: {{ order.totalAmount | currency }} MXN</p>
+				@if (order.paymentMethod == 'Dinero en efectivo') {
+					<p>Pago en efectivo - Cambio de {{ order.moneyChange | currency }} MXN</p>
+				} @else {
+					<p>Pago con tajerta débito / crédito</p>
+				}
+				<p>{{ order.client }}</p>
+
+				<div class="h-[1px] w-full bg-gray-300"></div>
+
+				<div>
+					<p class="flex flex-row justify-start items-center nunito-extra-bold text-sm mb-4">
+						<svg class="size-5 fill-gray-800 mr-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><path d="M14 2.2C22.5-1.7 32.5-.3 39.6 5.8L80 40.4 120.4 5.8c9-7.7 22.3-7.7 31.2 0L192 40.4 232.4 5.8c9-7.7 22.3-7.7 31.2 0L304 40.4 344.4 5.8c7.1-6.1 17.1-7.5 25.6-3.6s14 12.4 14 21.8l0 464c0 9.4-5.5 17.9-14 21.8s-18.5 2.5-25.6-3.6L304 471.6l-40.4 34.6c-9 7.7-22.3 7.7-31.2 0L192 471.6l-40.4 34.6c-9 7.7-22.3 7.7-31.2 0L80 471.6 39.6 506.2c-7.1 6.1-17.1 7.5-25.6 3.6S0 497.4 0 488L0 24C0 14.6 5.5 6.1 14 2.2zM96 144c-8.8 0-16 7.2-16 16s7.2 16 16 16l192 0c8.8 0 16-7.2 16-16s-7.2-16-16-16L96 144zM80 352c0 8.8 7.2 16 16 16l192 0c8.8 0 16-7.2 16-16s-7.2-16-16-16L96 336c-8.8 0-16 7.2-16 16zM96 240c-8.8 0-16 7.2-16 16s7.2 16 16 16l192 0c8.8 0 16-7.2 16-16s-7.2-16-16-16L96 240z"/></svg>
+						Producto(s) pedido(s):
+					</p>
+					@for (foodDish of order.foodDishes; track $index) {
+						<div class="w-full grid gap-2 px-5 text-gray-700 overflow-hidden">
+							<p class="text-sm nunito-extra-bold flex items-center justify-between">
+								<span>
+									{{ foodDish.quantity }}
+									<span class="text-sm ml-2 mr-3 nunito-extra-bold">x</span>
+									<span class="text-sm nunito-regular">{{ foodDish.name }}</span>
+								</span>
+								<span>{{ foodDish.price * foodDish.quantity | currency }} MXN</span>
+							</p>
+							<p class="text-xs text-gray-400 pl-4">
+								@if (foodDish.additionalInstructions == '') {
+									** Sin comentarios y/o especificaciones
+								} @else {
+									** {{ foodDish.additionalInstructions }}
+								}
+							</p>
+						</div>
+					}
+				</div>
+			</div>
+		</section>
+	}
+
+</div>

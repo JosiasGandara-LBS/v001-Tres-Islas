@@ -19,7 +19,8 @@
 				placeholder="Ej. Juan José"
 				required
 				/>
-			<div *ngIf="orderDetailForm.get('client')?.invalid && (orderDetailForm.get('client')?.dirty || orderDetailForm.get('client')?.touched)" class="text-red-600 text-sm">
+			<div *ngIf="orderDetailForm.get('client')?.invalid && (orderDetailForm.get('client')?.dirty || orderDetailForm.get('client')?.touched)" class="text-red-600 fill-red-600 text-sm flex flex-row justify-start items-center mt-2">
+				<svg class="size-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zm0-384c13.3 0 24 10.7 24 24l0 112c0 13.3-10.7 24-24 24s-24-10.7-24-24l0-112c0-13.3 10.7-24 24-24zM224 352a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"/></svg>
 				<p *ngIf="orderDetailForm.get('client')?.errors?.['required']">Introduzca un nombre.</p>
 				<p *ngIf="orderDetailForm.get('client')?.errors?.['pattern']">Coloque un nombre válido.</p>
 			</div>
@@ -37,7 +38,8 @@
 				placeholder="Ej. 6691220932"
 				required
 				/>
-			<div *ngIf="orderDetailForm.get('phoneNumber')?.invalid && (orderDetailForm.get('phoneNumber')?.dirty || orderDetailForm.get('phoneNumber')?.touched)" class="text-red-600 text-sm">
+			<div *ngIf="orderDetailForm.get('phoneNumber')?.invalid && (orderDetailForm.get('phoneNumber')?.dirty || orderDetailForm.get('phoneNumber')?.touched)" class="text-red-600 fill-red-600 text-sm flex flex-row justify-start items-center mt-2">
+				<svg class="size-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zm0-384c13.3 0 24 10.7 24 24l0 112c0 13.3-10.7 24-24 24s-24-10.7-24-24l0-112c0-13.3 10.7-24 24-24zM224 352a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"/></svg>
 				<p *ngIf="orderDetailForm.get('phoneNumber')?.errors?.['required']">Introduzca un número de teléfomo.</p>
 				<p *ngIf="orderDetailForm.get('phoneNumber')?.errors?.['pattern']">Coloque un número de teléfono válido.</p>
 			</div>
@@ -45,7 +47,8 @@
         <div class="max-w-full">
             <app-dropdown formControlName="assignedToTable"></app-dropdown>
 			<div>
-				<label *ngIf="orderDetailForm.get('assignedToTable')?.invalid && (orderDetailForm.get('assignedToTable')?.dirty || orderDetailForm.get('assignedToTable')?.touched)" class="text-red-600 text-sm">
+				<label *ngIf="orderDetailForm.get('assignedToTable')?.invalid && (orderDetailForm.get('assignedToTable')?.dirty || orderDetailForm.get('assignedToTable')?.touched)" class="text-red-600 fill-red-600 text-sm flex flex-row justify-start items-center mt-2">
+					<svg class="size-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zm0-384c13.3 0 24 10.7 24 24l0 112c0 13.3-10.7 24-24 24s-24-10.7-24-24l0-112c0-13.3 10.7-24 24-24zM224 352a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"/></svg>
 					<p *ngIf="orderDetailForm.get('assignedToTable')?.errors?.['required']">Seleccione una mesa.</p>
 				</label>
 			</div>
@@ -53,7 +56,8 @@
 		<div>
 			<label for="paymentMethod" class="block my-4 text-gray-800 nunito-extra-bold" style="font-size: 20px;">Método de pago:</label>
 			<div>
-				<label *ngIf="orderDetailForm.get('paymentMethod')?.invalid && (orderDetailForm.get('paymentMethod')?.dirty || orderDetailForm.get('assignedToTable')?.touched)" class="text-red-600 text-sm">
+				<label *ngIf="orderDetailForm.get('paymentMethod')?.invalid && (orderDetailForm.get('paymentMethod')?.dirty || orderDetailForm.get('assignedToTable')?.touched)" class="text-red-600 fill-red-600 text-sm flex flex-row justify-start items-center mb-2">
+					<svg class="size-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zm0-384c13.3 0 24 10.7 24 24l0 112c0 13.3-10.7 24-24 24s-24-10.7-24-24l0-112c0-13.3 10.7-24 24-24zM224 352a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"/></svg>
 					<p *ngIf="orderDetailForm.get('paymentMethod')?.errors?.['required']">Seleccione un método de pago.</p>
 				</label>
 			</div>
@@ -64,18 +68,18 @@
 						type="radio"
 						class="hidden peer"
 						formControlName="paymentMethod"
-						value="Efectivo u transferencia"
+						value="Dinero en efectivo"
 						required
 					/>
 					<label for="cash" class="inline-flex items-center justify-between w-full p-5 text-gray-500 bg-white border-2 border-gray-200 rounded-lg cursor-pointer shadow-lg outline-2 fill-gray-300 peer-checked:border-orange-600 peer-checked:text-orange-600 peer-checked:fill-orange-600">
 						<div class="flex flex-row items-center">
 							<svg class="size-6 mr-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><path d="M0 112.5L0 422.3c0 18 10.1 35 27 41.3c87 32.5 174 10.3 261-11.9c79.8-20.3 159.6-40.7 239.3-18.9c23 6.3 48.7-9.5 48.7-33.4l0-309.9c0-18-10.1-35-27-41.3C462 15.9 375 38.1 288 60.3C208.2 80.6 128.4 100.9 48.7 79.1C25.6 72.8 0 88.6 0 112.5zM288 352c-44.2 0-80-43-80-96s35.8-96 80-96s80 43 80 96s-35.8 96-80 96zM64 352c35.3 0 64 28.7 64 64l-64 0 0-64zm64-208c0 35.3-28.7 64-64 64l0-64 64 0zM512 304l0 64-64 0c0-35.3 28.7-64 64-64zM448 96l64 0 0 64c-35.3 0-64-28.7-64-64z"/></svg>
-							<div class="w-full text-sm font-semibold">Efectivo u transferencia</div>
+							<div class="w-full text-sm font-semibold">Dinero en efectivo</div>
 						</div>
 						<svg class="size-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"/></svg>
 					</label>
 				</li>
-				@if(orderDetailForm.get('paymentMethod')?.value === 'Efectivo u transferencia'){
+				@if(orderDetailForm.get('paymentMethod')?.value === 'Dinero en efectivo'){
 					<li>
 						<label for="money_change" class="block mb-2 text-sm font-medium text-gray-800">¿Necesitas cambio?</label>
 						<input
@@ -86,10 +90,7 @@
 							[ngClass]="{'border-orange-600': orderDetailForm.get('client')?.valid}"
 							placeholder="Tu cambio en $MXN"
 							required
-							/>
-						<div *ngIf="orderDetailForm.get('moneyChange')?.invalid && (orderDetailForm.get('moneyChange')?.dirty || orderDetailForm.get('moneyChange')?.touched)" class="text-red-600 text-sm">
-							<p *ngIf="orderDetailForm.get('moneyChange')?.errors?.['required']">Este campo es requerido.</p>
-						</div>
+						/>
 					</li>
 				}
 				<li>
