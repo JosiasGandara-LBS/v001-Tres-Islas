@@ -3,6 +3,7 @@ import { OrdersService } from '@core/services/orders.service';
 import { TruncatePipe } from '@shared/pipes/truncate.pipe';
 import { KeysLengthPipe } from '@shared/pipes/keys-length.pipe';
 import { CommonModule } from '@angular/common';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-order-detail',
@@ -42,4 +43,32 @@ export class OrderDetailComponent implements OnInit {
 		this.close.emit();
 	}
 
+	cancelOrder(orderID : string) {
+		Swal.fire({
+			title: '¿Estás seguro?',
+			text: 'El pedido será cancelado',
+			icon: 'warning',
+			showCancelButton: true,
+			confirmButtonText: 'Sí, cancelar',
+			cancelButtonText: 'No, mantener',
+			confirmButtonColor: 'red',
+			reverseButtons: true
+		}).then((result) => {
+			if (result.isConfirmed) {
+				this.cancelOrderConfirmed(orderID);
+			}
+		});
+	}
+
+	cancelOrderConfirmed(orderID : string) {
+		this._ordersService.cancelOrder(orderID).then(() => {
+			Swal.fire('Pedido cancelado', 'El pedido ha sido cancelado', 'success');
+			this.closeModal();
+		}
+		).catch((err: any) => {
+			Swal.fire('Error', 'No se pudo cancelar el pedido', 'error');
+			console.log('Error: ', err);
+		}
+		);
+	}
 }
