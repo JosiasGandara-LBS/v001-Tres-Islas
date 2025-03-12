@@ -67,4 +67,15 @@ export class OrdersService {
 			console.error('Error actualizando el campo:', error);
 		});
 	}
+
+	async cancelOrder(IDOrder: string): Promise<void> {
+		const orderDocRef = doc(this._firestore, `orders/${IDOrder}`);
+		return updateDoc(orderDocRef, { status: 0 })
+		.then(() => {
+			console.log('Pedido cancelado con éxito');
+		})
+		.catch(error => {
+			console.error('Error cancelando el pedido:', error);
+		});
+	}
 }
