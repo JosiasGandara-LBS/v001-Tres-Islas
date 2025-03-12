@@ -18,7 +18,11 @@
 				(keypress)="onlyLettersAndSpaces($event)"
 				placeholder="Ej. Juan José"
 				required
-			/>
+				/>
+			<div *ngIf="orderDetailForm.get('client')?.invalid && (orderDetailForm.get('client')?.dirty || orderDetailForm.get('client')?.touched)" class="text-red-600 text-sm">
+				<p *ngIf="orderDetailForm.get('client')?.errors?.['required']">Introduzca un nombre.</p>
+				<p *ngIf="orderDetailForm.get('client')?.errors?.['pattern']">Coloque un nombre válido.</p>
+			</div>
         </div>
         <div>
             <label for="phone_number" class="block mb-2 text-sm font-medium text-gray-800 ">¿Cuál es tu número de teléfono?</label>
@@ -32,13 +36,27 @@
   				(input)="limitPhoneNumberLength()"
 				placeholder="Ej. 6691220932"
 				required
-			/>
+				/>
+			<div *ngIf="orderDetailForm.get('phoneNumber')?.invalid && (orderDetailForm.get('phoneNumber')?.dirty || orderDetailForm.get('phoneNumber')?.touched)" class="text-red-600 text-sm">
+				<p *ngIf="orderDetailForm.get('phoneNumber')?.errors?.['required']">Introduzca un número de teléfomo.</p>
+				<p *ngIf="orderDetailForm.get('phoneNumber')?.errors?.['pattern']">Coloque un número de teléfono válido.</p>
+			</div>
         </div>
         <div class="max-w-full">
             <app-dropdown formControlName="assignedToTable"></app-dropdown>
+			<div>
+				<label *ngIf="orderDetailForm.get('assignedToTable')?.invalid && (orderDetailForm.get('assignedToTable')?.dirty || orderDetailForm.get('assignedToTable')?.touched)" class="text-red-600 text-sm">
+					<p *ngIf="orderDetailForm.get('assignedToTable')?.errors?.['required']">Seleccione una mesa.</p>
+				</label>
+			</div>
         </div>
 		<div>
 			<label for="paymentMethod" class="block my-4 text-gray-800 nunito-extra-bold" style="font-size: 20px;">Método de pago:</label>
+			<div>
+				<label *ngIf="orderDetailForm.get('paymentMethod')?.invalid && (orderDetailForm.get('paymentMethod')?.dirty || orderDetailForm.get('assignedToTable')?.touched)" class="text-red-600 text-sm">
+					<p *ngIf="orderDetailForm.get('paymentMethod')?.errors?.['required']">Seleccione un método de pago.</p>
+				</label>
+			</div>
 			<ul class="grid w-full gap-4 md:grid-cols-2">
 				<li>
 					<input
@@ -68,7 +86,10 @@
 							[ngClass]="{'border-orange-600': orderDetailForm.get('client')?.valid}"
 							placeholder="Tu cambio en $MXN"
 							required
-						/>
+							/>
+						<div *ngIf="orderDetailForm.get('moneyChange')?.invalid && (orderDetailForm.get('moneyChange')?.dirty || orderDetailForm.get('moneyChange')?.touched)" class="text-red-600 text-sm">
+							<p *ngIf="orderDetailForm.get('moneyChange')?.errors?.['required']">Este campo es requerido.</p>
+						</div>
 					</li>
 				}
 				<li>
@@ -102,3 +123,25 @@
 </footer>
 
 <div #cardPaymentModal></div>
+
+<div *ngIf="isModalVisible()" class="fixed top-0 left-0 px-8 w-full h-screen bg-gray-100 bg-opacity-70 flex flex-col justify-center items-center" style="z-index: 60;">
+	<div class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl">
+		<div class="bg-white p-4">
+			<div>
+				<div class="mx-auto flex size-12 shrink-0 items-center justify-center rounded-full bg-yellow-100">
+					<svg class="size-6 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" /></svg>
+				</div>
+				<div class="mt-3 text-center">
+					<h3 class="text-base font-semibold text-gray-900" id="modal-title">¡Ocurrio un error!</h3>
+					<div class="mt-2">
+						<p class="text-sm text-gray-500">Asegurate de que los datos ingresados sean correctos.</p>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="bg-gray-50 p-4">
+
+			<button (click)="closeMessage()" type="button" class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 shadow-xs ring-gray-300 ring-inset hover:bg-gray-50">Volver a intentar</button>
+		</div>
+	</div>
+</div>

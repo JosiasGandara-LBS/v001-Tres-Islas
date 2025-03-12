@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Inject, inject, Injector, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Inject, inject, Injector, OnInit, signal, ViewChild, ViewContainerRef } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CartService } from '../../core/services/cart.service';
 import { Router } from '@angular/router';
@@ -11,6 +11,7 @@ import { firstValueFrom, Observable } from 'rxjs';
 import { PagoService } from '@core/services/pago.service';
 import { KitchenStatusService } from '@core/services/kitchen-status.service';
 import { OrdersClientService } from '@core/services/orders-client.service';
+import Swal from 'sweetalert2';
 
 @Component({
 	selector: 'app-checkout',
@@ -24,6 +25,7 @@ export class CheckoutComponent {
 	orderDetailForm: FormGroup;
 	savedData: { firstName: string; lastName: string }[] = [];
 	totalPriceSignal = inject(CartService).getTotalPriceSignal();
+	public isModalVisible = signal(false);
 
 	@ViewChild('cardPaymentModal', { read: ViewContainerRef }) container!: ViewContainerRef;
 
@@ -68,6 +70,11 @@ export class CheckoutComponent {
 	}
 
 	async submitForm() {
+		if (this.orderDetailForm.invalid) {
+			this.isModalVisible.set(true);
+			this.orderDetailForm.markAllAsTouched();
+			return;
+		}
 		if (this.orderDetailForm.valid) {
 
 			if(this.orderDetailForm.get('paymentMethod')?.value === 'Tarjeta débito / crédito') {
@@ -138,5 +145,9 @@ export class CheckoutComponent {
 		if (phoneControl?.value.length > 10) {
 		  	phoneControl?.setValue(phoneControl.value.slice(0, 10));
 		}
+	}
+
+	closeMessage() {
+		this.isModalVisible.set(false);
 	}
 }

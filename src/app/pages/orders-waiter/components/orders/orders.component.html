@@ -1,6 +1,6 @@
 <div *ngFor="let order of orders" class="w-full h-16 mb-4 flex flex-row justify-between items-center nunito-regular gap-2 pl-4" style="box-shadow: 0px 4px 20px 1px rgba(0, 0, 0, 0.10);">
 	<!-- Nuevo -->
-	<div *ngIf="order.isChecked === 0" class="w-1 h-1 p-1 bg-c-orange-100 animate-ping rounded-full"></div>
+	<div [ngClass]="{'invisible': order.isChecked !== 0}" class="w-1 h-1 p-1 bg-c-orange-100 animate-ping rounded-full"></div>
 	<!-- Mesa -->
 	<div>
 		<p class="w-full text-slate-800 nunito-extra-bold text-center text-wrap" style="font-size: 14px;">
