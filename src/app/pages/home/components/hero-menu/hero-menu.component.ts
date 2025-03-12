@@ -65,7 +65,7 @@ export class HeroMenuComponent {
 	}
 
 	get hasOrders(): boolean{
-		return localStorage.getItem('currentOrders') !== null;
+		return localStorage.getItem('current_orders') !== null;
 	}
 
 	scrollToMenu() {
@@ -73,8 +73,8 @@ export class HeroMenuComponent {
 		const headerHeight = 64;
 
 		if (menuSection) {
-		  const menuPosition = menuSection.getBoundingClientRect().top + window.scrollY - headerHeight;
-		  window.scrollTo({ top: menuPosition, behavior: 'smooth' });
+			const menuPosition = menuSection.getBoundingClientRect().top + window.scrollY - headerHeight;
+			window.scrollTo({ top: menuPosition, behavior: 'smooth' });
 		}
 	  }
 

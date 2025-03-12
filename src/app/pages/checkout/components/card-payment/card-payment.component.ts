@@ -21,6 +21,7 @@ export class CardPaymentComponent implements OnInit {
 
 	@Input() phone_number !: string;
 	@Output() cerrar = new EventEmitter<void>();
+	@Output() isTransactionCompleted = new EventEmitter<boolean>();
 
 	totalPriceSignal = inject(CartService).getTotalPriceSignal();
 
@@ -62,14 +63,10 @@ export class CardPaymentComponent implements OnInit {
 	onSubmit() {
 		if(this.cardPaymentForm.valid) {
 
-			console.log("Entro al metodo");
-
 			this.showing = true;
 			this.loadingTransaction = true;
 			this.transactionSuccess = false;
 			this.transactionError = false;
-
-			console.log("estado del loading: ", this.loadingTransaction);
 
 			const name = this.holderName.split(" ")[0];
 			const lastname = this.holderName.split(" ")[1];
@@ -104,17 +101,13 @@ export class CardPaymentComponent implements OnInit {
 
 			OpenPay.token.create(cardData, (response: any) => {
 				const tokenId = response.data.id;
-				console.log('Token generado:', tokenId);
-				console.log('Device generado: ', this.deviceSessionId);
 
-				// Datos del cliente
 				const customer = {
 					name: name,
 					lastname: lastname,
 					email: `${name}_${lastname}@example.com`,
 					phone_number: this.phone_number
 				};
-
 
 				this.pagoService.procesarPago(tokenId, this.deviceSessionId, amount, 'Pago concepto orden', customer).subscribe(
 					response => {
@@ -123,7 +116,6 @@ export class CardPaymentComponent implements OnInit {
 						this.transactionSuccess = true;
 					},
 					error => {
-						console.error('Error al procesar el pago:', error);
 						this.setError('Ocurrió un error en tu tarjeta');
 					}
 				);
@@ -154,6 +146,7 @@ export class CardPaymentComponent implements OnInit {
 		this.transactionSuccess = false;
 		this.transactionError = true;
 		this.errorMessage = message;
+		this.isTransactionCompleted.emit(false);
 	}
 
 	returnToCheckout() {
@@ -164,6 +157,7 @@ export class CardPaymentComponent implements OnInit {
 
 	returnToHome() {
 		this.closeMessage();
+		this.isTransactionCompleted.emit(true);
 		this.router.navigate(["/home"]);
 	}
 

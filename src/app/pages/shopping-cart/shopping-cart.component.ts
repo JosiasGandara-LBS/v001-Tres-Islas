@@ -15,7 +15,8 @@ import { ModalItemComponent } from './components/modal-item/modal-item.component
 	styleUrl: './shopping-cart.component.scss',
 })
 export class ShoppingCartComponent implements OnInit {
-	title = 'Tu pedido'
+
+	title = 'Carrito de compra'
 
 	totalPriceSignal = inject(CartService).getTotalPriceSignal();
 	cartItemsCount = inject(CartService).getCartItemsCount();
@@ -23,7 +24,7 @@ export class ShoppingCartComponent implements OnInit {
 	@ViewChild(CheckoutComponent) checkoutComponent?: CheckoutComponent;
 
 	constructor( private route: ActivatedRoute, private router : Router, private injector : Injector) {}
-	
+
 
 	ngOnInit(): void {}
 
@@ -31,5 +32,5 @@ export class ShoppingCartComponent implements OnInit {
 
 	goToCheckout() { this.router.navigate(['/checkout']) }
 
-	
+
 }

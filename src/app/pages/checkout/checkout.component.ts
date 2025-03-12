@@ -7,8 +7,9 @@ import { CommonModule } from '@angular/common';
 import { DropdownComponent } from './components/dropdown/dropdown.component';
 import { CardPaymentComponent } from './components/card-payment/card-payment.component';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { firstValueFrom, Observable } from 'rxjs';
 import { PagoService } from '@core/services/pago.service';
+import { KitchenStatusService } from '@core/services/kitchen-status.service';
 
 @Component({
 	selector: 'app-checkout',
@@ -30,7 +31,7 @@ export class CheckoutComponent {
 		private fb: FormBuilder,
 		private ordersService : OrdersService,
 		private cartService : CartService,
-		private pagoService : PagoService,
+		private kitchenStatusService : KitchenStatusService,
 		private injector : Injector
 	) {
 		this.orderDetailForm = this.fb.group({
@@ -45,22 +46,49 @@ export class CheckoutComponent {
 		});
 	}
 
-	insertarComponente(phone_number: string){
-		const componentRef = this.container.createComponent(CardPaymentComponent, { injector: this.injector });
-		componentRef.instance.phone_number = phone_number;
-		componentRef.instance.cerrar.subscribe(() => componentRef?.destroy());
+	insertarComponente(phone_number: string): Promise<boolean> {
+		return new Promise((resolve) => {
+			const componentRef = this.container.createComponent(CardPaymentComponent, { injector: this.injector });
+			componentRef.instance.phone_number = phone_number;
+
+			// Espera la emisión del valor
+			componentRef.instance.isTransactionCompleted.subscribe((valor: boolean) => {
+				resolve(valor);
+				componentRef?.destroy(); // Elimina el componente después de recibir el valor
+			});
+
+			// Opcional: Manejo de cierre sin emitir valor
+			componentRef.instance.cerrar.subscribe(() => {
+				resolve(false); // Considera `false` si se cierra sin emitir
+				componentRef?.destroy();
+			});
+		});
 	}
 
-	submitForm() {
+	async submitForm() {
 		if (this.orderDetailForm.valid) {
 
 			if(this.orderDetailForm.get('paymentMethod')?.value === 'Tarjeta débito / crédito') {
+				const isValidPayment = await this.insertarComponente(this.orderDetailForm.get('phoneNumber')?.value);
 
+				if(!isValidPayment) {
+					return;
+				}
 			}
 
 			// Obtener solo los campos necesarios del carrito
 			const cartItems = this.cartService.getCartItemsToOrder();
-			console.log(cartItems);
+
+			// Obtener el tiempo estimado de la orden
+			let estimatedOrdersTime = 0;
+
+			try {
+				estimatedOrdersTime = await firstValueFrom(this.kitchenStatusService.getOrdersEstimatedTime());
+			} catch (error) {
+				return;
+			}
+
+			if (estimatedOrdersTime == null) return;
 
 			// Añadir datos derivados como fecha y precio total
 			const now = new Date();
@@ -69,9 +97,9 @@ export class CheckoutComponent {
 			// Actualizar valores en el formulario
 			this.orderDetailForm.patchValue({ createdDate: formattedDate, totalAmount: this.totalPriceSignal() });
 
-			this.ordersService.addOrder({...this.orderDetailForm.value, foodDishes: cartItems})
-			.then(() => {
-				console.log('Platillo agregado con exito');
+			this.ordersService.addOrder({...this.orderDetailForm.value, foodDishes: cartItems, estimatedOrdersTime: estimatedOrdersTime, isChecked: 0})
+			.then((response) => {
+				this.ordersService.addOrderIdToLocalStorage(response.id);
 				this.cartService.clearCart();
 				this.router.navigate(['/home']);
 			}).catch((error) => {
@@ -103,7 +131,7 @@ export class CheckoutComponent {
 		}
 	}
 
-	  limitPhoneNumberLength() {
+	limitPhoneNumberLength() {
 		let phoneControl = this.orderDetailForm.get('phoneNumber');
 		if (phoneControl?.value.length > 10) {
 		  	phoneControl?.setValue(phoneControl.value.slice(0, 10));

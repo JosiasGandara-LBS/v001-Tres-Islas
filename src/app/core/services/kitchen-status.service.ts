@@ -1,5 +1,5 @@
 import { inject, Injectable, signal } from '@angular/core';
-import { collectionData, Firestore, addDoc, deleteDoc } from '@angular/fire/firestore';
+import { collectionData, Firestore, addDoc, deleteDoc, docData } from '@angular/fire/firestore';
 import { Product } from '@shared/interfaces/product.interface';
 import { map } from 'rxjs';
 import { collection, doc, getDoc, updateDoc, getDocFromServer, DocumentData, DocumentReference } from 'firebase/firestore';
@@ -38,20 +38,16 @@ export class KitchenStatusService {
     }
 
     getOrdersEstimatedTime() {
-        const kitchenStatusCollection = collection(this.firestore, 'kitchenStatus');
-        return collectionData(kitchenStatusCollection, { idField: 'id' }).pipe(
-            map((status: any) => {
-                return status.map((status: {id: string, estimatedTime: number}) => {
-                    return {
-                        estimatedTime: status.estimatedTime
-                    };
-                });
-            }
-            )
-        ).pipe(
-            map((statusArray: any[]) => statusArray[0]?.estimatedTime)
-        );
-    }
+		const kitchenStatusDoc = doc(this.firestore, 'kitchenStatus/kitchenStatus');
+
+		return docData(kitchenStatusDoc).pipe(map((data: any) => {
+			if (!data) return null;
+
+			if (data.estimatedOrdersTime === undefined) return null;
+
+			return data.estimatedOrdersTime;
+		}));
+	}
 
     setOrdersEstimatedTime(estimatedTime: number) {
         const kitchenStatusCollection = collection(this.firestore, 'kitchenStatus');
