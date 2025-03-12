@@ -1,9 +1,12 @@
-<div *ngFor="let order of orders" class="w-full h-16 mb-4 flex flex-row justify-between items-center nunito-regular" style="box-shadow: 0px 4px 20px 1px rgba(0, 0, 0, 0.10);">
-
+<div *ngFor="let order of orders" class="w-full h-16 mb-4 flex flex-row justify-between items-center nunito-regular gap-2 pl-4" style="box-shadow: 0px 4px 20px 1px rgba(0, 0, 0, 0.10);">
+	<!-- Nuevo -->
+	<div *ngIf="order.isChecked === 0" class="w-1 h-1 p-1 bg-c-orange-100 animate-ping rounded-full"></div>
 	<!-- Mesa -->
-	<p class="w-1/6 text-slate-800 nunito-extra-bold px-6 text-start truncate" style="font-size: 14px;">
-		Mesa {{ order.assignedToTable }}
-	</p>
+	<div>
+		<p class="w-full text-slate-800 nunito-extra-bold text-center text-wrap" style="font-size: 14px;">
+			Mesa {{ order.assignedToTable }}
+		</p>
+	</div>
 
 	<!-- Cliente -->
 	<p class="w-1/6 text-gray-500 text-start truncate" style="font-size: 12px;">
@@ -11,7 +14,7 @@
 	</p>
 
 	<!-- Fecha -->
-	<p class="w-1/6 text-gray-500 text-start truncate" style="font-size: 12px;">
+	<p class="w-1/6 text-gray-500 truncate text-wrap text-center" style="font-size: 12px;">
 		{{ order.createdDate }}
 	</p>
 
@@ -45,7 +48,14 @@
 	<!-- Botón -->
 	<button type="button" (click)="openOrderDetail(order.id)" class="h-full w-1/6 bg-slate-800 inline-flex items-center justify-center nunito-extra-bold py-2 text-white" style="font-size: 14px;">
 		Ver pedido
+		<span *ngIf="order.isNew" class="badge bg-red-500 text-white rounded-full px-2 ml-2">Nuevo</span>
 	</button>
 </div>
+
+@if (!orders || orders.length === 0) {
+	<p class="text-center text-gray-500 nunito-regular" style="font-size: 14px;">
+		No hay pedidos
+	</p>
+}
 
 <app-order-detail *ngIf="showModal" [order]="selectedOrder" [orderStatus]="orderStatus" (close)="closeModal()"></app-order-detail>

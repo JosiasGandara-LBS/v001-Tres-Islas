@@ -56,4 +56,15 @@ export class OrdersService {
 		});
 	}
 
+
+	async setOrderAsChecked(IDOrder: string): Promise<void> {
+		const orderDocRef = doc(this._firestore, `orders/${IDOrder}`);
+		return updateDoc(orderDocRef, { isChecked: 1 })
+		.then(() => {
+			console.log('Campo actualizado con éxito');
+		})
+		.catch(error => {
+			console.error('Error actualizando el campo:', error);
+		});
+	}
 }

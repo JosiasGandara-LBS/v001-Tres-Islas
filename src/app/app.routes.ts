@@ -29,18 +29,18 @@ export const routes: Routes = [
 		loadComponent: () => import('./pages/orders-client/orders-client.component').then(m => m.OrdersClientComponent),
 	},
 	{
-		path: 'orders-waiter', component: OrdersWaiterComponent,
-		canActivate: [waiterGuard],
-		children: [
-			{
-				path: '', redirectTo: 'orders-waiter', pathMatch: 'full'
-			}
-		]
-	},
-	{
 		path: 'admin', component: AdminComponent,
 		canActivate: [cashierGuard],
 		children: [
+			{
+				path: 'orders-waiter', component: OrdersWaiterComponent,
+				canActivate: [waiterGuard],
+				children: [
+					{
+						path: '', redirectTo: 'orders-waiter', pathMatch: 'full'
+					}
+				]
+			},
 			{
 				path: 'products',
 				loadComponent: () => import('./pages/admin/products/products.component').then(m => m.ProductsComponent),

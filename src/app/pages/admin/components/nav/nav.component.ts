@@ -19,11 +19,7 @@ export class NavComponent {
 
 	private authService = inject(AuthService);
 
-	public navItems = [
-		{ name: 'Productos', route: 'products', icon: 'pi-box' },
-		{ name: 'Usuarios', route: 'employees', icon: 'pi-user' },
-		{ name: 'Pedidos', route: '/orders-waiter', icon: 'pi-list' },
-	];
+	public navItems = this.authService.getNavItems();
 
 	constructor() {}
 

@@ -85,6 +85,24 @@ export class AuthService {
 		return this.user()?.role as Role;
 	}
 
+	getNavItems() {
+		if (this.getRole() === 'ADMIN' || this.getRole() === 'TI') {
+			return [
+				{ name: 'Pedidos', route: 'orders-waiter', icon: 'pi-list' },
+				{ name: 'Productos', route: 'products', icon: 'pi-box' },
+				{ name: 'Usuarios', route: 'employees', icon: 'pi-user' },
+			];
+		} else if (this.getRole() === 'CAJA') {
+			return [
+				{ name: 'Pedidos', route: 'orders-waiter', icon: 'pi-list' },
+				{ name: 'Productos', route: 'products', icon: 'pi-box' },
+			];
+		}
+		return [
+			{ name: 'Pedidos', route: 'orders-waiter', icon: 'pi-list' },
+		];
+	}
+
 	async validateToken(token: string) {
 		const payload = this.decodeToken(token);
 		if (!payload) {

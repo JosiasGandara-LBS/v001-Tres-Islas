@@ -1,8 +1,6 @@
 import { Component } from '@angular/core';
 import { slideInAnimation } from './app.animations';
 import { RouterOutlet } from '@angular/router';
-import { IonicModule } from '@ionic/angular';
-import { IonRouterOutlet } from '@ionic/angular/standalone';
 
 @Component({
     selector: 'app-root',
@@ -10,7 +8,7 @@ import { IonRouterOutlet } from '@ionic/angular/standalone';
     styleUrls: ['./app.component.scss'],
     animations: [slideInAnimation], //para las animaciones slideRight y slideLeft
     standalone: true,
-    imports: [IonicModule, RouterOutlet, IonRouterOutlet]
+    imports: [RouterOutlet]
 })
 export class AppComponent {
     title = 'v001-tres-islas';
