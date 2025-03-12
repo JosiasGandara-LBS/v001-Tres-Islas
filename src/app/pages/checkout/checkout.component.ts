@@ -1,4 +1,4 @@
-import { Component, Inject, inject, Injector, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Inject, inject, Injector, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CartService } from '../../core/services/cart.service';
 import { Router } from '@angular/router';
@@ -10,6 +10,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { firstValueFrom, Observable } from 'rxjs';
 import { PagoService } from '@core/services/pago.service';
 import { KitchenStatusService } from '@core/services/kitchen-status.service';
+import { OrdersClientService } from '@core/services/orders-client.service';
 
 @Component({
 	selector: 'app-checkout',
@@ -30,6 +31,7 @@ export class CheckoutComponent {
 		private router: Router,
 		private fb: FormBuilder,
 		private ordersService : OrdersService,
+		private ordersClientService : OrdersClientService,
 		private cartService : CartService,
 		private kitchenStatusService : KitchenStatusService,
 		private injector : Injector
@@ -99,7 +101,7 @@ export class CheckoutComponent {
 
 			this.ordersService.addOrder({...this.orderDetailForm.value, foodDishes: cartItems, estimatedOrdersTime: estimatedOrdersTime, isChecked: 0})
 			.then((response) => {
-				this.ordersService.addOrderIdToLocalStorage(response.id);
+				this.ordersClientService.addOrderIdToLocalStorage(response.id);
 				this.cartService.clearCart();
 				this.router.navigate(['/home']);
 			}).catch((error) => {

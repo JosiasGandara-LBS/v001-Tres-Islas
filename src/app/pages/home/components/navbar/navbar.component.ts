@@ -17,8 +17,7 @@ export class NavbarComponent {
 	constructor(private router : Router){}
 
 	goToOrders() {
-		// if(this.cartItemsCount() > 0) this.router.navigate(['/shopping-cart'])
-		this.router.navigate(['/shopping-cart'])
+		if(this.cartItemsCount() > 0) this.router.navigate(['/shopping-cart'])
 	}
 
 }

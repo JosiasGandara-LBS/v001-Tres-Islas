@@ -1,4 +1,4 @@
-import { effect, inject, Injectable, Signal, signal } from '@angular/core';
+import { computed, effect, inject, Injectable, Signal, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { addDoc, collection, collectionData, doc, docData, Firestore, getDoc, or, orderBy, query, updateDoc, where } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
@@ -9,9 +9,6 @@ import { Observable } from 'rxjs';
 export class OrdersService {
 
 	private _firestore = inject(Firestore);
-	private _collectionOrders = collection(this._firestore, 'orders');
-
-	currentOrderIds = signal<string[]>(this.getOrderIdsFromLocalStorage());
 
 	constructor() {}
 
@@ -59,37 +56,6 @@ export class OrdersService {
 			console.error('Error actualizando el campo:', error);
 		});
 	}
-
-	addOrderIdToLocalStorage(orderId: string) {
-        let currentOrderIds = this.getOrderIdsFromLocalStorage();
-        currentOrderIds.push(orderId);
-        localStorage.setItem('current_orders', JSON.stringify(currentOrderIds));
-
-        // Actualizamos el Signal para disparar el efecto
-        this.currentOrderIds.set([...currentOrderIds]);
-    }
-
-	// Obtener solo las órdenes que coinciden con los IDs en `current_orders`
-	getOrdersByIds(): Signal<any[]> {
-		const ids = this.currentOrderIds();  // Obtener los IDs del `Signal`
-
-		// Si no hay IDs, devolvemos un array vacío
-		if (ids.length === 0) {
-		  return signal([]);
-		}
-
-		// Crear la consulta para filtrar las órdenes por los IDs
-		const ordersQuery = query(this._collectionOrders, where('id', 'in', ids));
-
-		// Convertimos la consulta a un Signal
-		return toSignal(collectionData(ordersQuery, { idField: 'id' }) as Observable<any[]>, { initialValue: [] });
-	}
-
-    // Obtener los IDs del localStorage
-    getOrderIdsFromLocalStorage(): string[] {
-        return JSON.parse(localStorage.getItem('current_orders') || '[]');
-    }
-
 
 	async setOrderAsChecked(IDOrder: string): Promise<void> {
 		const orderDocRef = doc(this._firestore, `orders/${IDOrder}`);
