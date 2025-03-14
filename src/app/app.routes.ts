@@ -51,10 +51,10 @@ export const routes: Routes = [
 				loadComponent: () => import('./pages/admin/employees/employees.component').then(m => m.EmployeesComponent),
 			},
 			{
-				path: '', redirectTo: 'products', pathMatch: 'full'
+				path: '', redirectTo: 'orders-waiter', pathMatch: 'full'
 			},
 			{
-				path: '**', redirectTo: 'products', pathMatch: 'full'
+				path: '**', redirectTo: 'orders-waiter', pathMatch: 'full'
 			}
 		]
 
