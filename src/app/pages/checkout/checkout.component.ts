@@ -12,20 +12,23 @@ import { PagoService } from '@core/services/pago.service';
 import { KitchenStatusService } from '@core/services/kitchen-status.service';
 import { OrdersClientService } from '@core/services/orders-client.service';
 import Swal from 'sweetalert2';
+import { DropdownTogoComponent } from './components/dropdown-togo/dropdown-togo.component';
 
 @Component({
 	selector: 'app-checkout',
 	standalone: true,
-	imports: [CommonModule, ReactiveFormsModule, FormsModule, DropdownComponent],
+	imports: [CommonModule, ReactiveFormsModule, FormsModule, DropdownComponent, DropdownTogoComponent],
 	templateUrl: './checkout.component.html',
 	styleUrl: './checkout.component.scss'
 })
-export class CheckoutComponent {
+export class CheckoutComponent implements OnInit {
 
 	orderDetailForm: FormGroup;
 	savedData: { firstName: string; lastName: string }[] = [];
 	totalPriceSignal = inject(CartService).getTotalPriceSignal();
 	public isModalVisible = signal(false);
+
+	paymentMethodDisabled: boolean = false;
 
 	@ViewChild('cardPaymentModal', { read: ViewContainerRef }) container!: ViewContainerRef;
 
@@ -40,13 +43,24 @@ export class CheckoutComponent {
 	) {
 		this.orderDetailForm = this.fb.group({
 			client:          ['', [Validators.required, Validators.pattern('^[a-zA-ZÀ-ÿ\\s]+$')]],
-  			phoneNumber:     ['', [Validators.required, Validators.pattern('^[0-9]{1,10}$')]],
+			phoneNumber:     ['', [Validators.required, Validators.pattern('^[0-9]{10}$')]],
 			assignedToTable: ['', Validators.required],
-			paymentMethod:   ['', Validators.required],
-			moneyChange:     [],
+			orderToGo:       [Validators.required],
+			paymentMethod:   [{ value: '', disabled: true }, Validators.required],
+			tenderedAmount:  [],
 			totalAmount:     [this.totalPriceSignal(), Validators.required],
 			createdDate:     ['01/01/1800, 00:00 a.m.'],
 			status:          [1]
+		});
+	}
+
+	ngOnInit(): void {
+		this.orderDetailForm.get('orderToGo')?.valueChanges.subscribe(value => {
+			if (value) {
+				this.orderDetailForm.get('paymentMethod')?.enable();
+			} else {
+				this.orderDetailForm.get('paymentMethod')?.disable();
+			}
 		});
 	}
 
@@ -55,69 +69,87 @@ export class CheckoutComponent {
 			const componentRef = this.container.createComponent(CardPaymentComponent, { injector: this.injector });
 			componentRef.instance.phone_number = phone_number;
 
-			// Espera la emisión del valor
 			componentRef.instance.isTransactionCompleted.subscribe((valor: boolean) => {
 				resolve(valor);
-				componentRef?.destroy(); // Elimina el componente después de recibir el valor
+				componentRef?.destroy();
 			});
 
-			// Opcional: Manejo de cierre sin emitir valor
 			componentRef.instance.cerrar.subscribe(() => {
-				resolve(false); // Considera `false` si se cierra sin emitir
+				resolve(false);
 				componentRef?.destroy();
 			});
 		});
 	}
 
 	async submitForm() {
-		if (this.orderDetailForm.invalid) {
-			this.isModalVisible.set(true);
-			this.orderDetailForm.markAllAsTouched();
+		const paymentMethod = this.orderDetailForm.get('paymentMethod')?.value;
+		const tenderedAmount = this.orderDetailForm.get('tenderedAmount')?.value;
+		const totalAmount = this.totalPriceSignal();
+
+		// Validación de pago con tarjeta
+		if (paymentMethod === 'Tarjeta débito / crédito' && !(await this.validarPagoConTarjeta())) {
+		  	return;
+		}
+
+		// Validación de pago en efectivo
+		if (paymentMethod === 'Dinero en efectivo' && tenderedAmount < totalAmount) {
+			this.mostrarModalError();
 			return;
 		}
-		if (this.orderDetailForm.valid) {
 
-			if(this.orderDetailForm.get('paymentMethod')?.value === 'Tarjeta débito / crédito') {
-				const isValidPayment = await this.insertarComponente(this.orderDetailForm.get('phoneNumber')?.value);
-
-				if(!isValidPayment) {
-					return;
-				}
-			}
-
-			// Obtener solo los campos necesarios del carrito
-			const cartItems = this.cartService.getCartItemsToOrder();
-
-			// Obtener el tiempo estimado de la orden
-			let estimatedOrdersTime = 0;
-
-			try {
-				estimatedOrdersTime = await firstValueFrom(this.kitchenStatusService.getOrdersEstimatedTime());
-			} catch (error) {
-				return;
-			}
-
-			if (estimatedOrdersTime == null) return;
-
-			// Añadir datos derivados como fecha y precio total
-			const now = new Date();
-			const formattedDate = new Intl.DateTimeFormat('es-MX', { dateStyle: 'short', timeStyle: 'short' }).format(now);
-
-			// Actualizar valores en el formulario
-			this.orderDetailForm.patchValue({ createdDate: formattedDate, totalAmount: this.totalPriceSignal() });
-
-			this.ordersService.addOrder({...this.orderDetailForm.value, foodDishes: cartItems, estimatedOrdersTime: estimatedOrdersTime, isChecked: 0})
-			.then((response) => {
-				this.ordersClientService.addOrderIdToLocalStorage(response.id);
-				this.cartService.clearCart();
-				this.router.navigate(['/home']);
-			}).catch((error) => {
-				console.log('Error al agregar platillo: ', error);
-			});
-
-		} else {
-			console.log('Formulario inválido');
+		// Validar formulario antes de proceder
+		if (!this.orderDetailForm.valid) {
+			this.mostrarModalError();
+			return;
 		}
+
+		// Obtener datos para la orden
+		const cartItems = this.cartService.getCartItemsToOrder();
+		const estimatedOrdersTime = await this.obtenerTiempoEstimadoOrden();
+		if (estimatedOrdersTime == null) return;
+
+		// Formatear fecha actual
+		const formattedDate = new Intl.DateTimeFormat('es-MX', { dateStyle: 'short', timeStyle: 'short' }).format(new Date());
+
+		// Actualizar valores en el formulario
+		this.orderDetailForm.patchValue({ createdDate: formattedDate, totalAmount });
+
+		// Enviar orden
+		this.registrarOrden(cartItems, estimatedOrdersTime);
+	}
+
+	private async validarPagoConTarjeta(): Promise<boolean> {
+		const phoneNumber = this.orderDetailForm.get('phoneNumber')?.value;
+		return this.insertarComponente(phoneNumber);
+	}
+
+	private mostrarModalError() {
+		this.isModalVisible.set(true);
+		this.orderDetailForm.markAllAsTouched();
+	}
+
+	private async obtenerTiempoEstimadoOrden(): Promise<number | null> {
+		try {
+		  	return await firstValueFrom(this.kitchenStatusService.getOrdersEstimatedTime());
+		} catch (error) {
+			console.error("Error al obtener tiempo estimado de la orden:", error);
+			return null;
+		}
+	}
+
+	private registrarOrden(cartItems: any[], estimatedOrdersTime: number) {
+		this.ordersService.addOrder({
+			...this.orderDetailForm.value,
+			foodDishes: cartItems,
+			estimatedOrdersTime,
+			isChecked: 0,
+		})
+		.then((response) => {
+			this.ordersClientService.addOrderIdToLocalStorage(response.id);
+			this.cartService.clearCart();
+			this.router.navigate(['/home']);
+		})
+		.catch((error) => console.error("Error al agregar platillo:", error));
 	}
 
 	goToShoppingCart() {
