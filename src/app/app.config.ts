@@ -11,6 +11,7 @@ import { HttpClientModule, provideHttpClient, withFetch } from '@angular/common/
 import { DialogService, DynamicDialogModule } from 'primeng/dynamicdialog';
 import { firebaseConfig } from 'src/environment/firebase.config';
 import { getFunctions, provideFunctions } from '@angular/fire/functions';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 
 export const appConfig: ApplicationConfig = {
@@ -23,6 +24,7 @@ export const appConfig: ApplicationConfig = {
 		provideFirebaseApp(() => initializeApp(firebaseConfig)),
 		provideStorage(() => getStorage()),
 		importProvidersFrom(HttpClientModule),
+		importProvidersFrom(BrowserAnimationsModule),
 		importProvidersFrom(DynamicDialogModule),
 		DialogService, provideFirebaseApp(() => initializeApp(firebaseConfig)), provideFunctions(() => getFunctions())
 	]
