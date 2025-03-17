@@ -4,13 +4,14 @@ import { Observable, Subscription, filter } from 'rxjs';
 import { OrdersService } from '@core/services/orders.service';
 import { KeysLengthPipe } from '../../shared/pipes/keys-length.pipe';
 import { OrdersComponent } from './components/orders/orders.component';
-import { OrderDetailComponent } from './components/order-detail/order-detail.component';
 import { TabViewModule } from 'primeng/tabview';
+import { DividerModule } from 'primeng/divider';
+import { EstimatedTimeDialogComponent } from './components/estimated-time-dialog/estimated-time-dialog.component';
 
 @Component({
 	selector: 'app-orders-waiter',
 	standalone: true,
-	imports: [CommonModule, OrdersComponent, TabViewModule],
+	imports: [CommonModule, OrdersComponent, TabViewModule, DividerModule, EstimatedTimeDialogComponent],
 	templateUrl: './orders-waiter.component.html',
 	styleUrl: './orders-waiter.component.scss',
 })
@@ -29,6 +30,7 @@ export class OrdersWaiterComponent implements OnInit, OnDestroy {
 	];
 
 	showModal: boolean = false;
+	showTimeModal = signal<boolean>(false);
 	public selectedOrder = signal<number>(1);
 
 	activeIndex: number = 1;
@@ -65,4 +67,11 @@ export class OrdersWaiterComponent implements OnInit, OnDestroy {
 		this.subscriptions.push(subscription);
 	}
 
+	openTimeModal(): void {
+		this.showTimeModal.set(true);
+	}
+
+	closeTimeModal(): void {
+		this.showTimeModal.set(false);
+	}
 }

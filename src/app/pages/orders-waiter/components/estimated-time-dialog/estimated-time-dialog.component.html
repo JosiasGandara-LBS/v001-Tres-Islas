@@ -1,0 +1,52 @@
+<div id="default-modal" class="fixed inset-0 z-50 flex justify-center items-center bg-black bg-opacity-50">
+
+	<div class="relative p-2 max-w-5xl w-fit max-h-full">
+
+		<!-- Modal content -->
+		<div class="relative bg-white shadow rounded-lg">
+
+			<!-- Modal header -->
+			<div class="flex flex-row items-center justify-between p-2 md:p-5 border-b rounded-t">
+				<div class="flex items-center">
+					<div class="flex items-center justify-center">
+						<svg class="size-5 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M464 256A208 208 0 1 1 48 256a208 208 0 1 1 416 0zM0 256a256 256 0 1 0 512 0A256 256 0 1 0 0 256zM232 120l0 136c0 8 4 15.5 10.7 20l96 64c11 7.4 25.9 4.4 33.3-6.7s4.4-25.9-6.7-33.3L280 243.2 280 120c0-13.3-10.7-24-24-24s-24 10.7-24 24z"/></svg>
+						<p class="text-xl flex items-center font-bold text-gray-900">Tiempo Estimado de Cocina</p>
+					</div>
+				</div>
+			</div>
+
+			<!-- Modal body -->
+			<div class="py-3 px-4 flex flex-row justify-between items-center">
+				<div class="flex flex-col items-center justify-center w-full">
+					<p class="text-center text-gray-500 nunito-regular" style="font-size: 15px;">
+						¿Cuánto tiempo tardará un nuevo pedido en salir?
+					</p>
+                    <form action="" [formGroup]="form">
+					    <div class="flex flex-col items-center justify-center gap-2 mt-4">
+                            <div class="flex flex-row items-center justify-center gap-1 mx-2">
+                                <div class="w-1/3 flex items-center justify-end">
+                                    <span><i class="pi pi-clock"></i></span>
+                                </div>
+                                <div class="w-1/3 flex items-center justify-center">
+                                    <p-inputNumber [(ngModel)]="time" [allowEmpty]="false" [min]="1" formControlName="time" [useGrouping]="false" [inputStyle]="{'border-width': '1px'}" class="w-full" inputStyleClass="w-2/3 border-c-gray-100 rounded-md py-2 px-1 focus:border-orange-500 focus:shadow-md focus:shadow-orange-300 focus:outline-none focus:ring-0 outline-none text-center" />
+                                </div>
+                                <div class="w-1/3 flex items-center justify-start">
+                                    <span>min.</span>
+                                </div>
+                            </div>
+                            <button type="button" (click)="setEstimatedTime()" class="h-10 bg-c-orange-100 rounded-md shadow-md inline-flex items-center justify-center nunito-extra-bold py-2 px-4 text-white" style="font-size: 14px;">
+                                Establecer tiempo
+                            </button>
+                        </div>
+                    </form>
+				</div>
+			</div>
+		</div>
+
+		<div (click)="closeModal()" class="absolute inline-flex items-center justify-center w-6 h-6 font-bold text-gray-400 bg-white rounded-full -top-0.5 -end-0.5 nunito-extra-bold shadow-lg hover:text-slate-800 hover:cursor-pointer" style="font-size: 10px;">
+			<svg class="w-2 h-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 14 14">
+				<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+			</svg>
+		</div>
+	</div>
+</div>
