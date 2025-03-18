@@ -47,7 +47,7 @@
 					<div class="py-3 px-4 flex flex-row justify-between items-center h-12">
 						<div class="flex flex-row items-center">
 							<p class="text-lg font-bold inline-flex justify-center items-center">{{ plateFood.quantity }}<span class="text-sm">x</span></p>
-							<p class="ml-10 text-sm font-bold">{{ plateFood.name }}</p>
+							<p class="ml-10 text-sm font-bold">{{ plateFood.name }} - {{ plateFood.category | uppercase }}</p>
 						</div>
 						<p class="text-sm font-bold">MX {{ plateFood.price * plateFood.quantity | currency }}</p>
 					</div>

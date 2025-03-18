@@ -62,7 +62,6 @@ export class OrdersWaiterComponent implements OnInit, OnDestroy {
 			} else {
 				this.statuses.find(s => s.n === status)!.hasChanges = false;
 			}
-			console.log(this.orders());
 		});
 		this.subscriptions.push(subscription);
 	}

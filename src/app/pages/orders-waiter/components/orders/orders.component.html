@@ -14,7 +14,7 @@
 	</p>
 
 	<!-- Fecha -->
-	<p class="w-1/6 text-gray-500 truncate text-wrap text-center" style="font-size: 12px;">
+	<p class="w-1/8 text-gray-500 truncate text-wrap text-center" style="font-size: 12px;">
 		{{ order.createdDate }}
 	</p>
 
@@ -24,8 +24,12 @@
 	</p>
 
 	<!-- Total -->
-	<p class="w-1/6 text-gray-500 text-start truncate" style="font-size: 12px;">
+	<p class="w-1/12 text-gray-500 truncate text-wrap text-center" style="font-size: 12px;">
 		MX {{ order.totalAmount | currency }}
+	</p>
+
+	<p class="w-1/6 nunito-extra-bold truncate text-wrap text-center" style="font-size: 12px;">
+		{{ order.paymentMethod }}
 	</p>
 
 	<!-- Estado -->
