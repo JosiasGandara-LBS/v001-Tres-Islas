@@ -59,7 +59,7 @@ export class ModalItemComponent implements OnInit, OnDestroy {
 
 	// Método para agregar al carrito
 	addToCart(item: MenuItem, quantity: number): void {
-		this.cartService.addToCart(item.id, item.name, item.description, item.price, quantity, this.additionalInstructions);
+		this.cartService.addToCart(item.id, item.name, item.description, item.category, item.price, quantity, this.additionalInstructions);
 		this.returnToMenu();
 	}
 

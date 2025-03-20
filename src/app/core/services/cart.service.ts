@@ -77,6 +77,7 @@ export class CartService {
 			id: item.id,
 			name: item.name,
 			quantity: item.quantity,
+			category: item.category,
 			price: item.price,
 			additionalInstructions: item.additionalInstructions
 		}));
@@ -91,10 +92,10 @@ export class CartService {
 	}
 
 	// Método para agregar un platillo al carrito
-	addToCart(id: string, name: string, description: string, price: number, quantity: number, additionalInstructions: string): void {
+	addToCart(id: string, name: string, description: string, category: string, price: number, quantity: number, additionalInstructions: string): void {
 		const cartItems = this.cartItemsValue;
 
-		cartItems.push({ id, name, description, price, image: '', quantity: quantity, additionalInstructions: additionalInstructions });
+		cartItems.push({ id, name, description, category, price, image: '', quantity: quantity, additionalInstructions: additionalInstructions });
 		// Guardar el carrito actualizado
 		this.saveCartItems(cartItems);
 	}
