@@ -50,7 +50,7 @@ export class CheckoutComponent implements OnInit {
 			tenderedAmount:  [],
 			totalAmount:     [this.totalPriceSignal(), Validators.required],
 			createdDate:     ['01/01/1800, 00:00 a.m.'],
-			status:          [1]
+			status:          [2]
 		});
 	}
 
