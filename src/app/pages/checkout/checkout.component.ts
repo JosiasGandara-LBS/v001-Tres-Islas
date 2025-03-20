@@ -24,9 +24,15 @@ import { DropdownTogoComponent } from './components/dropdown-togo/dropdown-togo.
 export class CheckoutComponent implements OnInit {
 
 	orderDetailForm: FormGroup;
+
 	savedData: { firstName: string; lastName: string }[] = [];
+
 	totalPriceSignal = inject(CartService).getTotalPriceSignal();
+
+	tiempoEstimado !: Observable<number | null>;
+
 	public isModalVisible = signal(false);
+	public configModal !: number;
 
 	paymentMethodDisabled: boolean = false;
 
@@ -55,6 +61,8 @@ export class CheckoutComponent implements OnInit {
 	}
 
 	ngOnInit() {
+		this.tiempoEstimado = this.kitchenStatusService.getOrdersEstimatedTime();
+
 		this.orderDetailForm.get('orderToGo')?.valueChanges.subscribe(value => {
 			if (value !== null && value !== undefined) {
 				this.orderDetailForm.get('paymentMethod')?.enable();
@@ -82,7 +90,14 @@ export class CheckoutComponent implements OnInit {
 		});
 	}
 
+	showModalBeforeOrder(configNumber: number) {
+		this.isModalVisible.set(true);
+		this.configModal = configNumber;
+	}
+
 	async submitForm() {
+		this.isModalVisible.set(false);
+
 		const paymentMethod = this.orderDetailForm.get('paymentMethod')?.value;
 		const tenderedAmount = this.orderDetailForm.get('tenderedAmount')?.value;
 		const totalAmount = this.totalPriceSignal();
@@ -94,19 +109,20 @@ export class CheckoutComponent implements OnInit {
 
 		// Validación de pago en efectivo
 		if (paymentMethod === 'Dinero en efectivo' && tenderedAmount < totalAmount) {
-			this.mostrarModalError();
+			this.showModalBeforeOrder(2);
 			return;
 		}
 
 		// Validar formulario antes de proceder
 		if (!this.orderDetailForm.valid) {
-			this.mostrarModalError();
+			this.showModalBeforeOrder(2);
+			console.log("Valor de paymentMethod: ", this.orderDetailForm.get("paymenthMethod")?.value);
 			return;
 		}
 
 		// Obtener datos para la orden
 		const cartItems = this.cartService.getCartItemsToOrder();
-		const estimatedOrdersTime = await this.obtenerTiempoEstimadoOrden();
+		const estimatedOrdersTime = await firstValueFrom(this.tiempoEstimado);
 		if (estimatedOrdersTime == null) return;
 
 		// Formatear fecha actual
@@ -124,12 +140,7 @@ export class CheckoutComponent implements OnInit {
 		return this.insertarComponente(phoneNumber);
 	}
 
-	private mostrarModalError() {
-		this.isModalVisible.set(true);
-		this.orderDetailForm.markAllAsTouched();
-	}
-
-	private async obtenerTiempoEstimadoOrden(): Promise<number | null> {
+	async obtenerTiempoEstimadoOrden(): Promise<number | null> {
 		try {
 		  	return await firstValueFrom(this.kitchenStatusService.getOrdersEstimatedTime());
 		} catch (error) {
@@ -148,13 +159,19 @@ export class CheckoutComponent implements OnInit {
 		.then((response) => {
 			this.ordersClientService.addOrderIdToLocalStorage(response.id);
 			this.cartService.clearCart();
-			this.router.navigate(['/home']);
+			this.showModalBeforeOrder(3);
 		})
 		.catch((error) => console.error("Error al agregar platillo:", error));
 	}
 
 	goToShoppingCart() {
+		this.closeMessage();
 		this.router.navigate(['shopping-cart']);
+	}
+
+	returnToHome() {
+		this.closeMessage();
+		this.router.navigate(["/home"]);
 	}
 
 	// Eventos para Inputs

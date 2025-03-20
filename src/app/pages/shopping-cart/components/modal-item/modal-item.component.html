@@ -20,7 +20,7 @@
 		<section class="p-6 flex flex-col items-center relative">
 			<!-- Imagen envuelta en un div para mejor control -->
 			<div class="relative">
-				<img [src]="item.image ? item.image : 'assets/img/no-image.svg'" alt="image" class="w-52 rounded-2xl mb-4">
+				<img [src]="item.image ? item.image : 'assets/img/no-image.svg'" alt="image" class="w-52 h-52 rounded-2xl mb-4">
 				<!-- Precio -->
 				<span class="absolute top-2 right-2 bg-c-beige-100 px-3 py-1 rounded-lg nunito-extra-bold text-sm text-[#E55204]">
 					MX {{ item.price | currency }}
