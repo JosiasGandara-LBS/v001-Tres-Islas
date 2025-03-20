@@ -49,7 +49,7 @@ export class ModalItemComponent implements OnInit, OnDestroy {
 
 	// Llamar a la función de incrementar cantidad
 	incrementQuantity(): void {
-		this.quantity++;
+		if(this.quantity < 9) this.quantity++;
 	}
 
 	// Llamar a la función de decrementar cantidad
