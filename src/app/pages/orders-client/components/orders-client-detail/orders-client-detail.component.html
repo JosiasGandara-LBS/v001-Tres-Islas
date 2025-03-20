@@ -63,13 +63,9 @@
 								</span>
 								<span>{{ foodDish.price * foodDish.quantity | currency }} MXN</span>
 							</p>
-							<p class="text-xs text-gray-400 pl-4">
-								@if (foodDish.additionalInstructions == '') {
-									** Sin comentarios y/o especificaciones
-								} @else {
-									** {{ foodDish.additionalInstructions }}
-								}
-							</p>
+							@if (foodDish.additionalInstructions !== '') {
+								<p class="text-xs text-gray-400 pl-4">** {{ foodDish.additionalInstructions }}</p>
+							}
 						</div>
 					}
 				</div>

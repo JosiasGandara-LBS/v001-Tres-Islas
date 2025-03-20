@@ -45,7 +45,7 @@ export class CheckoutComponent implements OnInit {
 			client:          ['', [Validators.required, Validators.pattern('^[a-zA-ZÀ-ÿ\\s]+$')]],
 			phoneNumber:     ['', [Validators.required, Validators.pattern('^[0-9]{10}$')]],
 			assignedToTable: ['', Validators.required],
-			orderToGo:       [Validators.required],
+			orderToGo:       [null, Validators.required],
 			paymentMethod:   [{ value: '', disabled: true }, Validators.required],
 			tenderedAmount:  [],
 			totalAmount:     [this.totalPriceSignal(), Validators.required],
@@ -54,13 +54,14 @@ export class CheckoutComponent implements OnInit {
 		});
 	}
 
-	ngOnInit(): void {
+	ngOnInit() {
 		this.orderDetailForm.get('orderToGo')?.valueChanges.subscribe(value => {
-			if (value) {
+			if (value !== null && value !== undefined) {
 				this.orderDetailForm.get('paymentMethod')?.enable();
 			} else {
 				this.orderDetailForm.get('paymentMethod')?.disable();
 			}
+			this.orderDetailForm.get('paymentMethod')?.setValue(null);
 		});
 	}
 
