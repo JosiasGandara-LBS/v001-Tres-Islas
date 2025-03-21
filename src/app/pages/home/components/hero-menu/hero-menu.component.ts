@@ -32,6 +32,10 @@ export class HeroMenuComponent {
 		this.updateCartItemsCount();
 	}
 
+	getQuantity(itemId: string): number {
+		return this.cartService.getQuantity(itemId);
+	}
+
 	insertarComponente(itemId: string) {
 		const componentRef = this.container.createComponent(ModalItemComponent, { injector: this.injector });
 		componentRef.instance.itemId = itemId;

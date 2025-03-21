@@ -62,5 +62,6 @@ export class ModalItemComponent implements OnInit, OnDestroy {
 		this.cartService.addToCart(item.id, item.name, item.description, item.category, item.price, quantity, this.additionalInstructions);
 		this.returnToMenu();
 	}
+	
 
 }

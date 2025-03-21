@@ -48,6 +48,7 @@ export class CartService {
 		return docData(itemRef, { idField: 'id' });
 	}
 
+
 	// Método para obtener el total de items en el carrito
 	getTotalItems(): number {
 		const cartItems = this.getCartItems();
@@ -83,6 +84,15 @@ export class CartService {
 		}));
 	}
 
+	// Método para obtener la cantidad de un item en el carrito
+    getQuantity(itemId: string): number {
+        const cartItems = this.getCartItems();
+        const item = cartItems.find(item => item.id === itemId);
+        return item ? item.quantity : 0; 
+    }
+
+
+
 	// Método para guardar el carrito en el localStorage
 	saveCartItems(cartItems: CartItem[]): void {
 		localStorage.setItem('cart', JSON.stringify(cartItems));
@@ -93,12 +103,21 @@ export class CartService {
 
 	// Método para agregar un platillo al carrito
 	addToCart(id: string, name: string, description: string, category: string, price: number, quantity: number, additionalInstructions: string): void {
-		const cartItems = this.cartItemsValue;
+        const cartItems = this.cartItemsValue;
+        const existingItem = cartItems.find(item => item.id === id);
 
-		cartItems.push({ id, name, description, category, price, image: '', quantity: quantity, additionalInstructions: additionalInstructions });
-		// Guardar el carrito actualizado
-		this.saveCartItems(cartItems);
-	}
+        if (existingItem) {
+            // El item ya existe, incrementa la cantidad
+            existingItem.quantity += quantity;
+        } else {
+            // El item no existe, añádelo al carrito
+            cartItems.push({ id, name, description, category, price, image: '', quantity, additionalInstructions });
+        }
+
+        // Guardar el carrito actualizado
+        this.saveCartItems(cartItems);
+    }
+
 
 	// Nueva función que actualiza el carrito con las imágenes
 	updateCartItemsWithImage(): void {
