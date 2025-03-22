@@ -23,7 +23,6 @@ export class OrdersWaiterComponent implements OnInit, OnDestroy {
 	subscriptions: Subscription[] = [];
 
 	statuses = [
-		{ n: 1, text: 'Por pagar', color: 'blue-700', icon: 'pi pi-dollar', hasChanges: false },
 		{ n: 2, text: 'Preparando', color: 'yellow-600', icon: 'pi pi-clock', hasChanges: false },
 		{ n: 0, text: 'Cancelado', color: 'red-700', icon: 'pi pi-ban', hasChanges: false },
 		{ n: 3, text: 'Entregado', color: 'gray-500', icon: 'pi pi-check', hasChanges: false }
@@ -31,9 +30,8 @@ export class OrdersWaiterComponent implements OnInit, OnDestroy {
 
 	showModal: boolean = false;
 	showTimeModal = signal<boolean>(false);
-	public selectedOrder = signal<number>(1);
+	public selectedOrder = signal<number>(2);
 
-	activeIndex: number = 1;
 
 	constructor(private _ordersService: OrdersService) {}
 

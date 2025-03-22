@@ -71,4 +71,33 @@ export class OrderDetailComponent implements OnInit {
 		}
 		);
 	}
+
+	payOrder(orderID : string) {
+		Swal.fire({
+			title: '¿Estás seguro?',
+			text: 'El pedido será marcado como pagado',
+			icon: 'warning',
+			showCancelButton: true,
+			confirmButtonText: 'Sí, marcar como pagado',
+			cancelButtonText: 'No, mantener',
+			confirmButtonColor: 'blue',
+			reverseButtons: true
+		}).then((result) => {
+			if (result.isConfirmed) {
+				this.payOrderConfirmed(orderID);
+			}
+		});
+	}
+
+	payOrderConfirmed(orderID : string) {
+		this._ordersService.setOrderAsPaid(orderID).then(() => {
+			Swal.fire('Pedido pagado', 'El pedido ha sido marcado como pagado', 'success');
+			this.closeModal();
+		}
+		).catch((err: any) => {
+			Swal.fire('Error', 'No se pudo marcar como pagado el pedido', 'error');
+			console.log('Error: ', err);
+		}
+		);
+	}
 }
