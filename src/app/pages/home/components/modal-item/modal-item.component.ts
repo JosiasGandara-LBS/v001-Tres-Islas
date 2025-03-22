@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { CartService } from '../../../../core/services/cart.service';
 import { MenuItem } from '../../../../core/models/menu-item';
 import { Subscription } from 'rxjs';
+import { KitchenStatusService } from '@core/services/kitchen-status.service';
 
 @Component({
   selector: 'app-modal-item',
@@ -16,6 +17,7 @@ export class ModalItemComponent implements OnInit, OnDestroy {
 
 	private cartService = inject(CartService);
 	private subscription!: Subscription;
+	
 
 	@Input() itemId !: string;
 	@Output() cerrar = new EventEmitter<void>();

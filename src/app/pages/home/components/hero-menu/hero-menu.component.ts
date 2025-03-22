@@ -5,6 +5,7 @@ import { ModalItemComponent } from '../modal-item/modal-item.component';
 import { MenuItem } from '../../../../core/models/menu-item';
 import { CartService } from '../../../../core/services/cart.service';
 import { ButtonModule } from 'primeng/button';
+import { KitchenStatusService } from '@core/services/kitchen-status.service';
 
 @Component({
 	selector: 'app-hero-menu',
@@ -14,11 +15,11 @@ import { ButtonModule } from 'primeng/button';
 	styleUrl: './hero-menu.component.scss'
 })
 export class HeroMenuComponent {
-
 	_menuService = inject(CartService).getMenu;
-
 	cartItemsCount: number = 0;
 	buttonClass: string = '';
+	kitchenStatusService = inject(KitchenStatusService);
+	isKitchenOpen = computed(() => this.kitchenStatusService.isKitchenOpen());
 
 	@ViewChild('modalContainer', { read: ViewContainerRef }) container!: ViewContainerRef;
 
@@ -70,7 +71,6 @@ export class HeroMenuComponent {
 	scrollToMenu() {
 		const menuSection = document.getElementById('menuSection');
 		const headerHeight = 64;
-
 		if (menuSection) {
 			const menuPosition = menuSection.getBoundingClientRect().top + window.scrollY - headerHeight;
 			window.scrollTo({ top: menuPosition, behavior: 'smooth' });

@@ -1,12 +1,9 @@
 import { Component, OnInit, signal, computed, Inject, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
-
 import { ProductsService } from '@core/services/products.service';
 import { KitchenStatusService } from '@core/services/kitchen-status.service';
-
 import { Product } from '@shared/interfaces/product.interface';
-
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { TooltipModule } from 'primeng/tooltip';
 import { TableModule } from 'primeng/table';
@@ -58,7 +55,9 @@ export class ProductsComponent implements OnInit {
 		});
 
 		this.kitchenStatusService.getKitchenStatus().subscribe(status => {
-			this._isKitchenOpen.set(status);
+			if(typeof status === 'boolean'){
+				this._isKitchenOpen.set(status);
+			}
 		});
 	}
 
@@ -97,7 +96,9 @@ export class ProductsComponent implements OnInit {
 	}
 
 	toggleKitchenStatus() {
-		this.kitchenStatusService.setKitchenStatus(!this.isKitchenOpen());
+		this.kitchenStatusService.setKitchenStatus(!this.isKitchenOpen()).then(() => {
+			this._isKitchenOpen.set(!this.isKitchenOpen());
+		});
 	}
 
 	setSelectedProduct(product: Product) {

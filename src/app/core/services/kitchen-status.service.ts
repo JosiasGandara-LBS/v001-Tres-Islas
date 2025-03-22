@@ -1,7 +1,7 @@
 import { inject, Injectable, signal } from '@angular/core';
 import { collectionData, Firestore, addDoc, deleteDoc, docData } from '@angular/fire/firestore';
 import { Product } from '@shared/interfaces/product.interface';
-import { map } from 'rxjs';
+import { map, Observable} from 'rxjs';
 import { collection, doc, getDoc, updateDoc, getDocFromServer, DocumentData, DocumentReference } from 'firebase/firestore';
 
 @Injectable({
@@ -9,23 +9,25 @@ import { collection, doc, getDoc, updateDoc, getDocFromServer, DocumentData, Doc
 })
 export class KitchenStatusService {
     private firestore = inject(Firestore);
-    constructor() {}
-
+    public isKitchenOpen = signal<boolean>(true);
+    
+    constructor() {
+        this.getKitchenStatus().subscribe(status => {
+            if(status !== undefined)
+                this.isKitchenOpen.set(status);
+        });
+    }
     public selectedProduct = signal<Product | null>(null);
 
-    getKitchenStatus(){
+    getKitchenStatus(): Observable<boolean | undefined> {
         const kitchenStatusCollection = collection(this.firestore, 'kitchenStatus');
         return collectionData(kitchenStatusCollection, { idField: 'id' }).pipe(
-            map((status: any) => {
-                return status.map((status: {id: string, status: boolean}) => {
-                    return {
-                        status: status.status
-                    };
-                });
+          map((status: any[]) => {
+            if (status && status.length > 0) {
+              return status[0]?.status;
             }
-            )
-        ).pipe(
-            map((statusArray: any[]) => statusArray[0]?.status)
+            return undefined;
+          })
         );
     }
 
