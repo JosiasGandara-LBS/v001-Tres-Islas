@@ -5,7 +5,10 @@
 /tmp
 /out-tsc
 /bazel-out
+
+# ENV files
 src/environment/firebase.config.ts
+src/environment/functions.config.ts
 
 # Node
 /node_modules

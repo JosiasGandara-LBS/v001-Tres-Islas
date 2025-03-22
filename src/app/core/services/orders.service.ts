@@ -78,4 +78,14 @@ export class OrdersService {
 			console.error('Error cancelando el pedido:', error);
 		});
 	}
+
+	async setOrderAsPaid(IDOrder: string): Promise<void> {
+		const orderDocRef = doc(this._firestore, `orders/${IDOrder}`);
+		return updateDoc(orderDocRef, { PaymentPending: false })
+			.then(() => {
+			})
+			.catch(error => {
+				console.error('Error pagando el pedido:', error);
+			});
+	}
 }

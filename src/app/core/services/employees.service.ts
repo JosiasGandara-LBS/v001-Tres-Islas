@@ -6,6 +6,8 @@ import { DialogService } from 'primeng/dynamicdialog';
 import { Observable } from 'rxjs';
 import { EmployeeModalComponent } from 'src/app/pages/admin/components/employee-modal/employee-modal.component';
 import Swal from 'sweetalert2';
+import { HttpClient } from '@angular/common/http';
+import { agregarUsuarioUrl, eliminarUsuarioUrl } from 'src/environment/functions.config';
 
 @Injectable({
   providedIn: 'root'
@@ -16,6 +18,7 @@ export class EmployeesService {
   private dialogService = inject(DialogService);
   private auth = inject(Auth);
   private firestore = inject(Firestore);
+  private http = inject(HttpClient);
 
   private ref: any;
 
@@ -45,7 +48,7 @@ export class EmployeesService {
       style: { 'max-height': '80%', 'height': 'auto' },
       contentStyle: { overflow: 'auto' },
     });
-    
+
     this.ref.onClose.subscribe((data: any) => {
       this.selectedUser.set(null);
     });
@@ -54,6 +57,40 @@ export class EmployeesService {
   closeModal() {
     this.ref.close();
   }
+
+  deleteUserFromFirebaseAuth(userId: string) {
+
+	const url = eliminarUsuarioUrl;
+	const body = {
+		uid: userId
+	}
+
+    const deleteUser = this.http.post(url, body).subscribe((data) => {
+		console.log(data);
+		if (data) {
+			Swal.fire('Éxito', 'Empleado eliminado correctamente', 'success');
+		}
+	});
+	deleteUser.unsubscribe();
+  }
+
+	createUserFirebaseAuth(email: string, password: string, role: string, name: string) {
+		const url = agregarUsuarioUrl;
+		const body = {
+			email: email,
+			password: password,
+			role: role,
+			name: name
+		}
+
+		const createUser = this.http.post(url, body).subscribe((data) => {
+			console.log(data);
+			if (data) {
+				Swal.fire('Éxito', 'Empleado agregado correctamente', 'success');
+			}
+		});
+		createUser.unsubscribe();
+	}
 
   deleteEmployee(user: any) {
     Swal.fire({
@@ -68,29 +105,20 @@ export class EmployeesService {
     }).then((result) => {
       if (result.isConfirmed) {
         try {
-          const userRef = doc(this.firestore, 'employees', user.id);
-          deleteDoc(userRef).then(() => {
-            Swal.fire('Eliminado', 'El empleado ha sido eliminado', 'success');
-          });
+			this.deleteUserFromFirebaseAuth(user.id)
         } catch (error) {
-          Swal.fire('Error', 'Ocurrió un error al eliminar el empleado', 'error');
+          	Swal.fire('Error', 'Ocurrió un error al eliminar el empleado', 'error');
         }
       }
     });
   }
 
   addEmployee(employee: Employee, password: string) {
-    const employeeData = { email: employee.email, name: employee.name, role: employee.role };
-
-    createUserWithEmailAndPassword(this.auth, employeeData.email, password)
-      .then((userCredential) => {
-        const userId = userCredential.user.uid;
-        const employeeRef = doc(this.firestore, 'employees', userId);
-        return setDoc(employeeRef, { ...employeeData, id: userId });
-      })
-      .catch((error) => {
-        Swal.fire('Error', 'Ocurrió un error al agregar el empleado', 'error');
-      });
+    try {
+		this.createUserFirebaseAuth(employee.email, password, employee.role, employee.name);
+	} catch (error) {
+		Swal.fire('Error', 'Ocurrió un error al agregar el empleado', 'error');
+	}
   }
 
   updateEmployee(employee: Employee) {

@@ -1,16 +1,14 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { procesarPagoUrl } from 'src/environment/functions.config';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PagoService {
 
-	private apiUrl = 'https://procesarpago-wjc3vrdlna-uc.a.run.app';
-	private apiKey = 'sk_cf030af358ea459984ed87e8fb92daf2';
-	private merchantId = 'mheinovbagqf3nzxctrx';
-	private apiSandboxUrl = `https://sandbox-api.openpay.mx/v1/MERCHANT_ID/checkouts`;
+	private apiUrl = procesarPagoUrl
 
   	constructor(private http: HttpClient) { }
 

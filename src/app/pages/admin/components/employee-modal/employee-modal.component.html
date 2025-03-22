@@ -15,7 +15,7 @@
                 {{ getErrorMessage('role') }}
             </div>
         </div>
-        <div class="p-field col-span-6 flex flex-col">
+        <div *ngIf="!selectedUser()" class="p-field col-span-6 flex flex-col">
             <label for="employeeEmail">Email</label>
             <input id="employeeEmail" type="email" pInputText formControlName="email" [style]="{'border-width': '1px'}" class="border-c-gray-100 rounded-md py-2 px-1 focus:border-orange-500 focus:shadow-md focus:shadow-orange-300 focus:outline-none focus:ring-0 outline-none"/>
             <div *ngIf="employeeForm.get('email')?.invalid && employeeForm.get('email')?.touched" class="p-error">
