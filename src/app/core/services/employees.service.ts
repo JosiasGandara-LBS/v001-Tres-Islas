@@ -65,13 +65,19 @@ export class EmployeesService {
 		uid: userId
 	}
 
-    const deleteUser = this.http.post(url, body).subscribe((data) => {
-		console.log(data);
-		if (data) {
-			Swal.fire('Éxito', 'Empleado eliminado correctamente', 'success');
+    const deleteUser = this.http.post(url, body).subscribe(
+		Response => {
+			console.log(Response);
+			if (Response) {
+				Swal.fire('Éxito', 'Empleado eliminado correctamente', 'success');
+			}
+			deleteUser.unsubscribe();
+		},
+		error => {
+			Swal.fire('Error', `Ocurrió un error al eliminar el empleado: ${error.error.error}` , 'error');
+			deleteUser.unsubscribe();
 		}
-    deleteUser.unsubscribe();
-	});
+	);
   }
 
 	createUserFirebaseAuth(email: string, password: string, role: string, name: string) {
@@ -83,13 +89,20 @@ export class EmployeesService {
 			name: name
 		}
 
-		const createUser = this.http.post(url, body).subscribe((data) => {
-			console.log(data);
-			if (data) {
-				Swal.fire('Éxito', 'Empleado agregado correctamente', 'success');
+		const createUser = this.http.post(url, body).subscribe(
+			Response => {
+				console.log(Response);
+				if (Response) {
+					Swal.fire('Éxito', 'Empleado agregado correctamente', 'success');
+				}
+				createUser.unsubscribe();
+			},
+			error => {
+				Swal.fire('Error', `Ocurrió un error al agregar el empleado: ${error.error.error}` , 'error');
+				createUser.unsubscribe();
 			}
-      createUser.unsubscribe();
-		});
+
+		);
 	}
 
   deleteEmployee(user: any) {
