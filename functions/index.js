@@ -69,7 +69,7 @@ exports.crearUsuario = onRequest(async (req, res) => {
 
 			const { role } = req.body;
 
-			await db.collection("users").doc(userRecord.uid).set({
+			await db.collection("employees").doc(userRecord.uid).set({
 				name: name,
 				email: email,
 				role: role,
@@ -92,7 +92,7 @@ exports.eliminarUsuario = onRequest(async (req, res) => {
 				return res.status(400).json({ error: "User ID is required" });
 			}
 			const db = getFirestore();
-			await db.collection("users").doc(uid).delete();
+			await db.collection("employees").doc(uid).delete();
 
 			await getAuth().deleteUser(uid);
 
