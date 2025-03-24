@@ -70,8 +70,8 @@ export class EmployeesService {
 		if (data) {
 			Swal.fire('Éxito', 'Empleado eliminado correctamente', 'success');
 		}
+    deleteUser.unsubscribe();
 	});
-	deleteUser.unsubscribe();
   }
 
 	createUserFirebaseAuth(email: string, password: string, role: string, name: string) {
@@ -88,8 +88,8 @@ export class EmployeesService {
 			if (data) {
 				Swal.fire('Éxito', 'Empleado agregado correctamente', 'success');
 			}
+      createUser.unsubscribe();
 		});
-		createUser.unsubscribe();
 	}
 
   deleteEmployee(user: any) {
