@@ -30,7 +30,6 @@ export class OrdersClientDetailComponent implements OnInit {
 	async ngOnInit() {
 		if(this.orderID) {
 			this.order = await this.ordersService.getOrderById(this.orderID);
-			console.log(this.order);
 		}
 	}
 

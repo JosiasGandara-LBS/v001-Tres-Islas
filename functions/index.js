@@ -1,10 +1,13 @@
 /* eslint-disable */
 const { onRequest } = require("firebase-functions/v2/https");
-const Openpay = require("openpay");
-const cors = require('cors')({ origin: true });
+const { onSchedule } = require("firebase-functions/v2/scheduler");
 const { getAuth } = require("firebase-admin/auth");
 const { getFirestore } = require("firebase-admin/firestore");
+
 const firebase_admin = require("firebase-admin");
+const Openpay = require("openpay");
+const cors = require('cors')({ origin: true });
+
 require('dotenv').config();
 
 const openpay = new Openpay(process.env.OPENPAY_MERCHANT_ID, process.env.OPENPAY_PRIVATE_KEY, process.env.OPENPAY_PRODUCTION_MODE);
@@ -103,3 +106,39 @@ exports.eliminarUsuario = onRequest(async (req, res) => {
 		}
 	});
 });
+
+// Función programada con Firebase Functions v2
+exports.copyOrdersToHistory = onSchedule(
+	{
+		schedule: "0 8 * * *",
+		timeZone: "America/Mazatlan",
+	},
+	async (event) => {
+		const db = firebase_admin.firestore();
+
+		try {
+			const ordersRef = db.collection("orders");
+			const snapshot = await ordersRef.get();
+
+			if (snapshot.empty) {
+				console.log("No hay órdenes para archivar.");
+				return null;
+			}
+
+			const batch = db.batch();
+			snapshot.forEach((doc) => {
+				const orderData = doc.data();
+				const orderHistoryRef = db.collection("orderHistory").doc(doc.id);
+				batch.set(orderHistoryRef, orderData);
+				batch.delete(doc.ref);
+			});
+
+			await batch.commit();
+			console.log(`Se copiaron ${snapshot.size} órdenes a orderHistory.`);
+		} catch (error) {
+			console.error("Error al copiar órdenes:", error);
+		}
+
+		return null;
+	}
+);

@@ -30,6 +30,8 @@ export class OrdersClientComponent {
 	}
 
 	insertarComponente(orderID: string){
+		if (this.container.length > 0) this.container.clear();
+
 		const componentRef = this.container.createComponent(OrdersClientDetailComponent, { injector: this.injector });
 		componentRef.instance.orderID = orderID;
 		componentRef.instance.cerrar.subscribe(() => componentRef?.destroy());

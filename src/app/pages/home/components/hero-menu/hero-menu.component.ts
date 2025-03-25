@@ -38,6 +38,8 @@ export class HeroMenuComponent {
 	}
 
 	insertarComponente(itemId: string) {
+		if (this.container.length > 0) this.container.clear();
+
 		const componentRef = this.container.createComponent(ModalItemComponent, { injector: this.injector });
 		componentRef.instance.itemId = itemId;
 		componentRef.instance.cerrar.subscribe(() => componentRef?.destroy());
