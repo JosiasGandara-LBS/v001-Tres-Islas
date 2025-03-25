@@ -1,0 +1,1 @@
+import{da as n}from"./chunk-3MM7HPS6.js";var s=(()=>{class r{transform(t,e=5){return t?t.length>e?t.substring(0,e):t:""}static{this.\u0275fac=function(e){return new(e||r)}}static{this.\u0275pipe=n({name:"truncate",type:r,pure:!0,standalone:!0})}}return r})();export{s as a};
