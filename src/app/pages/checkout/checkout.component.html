@@ -102,6 +102,7 @@
 								class="text-gray-800 text-sm rounded-lg block w-full p-2.5 shadow-lg border-2 border-gray-200 focus:outline-none focus:border-orange-600"
 								[ngClass]="{'border-orange-600': orderDetailForm.get('client')?.valid}"
 								placeholder="$000.00 MXN"
+								(keypress)="onlyNumbers($event)"
 								required
 							/>
 						</li>
