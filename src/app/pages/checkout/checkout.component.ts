@@ -54,6 +54,7 @@ export class CheckoutComponent implements OnInit {
 			orderToGo:       [null, Validators.required],
 			paymentMethod:   [{ value: '', disabled: true }, Validators.required],
 			tenderedAmount:  [],
+			pendingPayment:  [],
 			totalAmount:     [this.totalPriceSignal(), Validators.required],
 			createdDate:     ['01/01/1800, 00:00 a.m.'],
 			status:          [2]
@@ -101,10 +102,13 @@ export class CheckoutComponent implements OnInit {
 		const paymentMethod = this.orderDetailForm.get('paymentMethod')?.value;
 		const tenderedAmount = this.orderDetailForm.get('tenderedAmount')?.value;
 		const totalAmount = this.totalPriceSignal();
+		let pendingPayment = true;
 
 		// Validación de pago con tarjeta
-		if (paymentMethod === 'Tarjeta débito / crédito' && !(await this.validarPagoConTarjeta())) {
-		  	return;
+		if (paymentMethod === 'Tarjeta débito / crédito') {
+			const pagoValido = await this.validarPagoConTarjeta();
+			if (!pagoValido) return;
+			pendingPayment = false;
 		}
 
 		// Validación de pago en efectivo
@@ -116,7 +120,6 @@ export class CheckoutComponent implements OnInit {
 		// Validar formulario antes de proceder
 		if (!this.orderDetailForm.valid) {
 			this.showModalBeforeOrder(2);
-			console.log("Valor de paymentMethod: ", this.orderDetailForm.get("paymenthMethod")?.value);
 			return;
 		}
 
@@ -129,7 +132,7 @@ export class CheckoutComponent implements OnInit {
 		const formattedDate = new Intl.DateTimeFormat('es-MX', { dateStyle: 'short', timeStyle: 'short' }).format(new Date());
 
 		// Actualizar valores en el formulario
-		this.orderDetailForm.patchValue({ createdDate: formattedDate, totalAmount });
+		this.orderDetailForm.patchValue({ createdDate: formattedDate, totalAmount, pendingPayment });
 
 		// Enviar orden
 		this.registrarOrden(cartItems, estimatedOrdersTime);
