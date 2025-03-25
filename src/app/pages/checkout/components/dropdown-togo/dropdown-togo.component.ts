@@ -34,7 +34,7 @@ export class DropdownTogoComponent {
 
 	selectOption(option: any) {
 		this.selectedOption = option;
-		this.onChange(option.value); // Comunica el valor seleccionado al formulario reactivo
+		this.onChange(option.value);
 		this.isDropdownOpen = false;
 	}
 

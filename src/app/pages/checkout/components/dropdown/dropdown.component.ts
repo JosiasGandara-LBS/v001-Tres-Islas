@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, forwardRef } from '@angular/core';
+import { Component, forwardRef, Input } from '@angular/core';
 import { NG_VALUE_ACCESSOR } from '@angular/forms';
 
 @Component({
@@ -17,6 +17,8 @@ import { NG_VALUE_ACCESSOR } from '@angular/forms';
 	],
 })
 export class DropdownComponent {
+	@Input() disabled: boolean = false;
+
 	isDropdownOpen = false;
 	selectedOption: any = null;
 
@@ -39,14 +41,18 @@ export class DropdownComponent {
 	private onTouched = () => {};
 
 	toggleDropdown() {
-		this.isDropdownOpen = !this.isDropdownOpen;
+		if (!this.disabled) {
+			this.isDropdownOpen = !this.isDropdownOpen;
+		}
 	}
 
 	selectOption(option: any) {
-		this.selectedOption = option;
-		this.onChange(option.value); // Comunica el valor seleccionado al formulario reactivo
-		this.isDropdownOpen = false;
-	}
+		if (!this.disabled) {
+			this.selectedOption = option;
+			this.onChange(option.value);
+			this.isDropdownOpen = false;
+		}
+	  }
 
 	// Métodos necesarios para ControlValueAccessor
 	writeValue(value: any): void {

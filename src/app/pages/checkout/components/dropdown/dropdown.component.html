@@ -1,12 +1,13 @@
 <div>
 	<label id="listbox-label" class="block text-sm/6 font-medium text-gray-800">¿En qué mesa te encuentras?</label>
-	<div class="relative mt-2">
+	<div class="relative mt-2" [ngClass]="{'opacity-50': disabled}">
 		<button
 			type="button"
 			class="grid w-full cursor-default grid-cols-1 rounded-lg shadow-lg bg-white p-2.5 text-left text-gray-800 text-sm border-2 border-gray-200 focus:outline-none focus:border-orange-600 focus:fill-orange-600"
-			[ngClass]="{'border-orange-600': selectedOption}"
+			[ngClass]="{'border-orange-600': selectedOption && !disabled}"
 			[attr.aria-expanded]="isDropdownOpen"
 			(click)="toggleDropdown()"
+			[disabled]="disabled"
 		>
 			<span class="col-start-1 row-start-1 flex items-center gap-3 pr-6">
 				<ng-container *ngIf="selectedOption; else defaultText">

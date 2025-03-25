@@ -65,13 +65,23 @@ export class CheckoutComponent implements OnInit {
 		this.tiempoEstimado = this.kitchenStatusService.getOrdersEstimatedTime();
 
 		this.orderDetailForm.get('orderToGo')?.valueChanges.subscribe(value => {
+			const assignedToTableControl = this.orderDetailForm.get('assignedToTable');
+
 			if (value !== null && value !== undefined) {
+				if(value === 1) {
+					assignedToTableControl?.patchValue(null);
+				}
 				this.orderDetailForm.get('paymentMethod')?.enable();
 			} else {
 				this.orderDetailForm.get('paymentMethod')?.disable();
 			}
 			this.orderDetailForm.get('paymentMethod')?.setValue(null);
 		});
+
+	}
+
+	get isTableDropdownDisabled(): boolean {
+		return (this.orderDetailForm.get('orderToGo')?.value == null || this.orderDetailForm.get('orderToGo')?.value == 1) ? true : false ;
 	}
 
 	insertarComponente(phone_number: string): Promise<boolean> {
