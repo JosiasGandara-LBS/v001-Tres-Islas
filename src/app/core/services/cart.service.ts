@@ -149,7 +149,6 @@ export class CartService {
 		if (index !== -1) {
 			cart.splice(index, 1);
 			this.saveCartItems(cart);
-			console.log("Objeto del carrito eliminado");
 		}
 	}
 

@@ -43,7 +43,6 @@ export class OrdersWaiterComponent implements OnInit, OnDestroy {
 		this.statuses.forEach(status => {
 			this.getOrdersForStatus(status.n);
 		});
-		console.log(this.orders());
 	}
 
 	ngOnDestroy(): void {

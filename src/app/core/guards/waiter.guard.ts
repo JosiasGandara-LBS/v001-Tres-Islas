@@ -24,8 +24,6 @@ export const waiterGuard: CanActivateFn = async () => {
 	if (userRole === 'MESERO'|| userRole === 'CAJA' || userRole === 'ADMIN' || userRole === 'TI') {
 		return true;
 	} else {
-		console.log('No tienes permisos para acceder a esta página');
-		console.log("userRole: ", userRole);
 		router.navigate(['/home']);
 		return false;
 	}

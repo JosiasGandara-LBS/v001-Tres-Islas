@@ -40,7 +40,6 @@ export class ProductModalComponent implements OnInit {
 
 	ngOnInit() {
 		if (this.product) {
-			console.log(this.product);
 			this.productForm().patchValue({
 				...this.product,
 				price: this.product?.price,
@@ -48,7 +47,6 @@ export class ProductModalComponent implements OnInit {
 			});
 
 		}
-		console.log(this.productForm().get('image')?.value);
 		this.fetchCategories();
 	}
 

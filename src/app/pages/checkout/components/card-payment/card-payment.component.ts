@@ -111,7 +111,6 @@ export class CardPaymentComponent implements OnInit {
 
 				this.pagoService.procesarPago(tokenId, this.deviceSessionId, amount, 'Pago concepto orden', customer).subscribe(
 					response => {
-						console.log('Pago procesado exitosamente:', response);
 						this.loadingTransaction = false;
 						this.transactionSuccess = true;
 					},

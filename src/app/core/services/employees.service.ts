@@ -67,7 +67,6 @@ export class EmployeesService {
 
     const deleteUser = this.http.post(url, body).subscribe(
 		Response => {
-			console.log(Response);
 			if (Response) {
 				Swal.fire('Éxito', 'Empleado eliminado correctamente', 'success');
 			}
@@ -91,7 +90,6 @@ export class EmployeesService {
 
 		const createUser = this.http.post(url, body).subscribe(
 			Response => {
-				console.log(Response);
 				if (Response) {
 					Swal.fire('Éxito', 'Empleado agregado correctamente', 'success');
 				}
