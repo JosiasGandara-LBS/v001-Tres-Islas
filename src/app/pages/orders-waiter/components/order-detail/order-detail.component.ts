@@ -20,10 +20,8 @@ export class OrderDetailComponent implements OnInit {
 
 	statuses: { [key: number]: { text: string; color: string, textToChangeStatus: string} } = {
 		0 : { text: 'Cancelado', color: 'red-700', textToChangeStatus: 'Pedido cancelado'},
-		1 : { text: 'Por pagar', color: 'blue-800', textToChangeStatus: 'Pasar a preparación'},
-		2 : { text: 'Preparando', color: 'yellow-600', textToChangeStatus: 'Listo para entregar'},
-		3 : { text: 'Listo para entregar', color: 'green-700', textToChangeStatus: 'Entregado!'},
-		4 : { text: 'Entregado', color: 'gray-500', textToChangeStatus: 'Pedido entregado'}
+		2 : { text: 'Preparando', color: 'yellow-600', textToChangeStatus: 'Entregado!'},
+		3 : { text: 'Entregado', color: 'gray-500', textToChangeStatus: 'Pedido entregado'}
 	};
 
 	constructor(private _ordersService : OrdersService) {}
@@ -31,6 +29,9 @@ export class OrderDetailComponent implements OnInit {
 	ngOnInit(): void {}
 
 	updateStatus(orderID : string) {
+		if (this.orderStatus === 3 || this.orderStatus === 0) {
+			return;
+		}
 		this._ordersService.updateOrderStatusField(orderID, 'status', this.orderStatus + 1).then(() => {
 			console.log('Status actualizado correctamente');
 			this.closeModal();

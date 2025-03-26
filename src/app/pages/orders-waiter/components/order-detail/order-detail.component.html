@@ -7,10 +7,10 @@
 
 			<!-- Modal header -->
 			<div class="flex flex-row items-center justify-between p-2 md:p-5 border-b rounded-t">
-				<div class="flex items-center">
+				<div class="flex items-center flex-wrap gap-6">
 					<div class="flex flex-col items-start justify-center">
-						<p class="text-sm font-bold text-gray-900 mb-2">{{ order.client }}</p>
-						<p class="text-sm font-bold text-gray-900 inline-flex justify-center uppercase">
+						<p class="text-sm font-bold text-gray-900 mb-2 text-wrap">{{ order.client | truncate:15 }} - {{ order.phoneNumber }}</p>
+						<p class="text-sm font-bold text-gray-900 flex justify-center items-center uppercase">
 							#{{ order.id | truncate:5 }}
 							<span
 								[ngClass]="[
@@ -21,13 +21,13 @@
 								<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="currentColor" class="size-1 mr-2">
 									<path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512z" />
 								</svg>
-								<p class="nunito-extra-bold" style="font-size: 10px;">
+								<p class="nunito-extra-bold uppercase" style="font-size: 10px;">
 									{{ statuses[order.status].text | uppercase }}
 								</p>
 							</span>
 						</p>
 					</div>
-					<div class="flex flex-col items-start justify-center ml-6">
+					<div class="flex flex-col items-start justify-start">
 						<p class="nunito-regular truncate" style="font-size: 12px;">Método de pago:</p>
 						<p class="nunito-extra-bold truncate" style="font-size: 16px;">{{ order.paymentMethod }}</p>
 					</div>
@@ -60,7 +60,7 @@
 			</div>
 
 			<!-- Modal Order Details - Food Dishes -->
-			<div class="h-80 overflow-y-auto">
+			<div class="h-max md:max-h-80 overflow-y-auto">
 				<div *ngFor="let plateFood of order.foodDishes" class="items-center border-t border-gray-200">
 					<div class="py-3 px-4 flex flex-row justify-between items-center h-12">
 						<div class="flex flex-row items-center">
@@ -102,14 +102,16 @@
 
 			<!-- Modal footer -->
 			<div class="flex items-center p-4 md:p-5 gap-4 rounded-b">
-				<button (click)="cancelOrder(order.id)" type="button"
-					class="text-slate-800 border-2 border-slate-800 focus:outline-none rounded-lg text-sm p-[14px] text-center box-border hover:bg-slate-800 hover:text-white">
-					<!-- <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 512 512"><path d="M128 0C92.7 0 64 28.7 64 64l0 96 64 0 0-96 226.7 0L384 93.3l0 66.7 64 0 0-66.7c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0L128 0zM384 352l0 32 0 64-256 0 0-64 0-16 0-16 256 0zm64 32l32 0c17.7 0 32-14.3 32-32l0-96c0-35.3-28.7-64-64-64L64 192c-35.3 0-64 28.7-64 64l0 96c0 17.7 14.3 32 32 32l32 0 0 64c0 35.3 28.7 64 64 64l256 0c35.3 0 64-28.7 64-64l0-64zM432 248a24 24 0 1 1 0 48 24 24 0 1 1 0-48z"/></svg> -->
-					 <i class="pi pi-ban flex items-center justify-center"></i>
-				</button>
+				@if (order.status !== 0 && order.status !== 3) {
+					<button (click)="cancelOrder(order.id)" type="button"
+						class="text-slate-800 border-2 border-slate-800 focus:outline-none rounded-lg text-sm p-[14px] text-center box-border hover:bg-slate-800 hover:text-white">
+						<!-- <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 512 512"><path d="M128 0C92.7 0 64 28.7 64 64l0 96 64 0 0-96 226.7 0L384 93.3l0 66.7 64 0 0-66.7c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0L128 0zM384 352l0 32 0 64-256 0 0-64 0-16 0-16 256 0zm64 32l32 0c17.7 0 32-14.3 32-32l0-96c0-35.3-28.7-64-64-64L64 192c-35.3 0-64 28.7-64 64l0 96c0 17.7 14.3 32 32 32l32 0 0 64c0 35.3 28.7 64 64 64l256 0c35.3 0 64-28.7 64-64l0-64zM432 248a24 24 0 1 1 0 48 24 24 0 1 1 0-48z"/></svg> -->
+						 <i class="pi pi-ban flex items-center justify-center"></i>
+					</button>
+				}
 
 				<button (click)="updateStatus(order.id)" type="button"
-					class="p-4 w-full text-sm font-bold text-white focus:outline-none bg-slate-800 rounded-lg hover:bg-slate-700">
+					class="p-4 w-full text-sm font-bold text-white focus:outline-none bg-slate-800 rounded-lg hover:bg-slate-700" [ngClass]="{'!bg-transparent !border-2 border-slate-5-00 !text-slate-500': order.status === 0 || order.status === 3}">
 					{{ statuses[order.status].textToChangeStatus }}
 				</button>
 

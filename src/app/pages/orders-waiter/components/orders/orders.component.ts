@@ -4,11 +4,12 @@ import { OrdersService } from '@core/services/orders.service';
 import { CommonModule } from '@angular/common';
 import { KeysLengthPipe } from '@shared/pipes/keys-length.pipe';
 import { OrderDetailComponent } from '../order-detail/order-detail.component';
+import { TruncatePipe } from '@shared/pipes/truncate.pipe';
 
 @Component({
   selector: 'app-orders',
   standalone: true,
-  imports: [CommonModule, KeysLengthPipe, OrderDetailComponent],
+  imports: [CommonModule, KeysLengthPipe, OrderDetailComponent, TruncatePipe],
   templateUrl: './orders.component.html',
   styleUrl: './orders.component.scss'
 })

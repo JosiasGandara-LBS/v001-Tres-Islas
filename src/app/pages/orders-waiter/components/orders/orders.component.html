@@ -1,39 +1,42 @@
-<div *ngFor="let order of orders" class="w-full h-24 mb-4 flex flex-row justify-between items-center nunito-regular gap-2 pl-4" style="box-shadow: 0px 4px 20px 1px rgba(0, 0, 0, 0.10);" [ngClass]="{'animate-bounce': order.isChecked === 0}">
+<div *ngFor="let order of orders" class="w-full sm:h-auto md:h-24 mb-4 py-2 md:py-0 flex flex-col md:flex-row justify-between items-center nunito-regular gap-2 md:pl-4 sm:flex-wrap md:flex-nowrap" style="box-shadow: 0px 4px 20px 1px rgba(0, 0, 0, 0.10);" [ngClass]="{'animate-bounce': order.isChecked === 0}">
 	<!-- Nuevo -->
 	<div [ngClass]="{'invisible': order.isChecked !== 0}" class="w-1 h-1 p-1 bg-c-orange-100 animate-ping rounded-full"></div>
 	<!-- Mesa -->
-	<div>
+	<div class="flex flex-col items-center justify-center w-full md:w-1/6">
+		<p class="w-full text-slate-800 nunito-extra-bold text-center text-wrap uppercase" style="font-size: 14px;">
+			#{{ order.id | truncate:5 }}
+		</p>
 		<p class="w-full text-slate-800 nunito-extra-bold text-center text-wrap" style="font-size: 14px;">
 			Mesa {{ order.assignedToTable }}
 		</p>
 	</div>
 
 	<!-- Cliente -->
-	<p class="w-1/6 text-gray-500 text-start truncate" style="font-size: 12px;">
+	<p class="w-full md:w-1/6 text-gray-500 text-center md:text-start truncate" style="font-size: 12px;">
 		{{ order.client }}
 	</p>
 
 	<!-- Fecha -->
-	<p class="w-1/8 text-gray-500 truncate text-wrap text-center" style="font-size: 12px;">
+	<p class="w-full md:w-1/6 text-gray-500 truncate text-wrap text-center" style="font-size: 12px;">
 		{{ order.createdDate }}
 	</p>
 
 	<!-- Platillos -->
-	<p class="w-1/6 text-gray-500 text-start truncate" style="font-size: 12px;">
-		{{ order.foodDishes | keysLength }} Platillos
+	<p class="w-full md:w-1/6 text-gray-500 text-center md:text-start truncate" style="font-size: 12px;">
+		{{ order.foodDishes | keysLength }} Platillo{{ (order.foodDishes | keysLength) > 1 ? 's' : '' }}
 	</p>
 
 	<!-- Total -->
-	<p class="w-1/12 text-gray-500 truncate text-wrap text-center" style="font-size: 12px;">
+	<p class="w-full md:w-1/12 text-gray-500 truncate text-wrap text-center" style="font-size: 12px;">
 		MX {{ order.totalAmount | currency }}
 	</p>
 
-	<p class="w-1/6 nunito-extra-bold truncate text-wrap text-center" style="font-size: 12px;">
+	<p class="w-full md:w-1/6 nunito-extra-bold truncate text-wrap text-center" style="font-size: 12px;">
 		{{ order.paymentMethod }}
 	</p>
 
 	<!-- Estado -->
-	<div class="w-1/6 h-full flex items-center justify-center flex-col gap-3">
+	<div class="w-full md:w-1/6 h-full flex items-center justify-center flex-row md:flex-col gap-3">
 		<span
 			[ngClass]="[
 			'text-' + statuses[order.status].color,
@@ -69,7 +72,7 @@
 	</div>
 
 	<!-- Botón -->
-	<button type="button" (click)="openOrderDetail(order.id)" class="h-full w-1/6 inline-flex items-center justify-center nunito-extra-bold py-2 text-white text-wrap px-1" [ngClass]="{'bg-slate-800': order.isChecked !== 0, 'bg-c-orange-100 animate-pulse': order.isChecked === 0}" style="font-size: 14px;">
+	<button type="button" (click)="openOrderDetail(order.id)" class="h-full w-full md:w-1/6 inline-flex items-center justify-center nunito-extra-bold py-2 text-white text-wrap px-1" [ngClass]="{'bg-slate-800': order.isChecked !== 0, 'bg-c-orange-100 animate-pulse': order.isChecked === 0}" style="font-size: 14px;">
 		Ver pedido
 		<span *ngIf="order.isNew" class="badge bg-red-500 text-white rounded-full px-2 ml-2">Nuevo</span>
 	</button>

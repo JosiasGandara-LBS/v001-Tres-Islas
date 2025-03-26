@@ -1,8 +1,8 @@
 <div class="p-4 w-full min-h-screen h-full bg-white">
 	<p-divider></p-divider>
-	<div class="w-full flex align-center mb-8">
-		<div *ngFor="let tab of statuses" class="tab w-full flex items-center cursor-pointer" (click)="changeTab(tab.n)">
-			<div class="flex items-center gap-2 w-full justify-center flex-col">
+	<div class="w-full flex flex-col md:flex-row align-center mb-8 gap-4">
+		<div *ngFor="let tab of statuses" class="tab w-full flex items-center cursor-pointer border-c-orange-100 rounded-md" style="border-width: 1px;" (click)="changeTab(tab.n)">
+			<div class="flex items-center w-full justify-center flex-col">
 				<div class="flex justify-center items-center gap-1">
 					<i [class]="tab.icon" [ngClass]="['text-' + tab.color]"></i>
 					<span>{{ tab.text }}</span>
