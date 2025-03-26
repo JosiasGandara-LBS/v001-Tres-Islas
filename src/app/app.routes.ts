@@ -51,6 +51,11 @@ export const routes: Routes = [
 				loadComponent: () => import('./pages/admin/employees/employees.component').then(m => m.EmployeesComponent),
 			},
 			{
+				path: 'history',
+				canActivate: [adminGuard],
+				loadComponent: () => import('./pages/admin/orders-history/orders-history.component').then(m => m.OrdersHistoryComponent),
+			},
+			{
 				path: '', redirectTo: 'orders-waiter', pathMatch: 'full'
 			},
 			{

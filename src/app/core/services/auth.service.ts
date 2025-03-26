@@ -91,6 +91,7 @@ export class AuthService {
 				{ name: 'Pedidos', route: 'orders-waiter', icon: 'pi-list' },
 				{ name: 'Productos', route: 'products', icon: 'pi-box' },
 				{ name: 'Usuarios', route: 'employees', icon: 'pi-user' },
+				{ name: 'Historial', route: 'history', icon: 'pi-clock' },
 			];
 		} else if (this.getRole() === 'CAJA') {
 			return [

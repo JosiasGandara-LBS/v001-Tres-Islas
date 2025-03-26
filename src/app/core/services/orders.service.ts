@@ -88,4 +88,12 @@ export class OrdersService {
 				console.error('Error pagando el pedido:', error);
 			});
 	}
+
+	getOrderHistoryByState(state: number) {
+		const ordersCollection = collection(this._firestore, 'orders');
+		const queryByState = query(
+			ordersCollection, where('status', '==', state)
+		);
+		return collectionData(queryByState, { idField: 'id' }) as Observable<any[]>;
+	}
 }
