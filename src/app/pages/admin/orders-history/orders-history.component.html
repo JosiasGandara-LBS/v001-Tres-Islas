@@ -1,1 +1,23 @@
-<app-orders [orders]="filteredOrders()" [orderStatus]="selectedOrder()"></app-orders>
+<div class="p-4 w-full min-h-screen h-full bg-white">
+	<p-divider></p-divider>
+	<div class="w-full flex flex-col md:flex-row align-center mb-8 gap-4">
+		<div *ngFor="let tab of statuses" class="tab w-full flex items-center cursor-pointer border-c-orange-100 rounded-md" style="border-width: 1px;" (click)="changeSelectedState(tab.n)">
+			<div class="flex items-center w-full justify-center flex-col">
+				<div class="flex justify-center items-center gap-1">
+					<i [class]="tab.icon" [ngClass]="['text-' + tab.color]"></i>
+					<span>{{ tab.text }}</span>
+					<span *ngIf="tab.hasChanges" class="badge bg-red-500 text-white rounded-full animate-ping px-1 py-1 w-1 h-1"></span>
+				</div>
+				@if (selectedState() === tab.n) {
+					<div class="w-full rounded-full h-2 bg-c-orange-100"></div>
+				}
+			</div>
+		</div>
+	</div>
+	<div class="w-full rounded-full h-2 bg-c-beige-100 mb-4"></div>
+	<div *ngFor="let tab of statuses;">
+		<div *ngIf="selectedState() === tab.n">
+			<app-orders [orders]="filteredOrders()" [orderStatus]="selectedState()" [isHistory]="true"></app-orders>
+		</div>
+	</div>
+</div>

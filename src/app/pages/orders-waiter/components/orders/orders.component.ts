@@ -17,6 +17,7 @@ export class OrdersComponent {
 
 	@Input() orders: any[] = [];
 	@Input() orderStatus: number = 1;
+	@Input() isHistory: boolean = false;
 
 	subscription!: Subscription;
 	showModal: boolean = false;
@@ -33,10 +34,21 @@ export class OrdersComponent {
 
 	async openOrderDetail(orderID: any) {
 		try {
-		  	const order = await this._ordersService.getOrderById(orderID);
+			let order: any
+			if (this.isHistory) {
+				order = await this._ordersService.getOrderByIdHistory(orderID);
+				if (order.isChecked === 0) {
+					this._ordersService.setOrderAsCheckedHistory(orderID);
+				}
+			}
+			else {
+				order = await this._ordersService.getOrderById(orderID);
+				if (order.isChecked === 0) {
+					this._ordersService.setOrderAsChecked(orderID);
+				}
+			}
 		  	this.selectedOrder = order;
 		  	this.showModal = true;
-			this._ordersService.setOrderAsChecked(orderID);
 		} catch (error) {
 		  	console.error('Error al obtener la orden:', error);
 		}
