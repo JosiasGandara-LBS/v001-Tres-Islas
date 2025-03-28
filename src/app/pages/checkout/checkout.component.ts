@@ -33,6 +33,7 @@ export class CheckoutComponent implements OnInit {
 
 	public isModalVisible = signal(false);
 	public configModal !: number;
+	public errorsModal !: string;
 
 	paymentMethodDisabled: boolean = false;
 
@@ -102,8 +103,30 @@ export class CheckoutComponent implements OnInit {
 	}
 
 	showModalBeforeOrder(configNumber: number) {
+		let errorFields = "";
+
+		if(!this.orderDetailForm.get("client")?.valid) {
+			errorFields += "- Nombre del cliente\n";
+		}
+		if(!this.orderDetailForm.get("phoneNumber")?.valid) {
+			errorFields += "- Número de teléfono\n";
+		}
+		if(!this.orderDetailForm.get("assignedToTable")?.valid) {
+			errorFields += "- Número de mesa\n";
+		}
+		if(!this.orderDetailForm.get("orderToGo")?.valid) {
+			errorFields += "- Tipo de orden\n";
+		}
+		if(!this.orderDetailForm.get("paymentMethod")?.valid) {
+			errorFields += "- Método de pago\n";
+		}
+		if(this.orderDetailForm.get("tenderedAmount")?.value < this.totalPriceSignal() && this.orderDetailForm.get("tenderedAmount")?.value === null) {
+			errorFields += "- Tu pago no puede ser menor al total\n"
+		}
+
 		this.isModalVisible.set(true);
 		this.configModal = configNumber;
+		this.errorsModal = errorFields;
 	}
 
 	async submitForm() {
