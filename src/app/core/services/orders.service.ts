@@ -90,10 +90,33 @@ export class OrdersService {
 	}
 
 	getOrderHistoryByState(state: number) {
-		const ordersCollection = collection(this._firestore, 'orders');
-		const queryByState = query(
-			ordersCollection, where('status', '==', state)
-		);
-		return collectionData(queryByState, { idField: 'id' }) as Observable<any[]>;
+	  // No code changes needed; ensure a composite index for status + createdDate in Firestore
+	  const ordersCollection = collection(this._firestore, 'orderHistory');
+	  const queryByState = query(
+		ordersCollection,
+		where('status', '==', state),
+		orderBy('createdDate', 'asc')
+	  );
+	  return collectionData(queryByState, { idField: 'id' }) as Observable<any[]>;
+	}
+
+	async getOrderByIdHistory(id: string) {
+		const orderDoc = doc(this._firestore, `orderHistory/${id}`);
+		const docSnap = await getDoc(orderDoc);
+		if (docSnap.exists()) {
+		  	return { id, ...docSnap.data() };
+		} else {
+		  	throw new Error('No such document!');
+		}
+	}
+
+	setOrderAsCheckedHistory(IDOrder: string) {
+		const orderDocRef = doc(this._firestore, `orderHistory/${IDOrder}`);
+		return updateDoc(orderDocRef, { isChecked: 1 })
+		.then(() => {
+		})
+		.catch(error => {
+			console.error('Error actualizando el campo:', error);
+		});
 	}
 }
