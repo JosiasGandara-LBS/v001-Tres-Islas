@@ -16,7 +16,6 @@ export class EmployeesService {
   constructor() {}
 
   private dialogService = inject(DialogService);
-  private auth = inject(Auth);
   private firestore = inject(Firestore);
   private http = inject(HttpClient);
 
