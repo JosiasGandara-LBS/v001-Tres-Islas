@@ -87,8 +87,7 @@ export class CartService {
 	// Método para obtener la cantidad de un item en el carrito
     getQuantity(itemId: string): number {
         const cartItems = this.getCartItems();
-        const item = cartItems.find(item => item.id === itemId);
-        return item ? item.quantity : 0; 
+        return cartItems.filter(item => item.id === itemId).reduce((total, item) => total + item.quantity, 0); 
     }
 
 
@@ -103,19 +102,11 @@ export class CartService {
 
 	// Método para agregar un platillo al carrito
 	addToCart(id: string, name: string, description: string, category: string, price: number, quantity: number, additionalInstructions: string): void {
-        const cartItems = this.cartItemsValue;
-        const existingItem = cartItems.find(item => item.id === id);
-
-        if (existingItem) {
-            // El item ya existe, incrementa la cantidad
-            existingItem.quantity += quantity;
-        } else {
-            // El item no existe, añádelo al carrito
-            cartItems.push({ id, name, description, category, price, image: '', quantity, additionalInstructions });
-        }
+        const cartItems = [...this.cartItems()];
+		cartItems.push ({ id, name, description, category, price, image: '', quantity, additionalInstructions});
 
         // Guardar el carrito actualizado
-        this.saveCartItems(cartItems);
+		this.saveCartItems(cartItems);
     }
 
 

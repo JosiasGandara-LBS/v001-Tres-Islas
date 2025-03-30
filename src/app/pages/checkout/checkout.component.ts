@@ -45,7 +45,7 @@ export class CheckoutComponent implements OnInit {
 		private ordersService : OrdersService,
 		private ordersClientService : OrdersClientService,
 		private cartService : CartService,
-		private kitchenStatusService : KitchenStatusService,
+		public kitchenStatusService : KitchenStatusService,
 		private injector : Injector
 	) {
 		this.orderDetailForm = this.fb.group({
@@ -103,6 +103,15 @@ export class CheckoutComponent implements OnInit {
 	}
 
 	showModalBeforeOrder(configNumber: number) {
+
+		if (this.kitchenStatusService.isKitchenOpen()) {
+			this.isModalVisible.set(true);
+			this.configModal = configNumber;
+		} else {
+			// Si la cocina está cerrada, mostrar un mensaje
+			alert('La cocina está cerrada. No puedes hacer el pedido ahora.');
+		}
+
 		let errorFields = "";
 
 		if(!this.orderDetailForm.get("client")?.valid) {
@@ -127,6 +136,7 @@ export class CheckoutComponent implements OnInit {
 		this.isModalVisible.set(true);
 		this.configModal = configNumber;
 		this.errorsModal = errorFields;
+>>>>>>> a9f2dd1e8f826880474e68e41e446f689389634f
 	}
 
 	async submitForm() {

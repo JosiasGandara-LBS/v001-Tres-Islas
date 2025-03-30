@@ -43,6 +43,15 @@ export class HeroMenuComponent {
 		const componentRef = this.container.createComponent(ModalItemComponent, { injector: this.injector });
 		componentRef.instance.itemId = itemId;
 		componentRef.instance.cerrar.subscribe(() => componentRef?.destroy());
+
+	}
+
+	agregarAlCarrito(itemID: string){
+		const selectedItem = this._menuService().find(item => item.id === itemID);
+
+		if (selectedItem){
+			this.cartService.addToCart(selectedItem.id, selectedItem.name, selectedItem.description, selectedItem.category, selectedItem.price, 1, '');
+		}
 	}
 
 	// Método para organizar los platillos por categoría
