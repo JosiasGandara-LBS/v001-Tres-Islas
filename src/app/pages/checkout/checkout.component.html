@@ -155,8 +155,9 @@
 		<p class="text-gray-800" style="font-size: 24px;">MX {{ totalPriceSignal() | currency }}</p>
 		<p class="text-c-orange-100" style="font-size: 12px;">Total del pedido + IVA(16%)</p>
 	</div>
-	<button (click)="showModalBeforeOrder(1)" type="button" class="w-32 py-3 bg-c-orange-100 rounded-xl nunito-extra-bold text-sm text-white">Ordenar</button>
-</footer>
+	<button (click)="kitchenStatusService.isKitchenOpen() ? showModalBeforeOrder(1) : null" type="button" class="w-32 py-3 rounded-xl nunito-extra-bold text-sm text-white" [ngClass]="{ 'bg-c-orange-100': kitchenStatusService.isKitchenOpen(), 'bg-gray-500': !kitchenStatusService.isKitchenOpen()}">
+    	{{ kitchenStatusService.isKitchenOpen() ? 'Ordenar' : 'Cerrado' }}
+  	</button></footer>
 
 @if (isModalVisible()) {
 	<div class="fixed top-0 left-0 px-8 w-full h-screen bg-gray-100 bg-opacity-70 flex flex-col justify-center items-center" style="z-index: 60;">

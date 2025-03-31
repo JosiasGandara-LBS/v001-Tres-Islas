@@ -1,4 +1,4 @@
-import { Component, computed, inject, Injector, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
+import { Component, computed, inject, Injector, OnInit, ViewChild, ViewContainerRef, Input } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { CartService } from '../../../../core/services/cart.service';
@@ -13,45 +13,46 @@ import { ModalItemComponent } from '../modal-item/modal-item.component';
 })
 export class CartItemsComponent implements OnInit {
 
-	private cartService = inject(CartService);
+  private cartService = inject(CartService);
 
-	totalPriceSignal = inject(CartService).getTotalPriceSignal();
-	cartItemsCount = inject(CartService).getCartItemsCount();
-	_menuService = inject(CartService).getMenu;
+  totalPriceSignal = inject(CartService).getTotalPriceSignal();
+  cartItemsCount = inject(CartService).getCartItemsCount();
+  _menuService = inject(CartService).getMenu;
 
-	cartItems = computed(() => this.cartService.cartItemsValue);
+  cartItems = computed(() => this.cartService.cartItemsValue);
 
-	@ViewChild('modalContainer', { read: ViewContainerRef }) container!: ViewContainerRef;
+  @ViewChild('modalContainer', { read: ViewContainerRef }) container!: ViewContainerRef;
 
-	constructor(private router : Router, private injector : Injector) {}
+  @Input() isKitchenOpen: boolean = true; // Añadido el Input
 
-	ngOnInit() {
-		this.cartService.updateCartItemsWithImage();
-	}
+  constructor(private router: Router, private injector: Injector) { }
 
-	insertarComponente(cartItemID: string){
-		if (this.container.length > 0) this.container.clear();
+  ngOnInit() {
+    this.cartService.updateCartItemsWithImage();
+  }
 
-		const componentRef = this.container.createComponent(ModalItemComponent, { injector: this.injector });
-		componentRef.instance.itemId = cartItemID;
-		componentRef.instance.cerrar.subscribe(() => componentRef?.destroy());
-	}
+  insertarComponente(cartItemID: string) {
+    if (this.container.length > 0) this.container.clear();
 
-	deleteCartItem(cartItemID: string) {
-		this.cartService.deleteCartItem(cartItemID);
-	}
+    const componentRef = this.container.createComponent(ModalItemComponent, { injector: this.injector });
+    componentRef.instance.itemId = cartItemID;
+    componentRef.instance.cerrar.subscribe(() => componentRef?.destroy());
+  }
 
-	// Llamar a la función de incrementar cantidad
-	incrementQuantity(cartItemID: string): void {
+  deleteCartItem(cartItemID: string) {
+    this.cartService.deleteCartItem(cartItemID);
+  }
+
+  incrementQuantity(cartItemID: string): void {
+    if (this.isKitchenOpen) { // Verificamos si la cocina está abierta
 		this.cartService.incrementQuantity(cartItemID);
 	}
+  }
 
-	// Llamar a la función de decrementar cantidad
-	decrementQuantity(cartItemID: string): void {
-		this.cartService.decrementQuantity(cartItemID);
-		if (this.cartService.getCartItemsCount()() < 1) {
-			this.router.navigate(['/home']);
-		}
-	}
-
+  decrementQuantity(cartItemID: string): void {
+    this.cartService.decrementQuantity(cartItemID);
+    if (this.cartService.getCartItemsCount()() < 1) {
+      this.router.navigate(['/home']);
+    }
+  }
 }

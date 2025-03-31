@@ -1,7 +1,8 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, computed } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { CartService } from '../../../../core/services/cart.service';
+import { KitchenStatusService } from '@core/services/kitchen-status.service';
 
 @Component({
   selector: 'app-navbar',
@@ -12,12 +13,15 @@ import { CartService } from '../../../../core/services/cart.service';
 })
 export class NavbarComponent {
 
-	cartItemsCount = inject(CartService).getCartItemsCount();
+  cartItemsCount = inject(CartService).getCartItemsCount();
+  kitchenStatusService = inject(KitchenStatusService);
+  isKitchenOpen = computed(() => this.kitchenStatusService.isKitchenOpen());
 
-	constructor(private router : Router){}
+  constructor(private router: Router) {}
 
-	goToOrders() {
-		if(this.cartItemsCount() > 0) this.router.navigate(['/shopping-cart'])
-	}
-
+  goToOrders() {
+    if (this.isKitchenOpen()) {
+      if (this.cartItemsCount() > 0) this.router.navigate(['/shopping-cart']);
+    }
+  }
 }

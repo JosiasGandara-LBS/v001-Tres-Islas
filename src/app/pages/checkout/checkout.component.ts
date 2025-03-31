@@ -136,10 +136,14 @@ export class CheckoutComponent implements OnInit {
 		this.isModalVisible.set(true);
 		this.configModal = configNumber;
 		this.errorsModal = errorFields;
->>>>>>> a9f2dd1e8f826880474e68e41e446f689389634f
 	}
 
 	async submitForm() {
+		if (!this.kitchenStatusService.isKitchenOpen()) {
+			alert('La cocina está cerrada. No puedes hacer el pedido ahora.');
+			return;
+		}
+		
 		this.isModalVisible.set(false);
 
 		const paymentMethod = this.orderDetailForm.get('paymentMethod')?.value;

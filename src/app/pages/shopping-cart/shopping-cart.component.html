@@ -5,12 +5,14 @@
 	<p class="nunito-extra-bold ml-4 w-full text-[20px]">{{ title }}</p>
 </div>
 
-<app-cart-items></app-cart-items>
+<app-cart-items [isKitchenOpen]="isKitchenOpen()"></app-cart-items>
 
 <footer class="flex flex-row items-center justify-between bg-c-beige-100 h-24 px-6 fixed bottom-0 left-0 right-0 z-40 rounded-t-3xl">
 	<div class="nunito-extra-bold">
 		<p class="text-gray-800" style="font-size: 24px;">MX {{ totalPriceSignal() | currency }}</p>
 		<p class="text-c-orange-100" style="font-size: 12px;">Total del pedido + IVA(16%)</p>
 	</div>
-	<button (click)="goToCheckout()" type="button" class="w-32 py-3 bg-c-orange-100 rounded-xl nunito-extra-bold text-white" style="font-size: 14px;">Siguiente</button>
+	<button (click)="goToCheckout()" type="button" class="w-32 py-3 bg-c-orange-100 rounded-xl nunito-extra-bold text-white" style="font-size: 14px;" [disabled]="!isKitchenOpen()" [ngClass]="{'opacity-50 cursor-not-allowed': !isKitchenOpen()}">
+	    {{ isKitchenOpen() ? 'Siguiente' : 'Cerrado' }}
+  	</button>
 </footer>
