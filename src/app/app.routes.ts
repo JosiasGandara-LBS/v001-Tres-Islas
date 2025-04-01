@@ -56,6 +56,11 @@ export const routes: Routes = [
 				loadComponent: () => import('./pages/admin/orders-history/orders-history.component').then(m => m.OrdersHistoryComponent),
 			},
 			{
+				path: 'configs',
+				canActivate: [adminGuard],
+				loadComponent: () => import('./pages/admin/configs/configs.component').then(m => m.ConfigsComponent),
+			},
+			{
 				path: '', redirectTo: 'orders-waiter', pathMatch: 'full'
 			},
 			{

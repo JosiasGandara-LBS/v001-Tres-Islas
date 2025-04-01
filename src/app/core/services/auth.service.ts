@@ -101,6 +101,7 @@ export class AuthService {
 			{ name: 'Productos', route: 'products', icon: 'pi-box' },
 			{ name: 'Usuarios', route: 'employees', icon: 'pi-user' },
 			{ name: 'Historial', route: 'history', icon: 'pi-clock' },
+			{ name: 'Configuraciones', route: 'configs', icon: 'pi-cog' },
 		];
 		} else if (role === 'CAJA') {
 		return [

@@ -10,7 +10,7 @@ import { collection, doc, getDoc, updateDoc, getDocFromServer, DocumentData, Doc
 export class KitchenStatusService {
     private firestore = inject(Firestore);
     public isKitchenOpen = signal<boolean>(true);
-    
+
     constructor() {
         this.getKitchenStatus().subscribe(status => {
             if(status !== undefined)
@@ -58,5 +58,23 @@ export class KitchenStatusService {
             estimatedTime: estimatedTime
         });
     }
+
+	getConfigs() {
+		const kitchenStatusDoc = doc(this.firestore, 'kitchenStatus/kitchenStatus');
+
+		return docData(kitchenStatusDoc).pipe(map((data: any) => {
+			if (!data) return null;
+
+			return data;
+		}));
+	}
+
+	saveConfigs(configs: any) {
+		const kitchenStatusDoc = doc(this.firestore, 'kitchenStatus/kitchenStatus');
+
+		return updateDoc(kitchenStatusDoc, {
+			CashPaymentToGoStatus: configs.CashPaymentToGoStatus,
+		});
+	}
 }
 

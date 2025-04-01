@@ -1,0 +1,31 @@
+<div class="w-full h-full bg-white nunito-regular p-4">
+	<!-- Header -->
+	<div>
+		<h1 class="text-2xl nunito-extra-bold text-gray-800">Configuraciones</h1>
+	</div>
+	<!-- Body -->
+	<div class="flex flex-col gap-4 mt-4">
+		<form [formGroup]="configsForm()" class="nunito-regular">
+			<hr class="my-2">
+			<!-- To Go Cash Payment -->
+			 <div class="flex flex-col gap-4">
+				 <div class="nunito-bold text-lg">
+					<h3>Pago con efectivo en pedidos para llevar</h3>
+				 </div>
+				<div class="flex gap-2 items-center justify-start">
+					<p-inputSwitch formControlName="CashPaymentToGoStatus" [ngModel]="configsForm().get('CashPaymentToGoStatus')?.value" class="h-full flex items-center"></p-inputSwitch>
+					<label for="CashPaymentToGoStatus" class="flex w-auto text-center h-full text-nowrap items-center"><span class="text-center flex items-center text-nowrap text text-sm">{{ configsForm().get('CashPaymentToGoStatus')?.getRawValue() ? 'Disponible' : 'No Disponible' }}</span></label>
+				</div>
+			 </div>
+
+			 <hr class="my-2">
+
+
+			 <!-- Save configs -->
+			 <div class="flex gap-2 items-center justify-end">
+				 <button type="button" (click)="saveConfigs()" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Guardar</button>
+				 <button type="button" (click)="resetConfigs()" class="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400">Restablecer</button>
+			 </div>
+		</form>
+	</div>
+</div>
