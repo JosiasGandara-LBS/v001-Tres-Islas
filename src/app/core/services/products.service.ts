@@ -158,4 +158,31 @@ export class ProductsService {
 		const productRef = doc(this.firestore, 'menu', product.id);
 		return updateDoc(productRef, { available: true });
 	}
+
+	async getProductDiscounts() {
+		const discountsRef = doc(this.firestore, 'promotions/3X2TYT3A5');
+		return await getDoc(discountsRef).then((doc) => {
+			if (doc.exists()) {
+				const data = doc.data();
+				return data;
+			} else {
+				console.error('No such document!');
+				return null;
+			}
+		}
+		).catch((error) => {
+			console.error('Error getting document:', error);
+			return null;
+		}
+		);
+	}
+
+	async setProductDiscounts(discount: any) {
+		const discountsRef = doc(this.firestore, 'promotions/3X2TYT3A5');
+		return await updateDoc(discountsRef, discount).then(() => {
+		}).catch((error) => {
+			console.error('Error getting document:', error);
+			return null;
+		});
+	}
 }
