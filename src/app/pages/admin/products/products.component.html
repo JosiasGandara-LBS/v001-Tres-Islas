@@ -4,7 +4,7 @@
             <i class="pi text-white" [ngClass]="{'pi-ban ': !isKitchenOpen(), 'pi-check-circle': isKitchenOpen()}"></i>
             <h2 class="text-xl text-white">{{ isKitchenOpen() ? 'Cocina Abierta' : 'Cocina Cerrada' }}</h2>
         </div>
-        <button class="text-lg rounded-lg h-2/3 px-2 gap-2 flex text-white items-center align-middle"
+        <button class="text-md rounded-lg h-2/3 px-2 gap-2 flex text-white items-center align-middle"
                 [ngClass]="{'bg-red-500': isKitchenOpen(), 'bg-green-500': !isKitchenOpen()}" (click)="toggleKitchenStatus()">
             <i class="pi" [ngClass]="{'pi-ban': isKitchenOpen(), 'pi-check-circle': !isKitchenOpen()}"></i>
             {{ isKitchenOpen() ? 'Cerrar Cocina' : 'Abrir Cocina' }}

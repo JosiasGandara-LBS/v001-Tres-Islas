@@ -9,6 +9,7 @@ import { TooltipModule } from 'primeng/tooltip';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { TruncateLongTextPipe } from '@shared/pipes/truncate-long-text.pipe';
+import Swal from 'sweetalert2';
 
 
 @Component({
@@ -96,6 +97,21 @@ export class ProductsComponent implements OnInit {
 	}
 
 	toggleKitchenStatus() {
+		Swal.fire({
+			title: '¿Estás seguro de ?' + (this.isKitchenOpen() ? 'cerrar la cocina' : 'abrir la cocina'),
+			text: this.isKitchenOpen() ? 'Cerrar cocina' : 'Abrir cocina',
+			icon: 'warning',
+			showCancelButton: true,
+			confirmButtonText: 'Sí, continuar',
+			cancelButtonText: 'Cancelar'
+		}).then((result: any) => {
+			if (result.isConfirmed) {
+				this.updateKitchenStatus();
+			}
+		});
+	}
+
+	updateKitchenStatus() {
 		this.kitchenStatusService.setKitchenStatus(!this.isKitchenOpen()).then(() => {
 			this._isKitchenOpen.set(!this.isKitchenOpen());
 		});
