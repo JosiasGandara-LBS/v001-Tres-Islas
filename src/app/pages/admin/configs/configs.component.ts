@@ -64,6 +64,7 @@ export class ConfigsComponent implements OnInit{
 				icon: 'success',
 				confirmButtonText: 'Aceptar'
 			});
+			this.configsForm().markAsPristine();
 		} catch (error) {
 			Swal.fire({
 				title: 'Error',
