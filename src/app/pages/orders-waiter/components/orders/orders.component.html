@@ -50,22 +50,23 @@
 				{{ statuses[order.status].text }}
 			</p>
 		</span>
-
+		<!-- Pago Pendiente -->
 		<span
 			[ngClass]="[
-			order.PaymentPending ? 'border-yellow-600' : 'border-green-800',
-			order.PaymentPending ? 'bg-yellow-100' : 'bg-white',
-			order.PaymentPending ? 'animate-bounce' : '',
-			'w-auto text-xs font-medium inline-flex items-center justify-center gap-1 px-3.5 py-0.5 rounded border'
-		]">
-			@if (order.PaymentPending) {
+				order.pendingPayment ? 'border-yellow-600' : 'border-green-800',
+				order.pendingPayment ? 'bg-white' : 'bg-white',
+				order.pendingPayment ? 'animate-bounce' : '',
+				'w-auto text-xs font-medium inline-flex items-center justify-center gap-1 px-3.5 py-0.5 rounded border'
+			]"
+		>
+			@if (order.pendingPayment) {
 				<i class="pi pi-exclamation-circle text-yellow-600"></i>
 			}
 			@else {
 				<i class="pi pi-check-circle text-green-800"></i>
 			}
-			<p class="nunito-extra-bold truncate" [ngClass]="[order.PaymentPending ? 'text-yellow-600' : 'text-green-600',]" style="font-size: 10px;">
-				{{ order.PaymentPending ? 'Pago Pendiente' : 'Pagado' }}
+			<p class="nunito-extra-bold truncate" [ngClass]="[order.pendingPayment ? 'text-yellow-600' : 'text-green-600',]" style="font-size: 10px;">
+				{{ order.pendingPayment ? 'Pago Pendiente' : 'Pagado' }}
 			</p>
 		</span>
 
