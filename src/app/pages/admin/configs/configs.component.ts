@@ -1,10 +1,10 @@
-import { ProductsService } from '@core/services/products.service';
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { InputSwitchModule } from 'primeng/inputswitch';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { KitchenStatusService } from '@core/services/kitchen-status.service';
 import Swal from 'sweetalert2';
+import { PromotionsService } from '@core/services/promotions.service';
 @Component({
   selector: 'app-configs',
   standalone: true,
@@ -15,7 +15,7 @@ import Swal from 'sweetalert2';
 export class ConfigsComponent implements OnInit{
 	private fb = inject(FormBuilder);
 	private kitchenService = inject(KitchenStatusService);
-	private productsService = inject(ProductsService);
+	private promotionsService = inject(PromotionsService);
 
 	public configsForm = signal(this.fb.group({
 		CashPaymentToGoStatus: [false, [Validators.required]],
@@ -50,7 +50,7 @@ export class ConfigsComponent implements OnInit{
 				throw new Error('Error al guardar configuraciones de cocina: ' + error);
 			});
 
-			this.productsService.setProductDiscounts({
+			this.promotionsService.setProductDiscounts("3X2TYT3A5", {
 				enabled: configs.ProductDiscountEnabled,
 				startTime: configs.ProductDiscountStartTime,
 				endTime: configs.ProductDiscountEndTime,
@@ -83,7 +83,7 @@ export class ConfigsComponent implements OnInit{
 			}
 		});
 
-		this.productsService.getProductDiscounts().then((discounts: any) => {
+		this.promotionsService.getProductDiscounts("3X2TYT3A5").then((discounts: any) => {
 			if (discounts) {
 				this.configsForm().patchValue({
 					ProductDiscountEnabled: discounts.enabled,
