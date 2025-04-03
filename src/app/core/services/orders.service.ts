@@ -1,7 +1,7 @@
 import { computed, effect, inject, Injectable, Signal, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { addDoc, collection, collectionData, doc, docData, Firestore, getDoc, or, orderBy, query, updateDoc, where } from '@angular/fire/firestore';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 
 @Injectable({
   	providedIn: 'root'
@@ -118,5 +118,23 @@ export class OrdersService {
 		.catch(error => {
 			console.error('Error actualizando el campo:', error);
 		});
+	}
+
+	// Método para verificar si un ID existe en la colección
+	validateCurrentOrdersIds(ids: string[]): Observable<string[]> {
+		const ordersCollection = collection(this._firestore, 'orders');
+
+		// Consulta Firestore para obtener documentos cuyo ID esté en la lista de 'ids'
+		const ordersQuery = query(
+			ordersCollection,
+			where('id', 'in', ids)
+		);
+
+		// Realiza la consulta y retorna los IDs válidos encontrados en la base de datos
+		return collectionData(ordersQuery, { idField: 'id' }).pipe(
+			map((orders: any[]) => {
+				return orders.map(order => order.id); // Solo devolver los IDs que existen
+			})
+		);
 	}
 }

@@ -9,6 +9,7 @@ import { KitchenStatusService } from '@core/services/kitchen-status.service';
 import { PromotionsService } from '@core/services/promotions.service';
 import { Promotions2Service } from '@core/services/promotions2.service';
 import { Promotion } from '@shared/interfaces/promotion.interface';
+import { OrdersService } from '@core/services/orders.service';
 
 @Component({
 	selector: 'app-hero-menu',
@@ -31,11 +32,14 @@ export class HeroMenuComponent {
 		private router: Router,
 		private injector: Injector,
 		private cartService: CartService,
+		private ordersService: OrdersService,
 		private promotions2Service: Promotions2Service
 	) {}
 
 	async ngOnInit() {
 		this.updateCartItemsCount();
+
+		this.validateLocalStorageIds();
 
 		this.promotions2Service.promotions$.subscribe(promotions => {
 			this.promotions = promotions;
@@ -107,6 +111,17 @@ export class HeroMenuComponent {
 		return this.promotions.filter(promo =>
 			promo.enabled && promo.categories.includes(category)
 		);
+	}
+
+	validateLocalStorageIds(): void {
+		const storedIds: string[] = JSON.parse(localStorage.getItem('current_orders') || '[]');
+
+		if (storedIds.length > 0) {
+			this.ordersService.validateCurrentOrdersIds(storedIds).subscribe(validIds => {
+				const updatedIds = storedIds.filter(id => validIds.includes(id));
+				localStorage.setItem('current_orders', JSON.stringify(updatedIds));
+			});
+		}
 	}
 
 }
