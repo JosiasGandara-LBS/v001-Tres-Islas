@@ -125,14 +125,14 @@ export class HeroMenuComponent implements OnInit, OnDestroy {
 	}
 
 	validateLocalStorageIds(orders: any[]): void {
-		const storedIds: string[] = JSON.parse(localStorage.getItem('yourKey') || '[]');
+		const storedIds: string[] = JSON.parse(localStorage.getItem('current_orders') || '[]');
 
 		// Si hay IDs en el localStorage
 		if (storedIds.length > 0) {
 		  // Validar contra los pedidos existentes
 		  const validIds = orders.map(order => order.id);
 		  const updatedIds = storedIds.filter(id => validIds.includes(id));
-		  localStorage.setItem('yourKey', JSON.stringify(updatedIds));
+		  localStorage.setItem('current_orders', JSON.stringify(updatedIds));
 		}
 	}
 

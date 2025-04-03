@@ -25,6 +25,11 @@
 				<span class="absolute top-2 right-2 bg-c-beige-100 px-3 py-1 rounded-lg nunito-extra-bold text-sm text-[#E55204]">
 					MX {{ item.price | currency }}
 				</span>
+				@if (getPromotionForCategory(item.category)) {
+					<span class="absolute top-2 left-2 bg-green-500 px-3 py-1 rounded-lg nunito-extra-bold text-sm text-white">
+						{{ getPromotionForCategory(item.category)?.description }}
+					</span>
+				}
 			</div>
 			<!-- Texto -->
 			<h3 class="nunito-extra-bold uppercase mb-2 text-[16px]">{{ item.name }}</h3>
