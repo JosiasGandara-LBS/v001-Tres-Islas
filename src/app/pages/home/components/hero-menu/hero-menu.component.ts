@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, Injector, signal, ViewChild, ViewContainerRef } from '@angular/core';
+import { Component, computed, effect, inject, Injector, OnDestroy, OnInit, signal, ViewChild, ViewContainerRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { ModalItemComponent } from '../modal-item/modal-item.component';
@@ -10,6 +10,7 @@ import { PromotionsService } from '@core/services/promotions.service';
 import { Promotions2Service } from '@core/services/promotions2.service';
 import { Promotion } from '@shared/interfaces/promotion.interface';
 import { OrdersService } from '@core/services/orders.service';
+import { Subscription } from 'rxjs';
 
 @Component({
 	selector: 'app-hero-menu',
@@ -18,13 +19,15 @@ import { OrdersService } from '@core/services/orders.service';
 	templateUrl: './hero-menu.component.html',
 	styleUrl: './hero-menu.component.scss'
 })
-export class HeroMenuComponent {
+export class HeroMenuComponent implements OnInit, OnDestroy {
 	_menuService = inject(CartService).getMenu;
 	cartItemsCount: number = 0;
 	buttonClass: string = '';
 	promotions: any[] = [];
 	kitchenStatusService = inject(KitchenStatusService);
 	isKitchenOpen = computed(() => this.kitchenStatusService.isKitchenOpen());
+
+	private ordersSubscription!: Subscription;
 
 	@ViewChild('modalContainer', { read: ViewContainerRef }) container!: ViewContainerRef;
 
@@ -39,11 +42,19 @@ export class HeroMenuComponent {
 	async ngOnInit() {
 		this.updateCartItemsCount();
 
-		this.validateLocalStorageIds();
+		this.ordersSubscription = this.ordersService.listenForOrdersChanges().subscribe(orders => {
+			this.validateLocalStorageIds(orders);
+		});
 
 		this.promotions2Service.promotions$.subscribe(promotions => {
 			this.promotions = promotions;
 		});
+	}
+
+	ngOnDestroy(): void {
+		if (this.ordersSubscription) {
+		  this.ordersSubscription.unsubscribe();
+		}
 	}
 
 	getQuantity(itemId: string): number {
@@ -113,14 +124,15 @@ export class HeroMenuComponent {
 		);
 	}
 
-	validateLocalStorageIds(): void {
-		const storedIds: string[] = JSON.parse(localStorage.getItem('current_orders') || '[]');
+	validateLocalStorageIds(orders: any[]): void {
+		const storedIds: string[] = JSON.parse(localStorage.getItem('yourKey') || '[]');
 
+		// Si hay IDs en el localStorage
 		if (storedIds.length > 0) {
-			this.ordersService.validateCurrentOrdersIds(storedIds).subscribe(validIds => {
-				const updatedIds = storedIds.filter(id => validIds.includes(id));
-				localStorage.setItem('current_orders', JSON.stringify(updatedIds));
-			});
+		  // Validar contra los pedidos existentes
+		  const validIds = orders.map(order => order.id);
+		  const updatedIds = storedIds.filter(id => validIds.includes(id));
+		  localStorage.setItem('yourKey', JSON.stringify(updatedIds));
 		}
 	}
 

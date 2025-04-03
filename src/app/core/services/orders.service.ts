@@ -1,6 +1,6 @@
 import { computed, effect, inject, Injectable, Signal, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { addDoc, collection, collectionData, doc, docData, Firestore, getDoc, or, orderBy, query, updateDoc, where } from '@angular/fire/firestore';
+import { addDoc, collection, collectionData, doc, docData, Firestore, getDoc, onSnapshot, or, orderBy, query, updateDoc, where } from '@angular/fire/firestore';
 import { map, Observable } from 'rxjs';
 
 @Injectable({
@@ -136,5 +136,21 @@ export class OrdersService {
 				return orders.map(order => order.id); // Solo devolver los IDs que existen
 			})
 		);
+	}
+
+	// Método para escuchar en tiempo real los cambios en la colección "orders"
+	listenForOrdersChanges(): Observable<any[]> {
+		const ordersCollection = collection(this._firestore, 'orders');
+		const ordersQuery = query(ordersCollection, orderBy('createdDate', 'asc'));
+
+		return new Observable<any[]>((observer) => {
+			const unsubscribe = onSnapshot(ordersQuery, (snapshot) => {
+				const orders: any[] = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+				observer.next(orders);
+			});
+
+			// Devolver la función de limpieza
+			return () => unsubscribe();
+		});
 	}
 }

@@ -38,7 +38,6 @@ export class Promotions2Service {
 			promo.enabled && promo['startTime'] <= formattedNow && promo['endTime'] >= formattedNow
 		);
 
-		console.log("Hora actual:", formattedNow, "Promociones activas:", activePromotions);
 		this.promotionsSubject.next(activePromotions);
 	}
 
