@@ -185,6 +185,13 @@ export class CartService {
         return cartItems.filter(item => item.id === itemId).reduce((total, item) => total + item.quantity, 0);
     }
 
+	//Método para ver si ya existe alguna instrución adicionañ
+	getAdditionalInstructionsById(itemId: string): string {
+		const cartItems = this.getCartItems();
+		const item = cartItems.find(cartItem => cartItem.id === itemId);
+		return item ? item.additionalInstructions : '';
+	}
+
 	// Método para guardar el carrito en el localStorage
 	saveCartItems(cartItems: CartItem[]): void {
 		localStorage.setItem('cart', JSON.stringify(cartItems));
@@ -196,7 +203,16 @@ export class CartService {
 	// Método para agregar un platillo al carrito
 	addToCart(id: string, name: string, description: string, category: string, price: number, quantity: number, additionalInstructions: string): void {
         const cartItems = [...this.cartItems()];
-		cartItems.push ({ id, name, description, category, price, image: '', quantity, additionalInstructions});
+		const existingItem = cartItems.find(item => item.id === id);
+
+		if (existingItem) {
+			// Si existe, incrementar la cantidad y actualizar el comentario o instrucciones adicionales
+			existingItem.quantity += quantity;
+			existingItem.additionalInstructions = additionalInstructions;  // Aquí se actualiza el comentario
+		} else {
+			// Si no existe, agregar el platillo al carrito
+			cartItems.push({ id, name, description, category, price, image: '', quantity, additionalInstructions });
+		}
 
         // Guardar el carrito actualizado
 		this.saveCartItems(cartItems);

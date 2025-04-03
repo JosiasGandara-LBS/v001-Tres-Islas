@@ -40,6 +40,7 @@ export class ModalItemComponent implements OnInit, OnDestroy {
 		if (this.itemId) {
 			this.subscription = this.cartService.getItemById(this.itemId).subscribe((data) => {
 			  	this.item = data;
+				this.additionalInstructions = this.cartService.getAdditionalInstructionsById(this.itemId);
 			});
 		}
 	}

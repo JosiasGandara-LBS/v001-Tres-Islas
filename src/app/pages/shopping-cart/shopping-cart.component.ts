@@ -8,6 +8,7 @@ import { CommonModule } from '@angular/common';
 import { ModalItemComponent } from './components/modal-item/modal-item.component';
 import { KitchenStatusService } from '@core/services/kitchen-status.service';
 import { computed } from '@angular/core';
+
 @Component({
 	selector: 'app-shopping-cart',
 	standalone: true,
@@ -15,6 +16,7 @@ import { computed } from '@angular/core';
 	templateUrl: './shopping-cart.component.html',
 	styleUrl: './shopping-cart.component.scss',
 })
+
 export class ShoppingCartComponent implements OnInit {
 
 	title = 'Carrito de compra'
