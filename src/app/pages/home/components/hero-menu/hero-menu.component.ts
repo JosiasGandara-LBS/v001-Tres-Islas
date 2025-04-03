@@ -6,6 +6,9 @@ import { MenuItem } from '../../../../core/models/menu-item';
 import { CartService } from '../../../../core/services/cart.service';
 import { ButtonModule } from 'primeng/button';
 import { KitchenStatusService } from '@core/services/kitchen-status.service';
+import { PromotionsService } from '@core/services/promotions.service';
+import { Promotions2Service } from '@core/services/promotions2.service';
+import { Promotion } from '@shared/interfaces/promotion.interface';
 
 @Component({
 	selector: 'app-hero-menu',
@@ -18,6 +21,7 @@ export class HeroMenuComponent {
 	_menuService = inject(CartService).getMenu;
 	cartItemsCount: number = 0;
 	buttonClass: string = '';
+	promotions: any[] = [];
 	kitchenStatusService = inject(KitchenStatusService);
 	isKitchenOpen = computed(() => this.kitchenStatusService.isKitchenOpen());
 
@@ -26,11 +30,16 @@ export class HeroMenuComponent {
 	constructor(
 		private router: Router,
 		private injector: Injector,
-		private cartService: CartService
+		private cartService: CartService,
+		private promotions2Service: Promotions2Service
 	) {}
 
 	async ngOnInit() {
 		this.updateCartItemsCount();
+
+		this.promotions2Service.promotions$.subscribe(promotions => {
+			this.promotions = promotions;
+		});
 	}
 
 	getQuantity(itemId: string): number {
@@ -76,7 +85,7 @@ export class HeroMenuComponent {
 	}
 
 	get hasOrders(): boolean{
-		return localStorage.getItem('current_orders') !== null;
+		return (localStorage.getItem('current_orders') !== null && localStorage.getItem('current_orders') !== '[]');
 	}
 
 	scrollToMenu() {
@@ -86,6 +95,18 @@ export class HeroMenuComponent {
 			const menuPosition = menuSection.getBoundingClientRect().top + window.scrollY - headerHeight;
 			window.scrollTo({ top: menuPosition, behavior: 'smooth' });
 		}
-	  }
+	}
+
+	hasPromotion(category: string): boolean {
+		return this.promotions.some(promo =>
+			promo.enabled && promo.categories.includes(category)
+		);
+	}
+
+	getActivePromotions(category: string): Promotion[] {
+		return this.promotions.filter(promo =>
+			promo.enabled && promo.categories.includes(category)
+		);
+	}
 
 }

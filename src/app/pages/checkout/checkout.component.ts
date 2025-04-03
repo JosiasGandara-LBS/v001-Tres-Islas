@@ -129,7 +129,7 @@ export class CheckoutComponent implements OnInit {
 		if(!this.orderDetailForm.get("paymentMethod")?.valid) {
 			errorFields += "- Método de pago\n";
 		}
-		if(this.orderDetailForm.get("tenderedAmount")?.value < this.totalPriceSignal() && this.orderDetailForm.get("tenderedAmount")?.value === null) {
+		if(this.orderDetailForm.get("tenderedAmount")?.value < this.totalPriceSignal() || this.orderDetailForm.get("tenderedAmount")?.value === null) {
 			errorFields += "- Tu pago no puede ser menor al total\n"
 		}
 
@@ -143,7 +143,7 @@ export class CheckoutComponent implements OnInit {
 			alert('La cocina está cerrada. No puedes hacer el pedido ahora.');
 			return;
 		}
-		
+
 		this.isModalVisible.set(false);
 
 		const paymentMethod = this.orderDetailForm.get('paymentMethod')?.value;

@@ -39,11 +39,15 @@
 				</p>
 				<p>Estimado: {{ order.estimatedOrdersTime }} minutos</p>
 				<p>Total: {{ order.totalAmount | currency }} MXN</p>
+
 				@if (order.paymentMethod == 'Dinero en efectivo') {
 					<p>Pago en efectivo - Pagó con {{ order.tenderedAmount | currency }} MXN</p>
-				} @else {
+				} @else if(order.paymentMethod == 'Tarjeta débito / crédito') {
 					<p>Pago con tajerta débito / crédito</p>
+				} @else {
+					<p>Pago con terminal</p>
 				}
+
 				<p>{{ order.client }}</p>
 
 				<div class="h-[1px] w-full bg-gray-300"></div>

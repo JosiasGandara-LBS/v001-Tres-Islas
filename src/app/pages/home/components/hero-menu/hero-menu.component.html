@@ -1,5 +1,8 @@
-<section class="h-screen bg-cover bg-center flex items-end pb-16 justify-center" style="background-image: url('assets/img/fondo_tres_islas.png');">
-    <div (click)="scrollToMenu()" class="h-12 w-12 bg-c-beige-100 rounded-full flex justify-center items-center animate-bounce">
+<section class="h-screen flex flex-col items-center pt-16 justify-center bg-c-orange-100 relative">
+
+	<img src="../../../../../assets/img/Logo_Principal_TI.webp" class="h-36" alt="">
+
+    <div (click)="scrollToMenu()" class="absolute bottom-12 h-12 w-12 bg-c-beige-100 rounded-full flex justify-center items-center animate-bounce">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" fill="#E55204" class="size-5"><path d="M169.4 470.6c12.5 12.5 32.8 12.5 45.3 0l160-160c12.5-12.5 12.5-32.8 0-45.0s-32.8-12.5-45.3 0L224 370.8 224 64c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 306.7L54.6 265.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l160 160z"/></svg>
     </div>
 </section>
@@ -15,12 +18,23 @@
 <section id="menuSection" class="bg-white">
     @if (_menuService()) {
         <section *ngFor="let category of organizeByCategory(_menuService()) | keyvalue; let i = index" class="p-6 flex flex-col items-start justify-center text-gray-800 bg-inherit" [ngClass]="{ 'border-t-4': i != 0, 'border-gray-300': i != 0 }">
-            <p class="text-center nunito-extra-bold mb-2 uppercase" style="font-size: 24px;">{{ category.key | titlecase }}</p>
+            <p class="text-center nunito-extra-bold mb-2 uppercase flex flex-row items-center justify-center" style="font-size: 24px;">
+				{{ category.key | titlecase }}
+
+				<!-- Promociones -->
+				@if (hasPromotion(category.key)) {
+					@for (promo of getActivePromotions(category.key); track $index) {
+						<span class="inline-flex items-center rounded-md bg-green-500 shadow-md text-white text-sm px-4 py-1 ml-6 nunito-extra-bold">
+							{{ promo.description }}
+						</span>
+					}
+				}
+			</p>
 
             @for (item of category.value; track $index) {
                 @if (item.available) {
-                    <div 
-                        (click)="isKitchenOpen() ? insertarComponente(item.id) : null" 
+                    <div
+                        (click)="isKitchenOpen() ? insertarComponente(item.id) : null"
                         class="flex items-start w-full bg-inherit relative py-2"
                         [ngClass]="{'opacity-50 pointer-events-none': !isKitchenOpen()}"
                     >

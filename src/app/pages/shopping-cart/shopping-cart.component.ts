@@ -23,7 +23,7 @@ export class ShoppingCartComponent implements OnInit {
 	cartItemsCount = inject(CartService).getCartItemsCount();
 	kitchenStatusService = inject(KitchenStatusService);
 	isKitchenOpen = computed(() => this.kitchenStatusService.isKitchenOpen());
-  
+
 	@ViewChild(CheckoutComponent) checkoutComponent?: CheckoutComponent;
 
 	constructor( private route: ActivatedRoute, private router : Router, private injector : Injector) {}
@@ -33,7 +33,10 @@ export class ShoppingCartComponent implements OnInit {
 
 	goToHome() { this.router.navigate(['/home']) }
 
-	goToCheckout() { this.router.navigate(['/checkout']) }
-
+	goToCheckout() {
+		if(this.totalPriceSignal() > 0) {
+			this.router.navigate(['/checkout'])
+		}
+	}
 
 }

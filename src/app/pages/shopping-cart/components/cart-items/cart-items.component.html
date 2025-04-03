@@ -3,14 +3,32 @@
         <div class="flex items-start mb-2">
             <img class="w-16 h-16 mr-4 rounded-lg" [src]="cartItem.image ? cartItem.image : 'assets/img/no-image.svg'" alt="no-image"/>
             <div class="flex-1 flex flex-col h-16">
-                <h3 class="nunito-extra-bold flex-grow uppercase text-[16px]">
-                    {{ cartItem.quantity }} <span class="text-xs">X</span> {{ cartItem.name }}
+                <h3 class="nunito-extra-bold flex-grow uppercase text-base flex flex-row items-center">
+                    {{ cartItem.quantity }} <span class="text-xs mx-1.5">X</span> {{ cartItem.name }}
+
+					<!-- Si el producto tiene promociones activas -->
+					@if (hasPromotion(cartItem)) {
+						@for (promo of getActivePromotions(cartItem); track $index) {
+							<span class="inline-flex items-center rounded-md bg-green-500 shadow-md text-white text-xs px-2 py-0.5 ml-4 nunito-extra-bold">
+								{{ promo.description }}
+							</span>
+						}
+					}
                 </h3>
                 <p class="text-gray-600 nunito-regular line-clamp-2 text-xs">{{ cartItem.description }}</p>
             </div>
         </div>
         <div class="flex flex-row justify-between pl-20">
-            <h3 class="nunito-extra-bold uppercase text-[16px]">MX {{ cartItem.price * cartItem.quantity | currency }}</h3>
+            <!-- Calcular precios antes de imprimir para optimizar -->
+			@if (getDiscountedPrice(cartItem)) {
+				<h3 class="nunito-extra-bold uppercase text-base">
+					MX {{ getDiscountedPrice(cartItem).discountedPrice | currency }}
+
+					@if (hasPromotion(cartItem)) {
+						<h3 class="text-xs line-through">MX {{ getDiscountedPrice(cartItem).originalPrice | currency }}</h3>
+					}
+				</h3>
+			}
             <div class="flex flex-row items-center justify-between">
                 <div (click)="isKitchenOpen ? insertarComponente(cartItem.id) : null" class="flex justify-center items-center h-6 w-6 rounded-full bg-amber-500" [ngClass]="{'opacity-50 cursor-not-allowed': !isKitchenOpen}" [attr.disabled]="!isKitchenOpen ? true : null">
                     <svg class="size-3 fill-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M362.7 19.3L314.3 67.7 444.3 197.7l48.4-48.4c25-25 25-65.5 0-90.5L453.3 19.3c-25-25-65.5-25-90.5 0zm-71 71L58.6 323.5c-10.4 10.4-18 23.3-22.2 37.4L1 481.2C-1.5 489.7 .8 498.8 7 505s15.3 8.5 23.7 6.1l120.3-35.4c14.1-4.2 27-11.8 37.4-22.2L421.7 220.3 291.7 90.3z"/></svg>

@@ -1,5 +1,7 @@
-import { inject, Injectable } from '@angular/core';
-import { doc, Firestore, getDoc, updateDoc } from '@angular/fire/firestore';
+import { inject, Injectable, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { collection, collectionData, doc, Firestore, getDoc, getDocs, query, updateDoc, where } from '@angular/fire/firestore';
+import { map, Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -7,10 +9,11 @@ import { doc, Firestore, getDoc, updateDoc } from '@angular/fire/firestore';
 export class PromotionsService {
 
 	private firestore = inject(Firestore);
+	private _promotionCollection = collection(this.firestore, 'promotions');
 
-  constructor() {}
+  	constructor() {}
 
-  async getProductDiscounts(docId: string) {
+  	async getProductDiscounts(docId: string) {
 		const discountsRef = doc(this.firestore, 'promotions', docId);
 		return await getDoc(discountsRef).then((doc) => {
 			if (doc.exists()) {
@@ -27,6 +30,20 @@ export class PromotionsService {
 		}
 		);
 	}
+
+	getPromotions(): Observable<any[]> {
+		return collectionData(this._promotionCollection, { idField: 'id' }).pipe(
+			map(promotions => {
+				const now = new Date();
+				const formattedNow = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
+
+				return promotions.filter(promo => {
+					return promo['startTime'] <= formattedNow && promo['endTime'] >= formattedNow;
+				});
+			})
+		);
+	}
+
 
 	async setProductDiscounts(product: string, discount: any) {
 		const discountsRef = doc(this.firestore, 'promotions/' + product);
