@@ -65,7 +65,7 @@
 									<span class="text-sm ml-2 mr-3 nunito-extra-bold">x</span>
 									<span class="text-sm nunito-regular">{{ foodDish.name }}</span>
 								</span>
-								<span>{{ foodDish.price * foodDish.quantity | currency }} MXN</span>
+								<span>{{ (foodDish.price * foodDish.quantity) - foodDish.discount | currency }} MXN</span>
 							</p>
 							@if (foodDish.additionalInstructions !== '') {
 								<p class="text-xs text-gray-400 pl-4">** {{ foodDish.additionalInstructions }}</p>

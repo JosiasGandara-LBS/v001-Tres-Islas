@@ -31,6 +31,8 @@ export class CheckoutComponent implements OnInit {
 
 	tiempoEstimado !: Observable<number | null>;
 
+	modalVisible = this.cartService.modalVisible;
+
 	public isModalVisible = signal(false);
 	public configModal !: number;
 	public errorsModal !: string;
@@ -249,5 +251,10 @@ export class CheckoutComponent implements OnInit {
 
 	closeMessage() {
 		this.isModalVisible.set(false);
+	}
+
+	cerrar() {
+		this.modalVisible.set(false);
+		console.log(this.modalVisible());
 	}
 }

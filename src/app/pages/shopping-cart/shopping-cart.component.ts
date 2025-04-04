@@ -25,10 +25,11 @@ export class ShoppingCartComponent implements OnInit {
 	cartItemsCount = inject(CartService).getCartItemsCount();
 	kitchenStatusService = inject(KitchenStatusService);
 	isKitchenOpen = computed(() => this.kitchenStatusService.isKitchenOpen());
+	modalVisible = this.cartService.modalVisible;
 
 	@ViewChild(CheckoutComponent) checkoutComponent?: CheckoutComponent;
 
-	constructor( private route: ActivatedRoute, private router : Router, private injector : Injector) {}
+	constructor( private route: ActivatedRoute, private router : Router, private injector : Injector, private cartService: CartService) {}
 
 
 	ngOnInit(): void {}
@@ -39,6 +40,11 @@ export class ShoppingCartComponent implements OnInit {
 		if(this.totalPriceSignal() > 0) {
 			this.router.navigate(['/checkout'])
 		}
+	}
+
+	cerrar() {
+		this.modalVisible.set(false);
+		console.log(this.modalVisible());
 	}
 
 }

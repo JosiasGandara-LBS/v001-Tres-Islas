@@ -29,6 +29,8 @@ export class CartService {
 
 	cartItemsWithDiscount = signal<CartItem[]>([]);
 
+	modalVisible: WritableSignal<boolean> = signal(false);
+
 	// Se recalcula automáticamente cuando cambian las promociones o el carrito
 	totalPrice = computed(() => {
 		const promotions = this.promotionsSignal();
@@ -42,16 +44,6 @@ export class CartService {
 		  }
 		});
 
-		// total = cartItems.reduce((acc, item) => {
-		//   let quantity = item.quantity;
-		//   let price = item.price;
-
-		//   // Aplicar promociones si existen
-		//   const promo = promoMap.get(item.category);
-		//   if (promo) quantity = this.applyPromotion(promo, quantity, price);
-
-		//   return acc + (price * quantity);
-		// }, 0);
 		total = this.cartItemsWithDiscount().reduce((acc, item) => {
 			let quantity = item.quantity;
 			let price = item.price;
@@ -78,13 +70,10 @@ export class CartService {
 		});
 
 		effect(() => {
-
 			const cartItems = this.cartItems();
 			const promotions = this.promotionsSignal();
 
-			if (!promotions.length) {
-				return;
-			}
+			if (!promotions.length) return;
 
 			const hasActivePromotions = cartItems.some(cartItem =>
 				promotions.some(promo =>
@@ -92,21 +81,15 @@ export class CartService {
 				)
 			);
 
-			// Verificar si algún producto tiene descuento pero no hay promociones activas
 			const hasDiscountWithoutActivePromotions = cartItems.some(cartItem =>
-				cartItem.discounted > 0 && !hasActivePromotions
+			  	cartItem.discounted > 0 && !hasActivePromotions
 			);
 
 			if (hasDiscountWithoutActivePromotions) {
-				// AQUI SE MUESTRA LA ALERTA CUANDO SE VENCE UNA PROMO
-				Swal.fire({
-					icon: 'warning',
-					title: 'Atención',
-					text: 'Hay productos con descuento, pero no hay promociones activas.',
-					confirmButtonText: 'Entendido'
-				});
+			  	this.modalVisible.set(true);
 			}
-		}, {allowSignalWrites: true});
+
+		}, { allowSignalWrites: true });
 
 		effect(() => {
 			const cartItems = this.cartItems();

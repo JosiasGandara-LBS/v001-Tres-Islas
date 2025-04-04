@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, Injector, OnDestroy, OnInit, signal, ViewChild, ViewContainerRef } from '@angular/core';
+import { Component, computed, effect, inject, Injector, Input, OnChanges, OnDestroy, OnInit, Signal, signal, ViewChild, ViewContainerRef, WritableSignal } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { ModalItemComponent } from '../modal-item/modal-item.component';
@@ -20,6 +20,9 @@ import { Subscription } from 'rxjs';
 	styleUrl: './hero-menu.component.scss'
 })
 export class HeroMenuComponent implements OnInit, OnDestroy {
+
+	modalVisible = this.cartService.modalVisible;
+
 	_menuService = inject(CartService).getMenu;
 	cartItemsCount: number = 0;
 	buttonClass: string = '';
@@ -49,6 +52,8 @@ export class HeroMenuComponent implements OnInit, OnDestroy {
 		this.promotions2Service.promotions$.subscribe(promotions => {
 			this.promotions = promotions;
 		});
+
+		console.log(this.modalVisible());
 	}
 
 	ngOnDestroy(): void {
@@ -134,6 +139,11 @@ export class HeroMenuComponent implements OnInit, OnDestroy {
 		  const updatedIds = storedIds.filter(id => validIds.includes(id));
 		  localStorage.setItem('current_orders', JSON.stringify(updatedIds));
 		}
+	}
+
+	cerrar() {
+		this.modalVisible.set(false);
+		console.log(this.modalVisible());
 	}
 
 }
