@@ -34,9 +34,16 @@ export class Promotions2Service {
 		const now = new Date();
 		const formattedNow = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
 
-		const activePromotions = this.promotions.filter(promo =>
-			promo.enabled && promo['startTime'] <= formattedNow && promo['endTime'] >= formattedNow
-		);
+		const activePromotions: any[] = [];
+		// const activePromotions = this.promotions.filter(promo =>
+		// 	promo.enabled && promo['startTime'] <= formattedNow && promo['endTime'] >= formattedNow
+		// );
+		this.promotions.forEach(promo => {
+			if (!(promo['startTime'] <= formattedNow && promo['endTime'] >= formattedNow)) {
+				promo.enabled = false;
+			}
+			activePromotions.push(promo);
+		});
 
 		this.promotionsSubject.next(activePromotions);
 	}

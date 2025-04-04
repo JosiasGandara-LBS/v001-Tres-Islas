@@ -82,6 +82,10 @@ export class CartService {
 			const cartItems = this.cartItems();
 			const promotions = this.promotionsSignal();
 
+			if (!promotions.length) {
+				return;
+			}
+
 			const hasActivePromotions = cartItems.some(cartItem =>
 				promotions.some(promo =>
 					promo.enabled && promo.categories.includes(cartItem.category)
