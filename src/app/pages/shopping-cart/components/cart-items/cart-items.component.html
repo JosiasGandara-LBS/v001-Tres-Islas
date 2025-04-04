@@ -20,13 +20,18 @@
         </div>
         <div class="flex flex-row justify-between pl-20">
             <!-- Calcular precios antes de imprimir para optimizar -->
-			@if (getDiscountedPrice(cartItem)) {
+			@if (cartItem.discounted && cartItem.discounted > 0) {
 				<h3 class="nunito-extra-bold uppercase text-base">
-					MX {{ getDiscountedPrice(cartItem).discountedPrice | currency }}
+					MX {{ (cartItem.price * cartItem.quantity ) - cartItem.discounted | currency }}
 
 					@if (hasPromotion(cartItem)) {
-						<h3 class="text-xs line-through">MX {{ getDiscountedPrice(cartItem).originalPrice | currency }}</h3>
+						<h3 class="text-xs line-through">MX {{ cartItem.price * cartItem.quantity | currency }}</h3>
 					}
+				</h3>
+			}
+			@if (!cartItem.discounted || cartItem.discounted === 0) {
+				<h3 class="nunito-extra-bold uppercase text-base">
+					MX {{ cartItem.price * cartItem.quantity | currency }}
 				</h3>
 			}
             <div class="flex flex-row items-center justify-between">

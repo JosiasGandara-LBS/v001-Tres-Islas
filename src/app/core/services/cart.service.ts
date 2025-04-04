@@ -7,6 +7,7 @@ import { MenuItem } from '../models/menu-item';
 import { CartItem } from '../models/cart-item';
 import { Promotions2Service } from './promotions2.service';
 import { Promotion } from '@shared/interfaces/promotion.interface';
+import Swal from 'sweetalert2';
 
 @Injectable({
   providedIn: 'root'
@@ -24,9 +25,12 @@ export class CartService {
 	private cartItemsSignal = signal<CartItem[]>(this.getCartItems());
   	private promotionsSignal = signal<any[]>([]);
 
+	private arePromotionsActive = signal<boolean>(false);
+
+	cartItemsWithDiscount = signal<CartItem[]>([]);
+
 	// Se recalcula automáticamente cuando cambian las promociones o el carrito
 	totalPrice = computed(() => {
-		const cartItems = this.cartItemsSignal();
 		const promotions = this.promotionsSignal();
 
 		let total = 0;
@@ -38,16 +42,23 @@ export class CartService {
 		  }
 		});
 
-		total = cartItems.reduce((acc, item) => {
-		  let quantity = item.quantity;
-		  let price = item.price;
+		// total = cartItems.reduce((acc, item) => {
+		//   let quantity = item.quantity;
+		//   let price = item.price;
 
-		  // Aplicar promociones si existen
-		  const promo = promoMap.get(item.category);
-		  if (promo) quantity = this.applyPromotion(promo, quantity, price);
+		//   // Aplicar promociones si existen
+		//   const promo = promoMap.get(item.category);
+		//   if (promo) quantity = this.applyPromotion(promo, quantity, price);
 
-		  return acc + (price * quantity);
-		}, 0);
+		//   return acc + (price * quantity);
+		// }, 0);
+		total = this.cartItemsWithDiscount().reduce((acc, item) => {
+			let quantity = item.quantity;
+			let price = item.price;
+			let discount = item.discounted || 0;
+
+			return acc + ((price * quantity) - discount);
+		},0);
 
 		return total;
 	});
@@ -65,6 +76,77 @@ export class CartService {
 		this.promotions2Service.promotions$.subscribe(promotions => {
 			this.promotionsSignal.set(promotions);
 		});
+
+		effect(() => {
+
+			const cartItems = this.cartItems();
+			const promotions = this.promotionsSignal();
+
+			const hasActivePromotions = cartItems.some(cartItem =>
+				promotions.some(promo =>
+					promo.enabled && promo.categories.includes(cartItem.category)
+				)
+			);
+
+			// Verificar si algún producto tiene descuento pero no hay promociones activas
+			const hasDiscountWithoutActivePromotions = cartItems.some(cartItem =>
+				cartItem.discounted > 0 && !hasActivePromotions
+			);
+
+			if (hasDiscountWithoutActivePromotions) {
+				// AQUI SE MUESTRA LA ALERTA CUANDO SE VENCE UNA PROMO
+				Swal.fire({
+					icon: 'warning',
+					title: 'Atención',
+					text: 'Hay productos con descuento, pero no hay promociones activas.',
+					confirmButtonText: 'Entendido'
+				});
+			}
+		}, {allowSignalWrites: true});
+
+		effect(() => {
+			const cartItems = this.cartItems();
+			cartItems.forEach(cartItem => {
+				cartItem.discounted = 0; // Reiniciar el descuento
+			});
+
+			const cartItemsWithPromotions: CartItem[] = (cartItems.filter(cartItem => this.hasPromotion(cartItem))).sort((a: CartItem, b: CartItem) => a.price - b.price);
+
+			if (cartItemsWithPromotions.length > 0) {
+
+				// Obtener la cantidad de items que se van a descontar
+				const qtyItemsWithPromotions: number = cartItemsWithPromotions.reduce((acc, cartItem) => {
+					return acc + cartItem.quantity;
+				}, 0);
+
+				const qtyItemsDiscounted: number = Math.floor( qtyItemsWithPromotions / 3);
+
+				for(let i = 0; i < qtyItemsDiscounted; i++) { // Por la cantidad de items descontados (3x2)
+					for (let j = 0 ; j < cartItemsWithPromotions.length; j++) { // Iterar los items en los que aplica la promo de menor precio a mayor
+						const cartItem = cartItemsWithPromotions[j];
+						if ((cartItem.quantity * cartItem.price) > (cartItem.discounted || 0)) { // Si el precio del item es mayor al descuento
+							cartItemsWithPromotions[j].discounted = (cartItem.discounted || 0) + cartItem.price; // Se le suma el precio del item al descuento (Se descontó un item)
+							break;
+						}
+					}
+				}
+			}
+			const finalCart = cartItems.map(cartItem => {
+				const discountedItem = cartItemsWithPromotions.find(item => item.id === cartItem.id);
+				if (discountedItem) {
+					cartItem.discounted = discountedItem.discounted;
+				}
+				return cartItem;
+			});
+			this.cartItemsWithDiscount.set(finalCart);
+		}, {allowSignalWrites: true});
+	}
+
+	// Método para obtener si el producto tiene promocion
+	hasPromotion(cartItem: any): boolean {
+		return this.promotionsSignal().some(promo =>
+			promo.enabled && promo.categories.includes(cartItem.category)
+		);
 	}
 
 	// Getter público para acceder a cartItems
@@ -117,15 +199,14 @@ export class CartService {
 				// Parametros de item
 				let quantity = item.quantity;
 				let price = item.price;
+				let discount = item.discounted || 0;
 
-				// Si hay una promo para la categoría del producto, aplicarla
-				const promo = promoMap.get(item.category);
-				if (promo) quantity = this.applyPromotion(promo, quantity, price);
+				// Si hay una promo para la categoría del producto, aplicarla -- JOSIAS GANDARA
+				// const promo = promoMap.get(item.category);
+				// if (promo) quantity = this.applyPromotion(promo, quantity, price);
 
-				return acc + (price * quantity);
+				return acc + ((price * quantity) - discount);
 			}, 0);
-
-			console.log("Total con promociones aplicadas:", total);
 		});
 
 		return total;
@@ -175,6 +256,7 @@ export class CartService {
 			quantity: item.quantity,
 			category: item.category,
 			price: item.price,
+			discount: item.discount || 0,
 			additionalInstructions: item.additionalInstructions
 		}));
 	}
@@ -211,7 +293,7 @@ export class CartService {
 			existingItem.additionalInstructions = additionalInstructions;  // Aquí se actualiza el comentario
 		} else {
 			// Si no existe, agregar el platillo al carrito
-			cartItems.push({ id, name, description, category, price, image: '', quantity, additionalInstructions });
+			cartItems.push({ id, name, description, category, price, image: '', quantity, additionalInstructions , discount: 0});
 		}
 
         // Guardar el carrito actualizado

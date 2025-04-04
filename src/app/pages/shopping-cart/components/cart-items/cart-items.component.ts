@@ -1,4 +1,4 @@
-import { Component, computed, inject, Injector, OnInit, ViewChild, ViewContainerRef, Input } from '@angular/core';
+import { Component, computed, inject, Injector, OnInit, ViewChild, ViewContainerRef, Input, effect } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { CartService } from '../../../../core/services/cart.service';
@@ -22,7 +22,7 @@ export class CartItemsComponent implements OnInit {
 	cartItemsCount = inject(CartService).getCartItemsCount();
 	_menuService = inject(CartService).getMenu;
 
-	cartItems = computed(() => this.cartService.cartItemsValue);
+	cartItems = computed(() => this.cartService.cartItemsWithDiscount());
 
 	promotions = computed(() => {
 		const promos = this.cartService.getPromotionsSignal();
@@ -37,8 +37,10 @@ export class CartItemsComponent implements OnInit {
 
 	ngOnInit() {
 		this.cartService.updateCartItemsWithImage();
-	}
 
+		console.log('Cart items:', this.cartItems());
+	}
+	/*
 	getDiscountedPrice(cartItem: any): { originalPrice: number, discountedPrice: number } {
 		const quantity = cartItem.quantity;
 		const price = cartItem.price;
@@ -68,6 +70,7 @@ export class CartItemsComponent implements OnInit {
 		const discountedPrice = price * finalQuantity; // Precio después del descuento
 		return { originalPrice, discountedPrice };
 	}
+	*/
 
 	hasPromotion(cartItem: any): boolean {
 		return this.promotions().some(promo =>

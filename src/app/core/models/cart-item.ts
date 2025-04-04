@@ -7,4 +7,5 @@ export interface CartItem {
 	price: number;
 	quantity: number;
 	additionalInstructions: string;
+	discounted?: number;
 }
