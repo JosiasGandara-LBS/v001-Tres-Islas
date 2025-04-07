@@ -2,7 +2,7 @@ import { inject, Injectable, signal } from '@angular/core';
 import { collectionData, Firestore, addDoc, deleteDoc, docData } from '@angular/fire/firestore';
 import { Product } from '@shared/interfaces/product.interface';
 import { map, Observable} from 'rxjs';
-import { collection, doc, getDoc, updateDoc, getDocFromServer, DocumentData, DocumentReference } from 'firebase/firestore';
+import { collection, doc, getDoc, updateDoc, getDocFromServer, DocumentData, DocumentReference, onSnapshot } from 'firebase/firestore';
 
 @Injectable({
   providedIn: 'root'
@@ -10,13 +10,17 @@ import { collection, doc, getDoc, updateDoc, getDocFromServer, DocumentData, Doc
 export class KitchenStatusService {
     private firestore = inject(Firestore);
     public isKitchenOpen = signal<boolean>(true);
+	private statusSignal = signal<boolean>(false);
 
     constructor() {
         this.getKitchenStatus().subscribe(status => {
             if(status !== undefined)
                 this.isKitchenOpen.set(status);
         });
+
+		this.cashPaymentToGoStatus();
     }
+
     public selectedProduct = signal<Product | null>(null);
 
     getKitchenStatus(): Observable<boolean | undefined> {
@@ -75,6 +79,25 @@ export class KitchenStatusService {
 		return updateDoc(kitchenStatusDoc, {
 			CashPaymentToGoStatus: configs.CashPaymentToGoStatus,
 		});
+	}
+
+	private cashPaymentToGoStatus() {
+		const docRef = doc(this.firestore, 'kitchenStatus', 'kitchenStatus');
+
+		// Escucha en tiempo real
+		onSnapshot(docRef, (docSnap) => {
+			if (docSnap.exists()) {
+				const data = docSnap.data();
+				this.statusSignal.set(data['CashPaymentToGoStatus']);
+			} else {
+				this.statusSignal.set(false);
+			}
+		});
+	}
+
+	// Signal pública para acceder al valor reactivo
+	get cashPaymentStatusSignal() {
+		return this.statusSignal.asReadonly();
 	}
 }
 

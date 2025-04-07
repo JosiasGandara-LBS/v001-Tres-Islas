@@ -33,6 +33,8 @@ export class CheckoutComponent implements OnInit {
 
 	modalVisible = this.cartService.modalVisible;
 
+	statusCashPaymentToGoStatus = this.kitchenStatusService.cashPaymentStatusSignal;
+
 	public isModalVisible = signal(false);
 	public configModal !: number;
 	public errorsModal !: string;
