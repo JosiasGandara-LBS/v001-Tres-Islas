@@ -81,7 +81,7 @@ export class OrdersService {
 
 	async setOrderAsPaid(IDOrder: string): Promise<void> {
 		const orderDocRef = doc(this._firestore, `orders/${IDOrder}`);
-		return updateDoc(orderDocRef, { PaymentPending: false })
+		return updateDoc(orderDocRef, { pendingPayment: false })
 			.then(() => {
 			})
 			.catch(error => {
