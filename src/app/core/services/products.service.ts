@@ -47,8 +47,9 @@ export class ProductsService {
 		return getDoc(doc(this.firestore, 'menu', id))
 	}
 
-	addProduct(product: Product) {
-		return addDoc(collection(this.firestore, 'menu'), product);
+	addProduct(product: any) {
+		const menuCollection = collection(this.firestore, 'menu');
+		return addDoc(menuCollection, product);
 	}
 
 	deleteProduct(id: string) {

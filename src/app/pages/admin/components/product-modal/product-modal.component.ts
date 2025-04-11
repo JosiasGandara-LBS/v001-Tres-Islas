@@ -74,7 +74,7 @@ export class ProductModalComponent implements OnInit {
 		if (this.productForm().valid) {
 			const formValues = this.productForm().value;
 			const updatedProduct: Product = {
-				id: this.productsService.selectedProduct()?.id ?? '',
+				id: this.product?.id ?? null,
 				name: formValues.name as string,
 				price: formValues.price as number,
 				description: formValues.description as string,
@@ -82,12 +82,30 @@ export class ProductModalComponent implements OnInit {
 				category: formValues.category as string,
 				image: formValues.image as string
 			};
-			this.productsService.updateProduct(updatedProduct).then(() => {
-				Swal.fire({ icon: 'success', title: 'Éxito', text: 'Producto guardado' });
-				this.productsService.closeProductModal();
-			}).catch((error) => {
-				Swal.fire({ icon: 'error', title: 'Error', text: `Error al guardar el producto: ${error}` });
-			});
+			if(updatedProduct.id) {
+				this.productsService.updateProduct(updatedProduct).then(() => {
+					Swal.fire({ icon: 'success', title: 'Éxito', text: 'Producto guardado' });
+					this.productsService.closeProductModal();
+				}).catch((error) => {
+					Swal.fire({ icon: 'error', title: 'Error', text: `Error al guardar el producto: ${error}` });
+				});
+			}
+			else {
+				const newProduct = {
+					name: formValues.name as string,
+					price: formValues.price as number,
+					description: formValues.description as string,
+					available: formValues.available === true,
+					category: formValues.category as string,
+					image: formValues.image as string
+				}
+				this.productsService.addProduct(newProduct).then(() => {
+					Swal.fire({ icon: 'success', title: 'Éxito', text: 'Producto guardado' });
+					this.productsService.closeProductModal();
+				}).catch((error) => {
+					Swal.fire({ icon: 'error', title: 'Error', text: `Error al guardar el producto: ${error}` });
+				});
+			}
 		} else {
 			this.productForm().markAllAsTouched();
 			Swal.fire({ icon: 'error', title: 'Error', text: `Formulario Inválido` });
