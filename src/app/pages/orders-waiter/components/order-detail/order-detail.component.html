@@ -84,17 +84,17 @@
 							<p class="text-xs inline-flex justify-end items-center">Subtotal</p>
 							<p class="text-xs">MX {{ order.totalAmount | currency }}</p>
 						</div>
-						<div *ngIf="order.moneyChange && order.moneyChange > 0" class="flex flex-row items-center justify-between min-w-40 mb-2">
+						<div *ngIf="order.tenderedAmount && order.tenderedAmount > 0" class="flex flex-row items-center justify-between min-w-40 mb-2">
 							<p class="text-xs inline-flex justify-end items-center">Pago</p>
-							<p class="text-xs">MX {{ order.moneyChange | currency }}</p>
+							<p class="text-xs">MX {{ order.tenderedAmount | currency }}</p>
 						</div>
 						<div class="flex flex-row items-center justify-between min-w-40 mb-2">
 							<p class="text-sm font-bold inline-flex justify-between items-center">Total</p>
 							<p class="text-sm font-bold">MX {{ order.totalAmount | currency }}</p>
 						</div>
-						<div *ngIf="order.moneyChange && order.moneyChange > 0" class="flex flex-row items-center justify-between min-w-40">
+						<div *ngIf="order.tenderedAmount && order.tenderedAmount > 0" class="flex flex-row items-center justify-between min-w-40">
 							<p class="text-sm font-bold inline-flex justify-end items-center">Cambio</p>
-							<p class="text-sm font-bold">MX {{ order.moneyChange - order.totalAmount  | currency }}</p>
+							<p class="text-sm font-bold">MX {{ order.tenderedAmount - order.totalAmount  | currency }}</p>
 						</div>
 					</div>
 				</div>

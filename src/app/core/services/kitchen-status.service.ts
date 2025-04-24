@@ -99,5 +99,25 @@ export class KitchenStatusService {
 	get cashPaymentStatusSignal() {
 		return this.statusSignal.asReadonly();
 	}
+
+	getTables() {
+		const kitchenStatusDoc = doc(this.firestore, 'kitchenStatus/kitchenStatus');
+
+		return docData(kitchenStatusDoc).pipe(map((data: any) => {
+			if (!data) return null;
+
+			if (data.tables === undefined) return null;
+
+			return data.tables;
+		}));
+	}
+
+	saveTables(tables: any[]) {
+		const kitchenStatusDoc = doc(this.firestore, 'kitchenStatus/kitchenStatus');
+
+		return updateDoc(kitchenStatusDoc, {
+			tables: tables
+		});
+	}
 }
 

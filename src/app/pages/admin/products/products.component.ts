@@ -98,8 +98,8 @@ export class ProductsComponent implements OnInit {
 
 	toggleKitchenStatus() {
 		Swal.fire({
-			title: '¿Estás seguro de ?' + (this.isKitchenOpen() ? 'cerrar la cocina' : 'abrir la cocina'),
-			text: this.isKitchenOpen() ? 'Cerrar cocina' : 'Abrir cocina',
+			title: '¿Estás seguro de ' + (this.isKitchenOpen() ? 'cerrar la cocina' : 'abrir la cocina') + '?',
+			text: this.isKitchenOpen() ? 'Se cerrará la cocina y no podrán entrar más ordenes' : 'Se abrirá la cocina y podrán entrar más ordenes',
 			icon: 'warning',
 			showCancelButton: true,
 			confirmButtonText: 'Sí, continuar',
@@ -140,5 +140,25 @@ export class ProductsComponent implements OnInit {
 
 	enableProduct(product: Product) {
 		this.productsService.enableProduct(product);
+	}
+
+	deleteProduct(product: Product) {
+		Swal.fire({
+			title: '¿Estás seguro de eliminar el producto?',
+			text: 'No podrás revertir esta acción',
+			icon: 'warning',
+			showCancelButton: true,
+			confirmButtonText: 'Sí, eliminar',
+			cancelButtonText: 'Cancelar'
+		}).then((result) => {
+			if (result.isConfirmed) {
+				this.productsService.deleteProduct(product.id).then(() => {
+					Swal.fire('Éxito', 'Producto eliminado correctamente', 'success');
+					this.getProducts();
+				}).catch((error) => {
+					Swal.fire('Error', `Ocurrió un error al eliminar el producto: ${error}`, 'error');
+				});
+			}
+		});
 	}
 }
