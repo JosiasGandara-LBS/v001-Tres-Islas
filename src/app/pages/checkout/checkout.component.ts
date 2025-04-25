@@ -254,9 +254,9 @@ export class CheckoutComponent implements OnInit {
 	limitDigits(event: Event) {
 		const input = event.target as HTMLInputElement;
 		if (input.value.length > 8) {
-		  input.value = input.value.slice(0, 8);
+		  	input.value = input.value.slice(0, 8);
 		}
-	  }
+	}
 
 	closeMessage() {
 		this.isModalVisible.set(false);

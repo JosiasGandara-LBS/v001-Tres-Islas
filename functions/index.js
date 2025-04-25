@@ -10,7 +10,7 @@ const cors = require('cors')({ origin: true });
 
 require('dotenv').config();
 
-const openpay = new Openpay(process.env.OPENPAY_MERCHANT_ID, process.env.OPENPAY_PRIVATE_KEY, process.env.OPENPAY_PRODUCTION_MODE);
+const openpay = new Openpay(process.env.OPENPAY_MERCHANT_ID, process.env.OPENPAY_PRIVATE_KEY, false);
 
 firebase_admin.initializeApp()
 
@@ -33,6 +33,8 @@ exports.procesarPago = onRequest(async (req, res) => {
         description: description,
         device_session_id: deviceSessionId,
         customer: customer,
+		use_3d_secure: true,
+		redirect_url: "https://example.com"
       };
 
       // Convertir el callback en una promesa
@@ -48,8 +50,8 @@ exports.procesarPago = onRequest(async (req, res) => {
 
       return res.status(200).json(charge);
     } catch (error) {
-      console.error("Error al procesar el pago:", error);
-      return res.status(500).json({ error: error.toString() });
+	  console.error("Error al procesar el pago:", JSON.stringify(error, null, 2));
+      return res.status(500).json({ error: error });
     }
   });
 });
