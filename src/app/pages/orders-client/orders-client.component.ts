@@ -26,7 +26,6 @@ export class OrdersClientComponent {
 	constructor(private router: Router, private ordersClientService: OrdersClientService, private injector : Injector) {
 		effect(() => {
 			this.getOrders = this.ordersClientService.orders();
-			console.log(this.getOrders);
 		});
 	}
 

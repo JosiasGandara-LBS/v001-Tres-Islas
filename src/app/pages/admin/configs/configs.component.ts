@@ -38,9 +38,6 @@ export class ConfigsComponent implements OnInit{
 	}
 
 	constructor() {
-		effect(() => {
-			console.log(this.tables());
-		});
 	}
 
 

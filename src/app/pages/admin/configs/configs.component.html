@@ -10,10 +10,10 @@
 			<!-- To Go Cash Payment -->
 			 <div class="flex flex-row gap-4 items-center justify-start">
 				 <div class="flex flex-col gap-4">
-					 <div class="nunito-bold text-lg">
+					 <div class="nunito-bold text-lg md:text-start text-center">
 						<h3>Pago con efectivo en pedidos para llevar</h3>
 					 </div>
-					<div class="flex gap-2 items-center justify-start">
+					<div class="flex gap-2 items-center justify-center md:justify-start">
 						<p-inputSwitch formControlName="CashPaymentToGoStatus" [ngModel]="configsForm().get('CashPaymentToGoStatus')?.value" class="h-full flex items-center"></p-inputSwitch>
 						<label for="CashPaymentToGoStatus" class="flex w-auto text-center h-full text-nowrap items-center"><span class="text-center flex items-center text-nowrap text text-sm">{{ configsForm().get('CashPaymentToGoStatus')?.getRawValue() ? 'Disponible' : 'No Disponible' }}</span></label>
 					</div>
@@ -32,10 +32,10 @@
 			 <!-- 3x2 En tacos y tostadas config -->
 
 			 <div class="flex flex-col gap-4">
-				 <div class="nunito-bold text-lg">
+				 <div class="nunito-bold text-lg md:text-start text-center">
 					<h3>3x2 en tacos y tostadas</h3>
 				 </div>
-				 <div class="flex gap-8 items-center justify-start">
+				 <div class="flex md:flex-row flex-col gap-8 items-center justify-start">
 					 <div class="flex gap-2 items-center justify-start">
 						 <p-inputSwitch formControlName="ProductDiscountEnabled" [ngModel]="configsForm().get('ProductDiscountEnabled')?.value" class="h-full flex items-center"></p-inputSwitch>
 						 <label for="ProductDiscountEnabled" class="flex w-auto text-center h-full text-nowrap items-center"><span class="text-center flex items-center text-nowrap text text-sm">{{ configsForm().get('ProductDiscountEnabled')?.getRawValue() ? 'Habilitada' : 'No Habilitada' }}</span></label>
@@ -65,22 +65,27 @@
 			 <!-- Mesas config -->
 
 			<div class="flex flex-col gap-4">
-				<div class="nunito-bold text-lg">
+				<div class="nunito-bold text-lg text-center md:text-start">
 					<h3>Mesas</h3>
 				</div>
 				<div class="flex flex-col gap-8 items-center justify-start">
-					<div class="flex gap-2 items-end justify-start">
-						<div class="p-field flex flex-col">
-							<label for="tableName">Nombre de la mesa</label>
-							<input id="tableName" type="text" pInputText formControlName="tableName" [style]="{'border-width': '1px'}" class="border-c-gray-100 rounded-md py-2 px-1 focus:border-orange-500 focus:shadow-md focus:shadow-orange-300 focus:outline-none focus:ring-0 outline-none"/>
-							<div *ngIf="configsForm().get('tableName')?.invalid && configsForm().get('tableName')?.touched" class="p-error">
-								Nombre es requerido
-							</div>
+					<div class="flex flex-col gap-2 items-start md:items-center justify-start">
+						<div class="nunito-bold text-lg text-center w-full">
+							Agregar mesa
 						</div>
-						<button class="bg-green-500 text-white px-4 py-2 rounded-md" (click)="addTable()">Agregar</button>
+						<div class="flex md:flex-row flex-col gap-2 items-end justify-start p-2">
+							<div class="p-field flex flex-col">
+								<label for="tableName">Nombre de la mesa</label>
+								<input id="tableName" type="text" pInputText formControlName="tableName" [style]="{'border-width': '1px'}" class="border-c-gray-100 rounded-md py-2 px-1 focus:border-orange-500 shadow-md focus:shadow-orange-300 focus:outline-none focus:ring-0 outline-none"/>
+								<div *ngIf="configsForm().get('tableName')?.invalid && configsForm().get('tableName')?.touched" class="p-error">
+									Nombre es requerido
+								</div>
+							</div>
+							<button class="bg-green-500 text-white px-4 py-2 rounded-md md:w-fit w-full" (click)="addTable()">Agregar</button>
+						</div>
 					</div>
 					@if(tables().length){
-						<div class="mt-3 w-full md:w-2/3 lg:w-1/2">
+						<div class="mt-3 w-full max-h-96 overflow-auto no-scrollbar">
 							<table class="w-full mt-3">
 								<thead class="">
 									<tr class="">
@@ -89,7 +94,7 @@
 								</thead>
 								<tbody class="flex flex-col gap-2">
 									<tr *ngFor="let table of tables(); let index = index" class="flex justify-between border-c-gray-100 items-center h-full border-b-2 mb-2 pb-1">
-										<td *ngIf="editingTableId !== index" class="flex items-center h-full text-lg nunito-regular">{{ table | uppercase }}</td>
+										<td *ngIf="editingTableId !== index" class="flex items-center h-full text-lg nunito-regular">MESA {{ table | uppercase }}</td>
 										<td *ngIf="editingTableId === index">
 											<form [formGroup]="editTableForm" (ngSubmit)="updateTable(index)">
 												<input type="text" pInputText formControlName="name" (blur)="updateTable(index)" (keydown.enter)="updateTable(index)" [style]="{'border-width': '1px'}" class="border-c-gray-100 rounded-md py-2 px-1 focus:border-orange-500 focus:shadow-md focus:shadow-orange-300 focus:outline-none focus:ring-0 outline-none"/>
@@ -115,7 +120,7 @@
 			 <hr class="my-2">
 
 			 <!-- Save configs -->
-			 <div class="flex gap-2 items-center justify-end">
+			 <div class="flex gap-2 items-center justify-end mb-2">
 				 <button type="button" (click)="saveConfigs()" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Guardar</button>
 				 <button type="button" (click)="resetConfigs()" class="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400">Restablecer</button>
 			 </div>

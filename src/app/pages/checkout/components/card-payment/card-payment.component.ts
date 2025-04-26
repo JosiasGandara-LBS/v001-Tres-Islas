@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, inject, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { TransactionData } from '@core/models/transaction-data';
 import { CartService } from '@core/services/cart.service';
 import { PagoService } from '@core/services/pago.service';
 import { CreditCardFormatPipe } from '@shared/pipes/credit-card-format.pipe';
@@ -21,7 +22,7 @@ export class CardPaymentComponent implements OnInit {
 
 	@Input() phone_number !: string;
 	@Output() cerrar = new EventEmitter<void>();
-	@Output() isTransactionCompleted = new EventEmitter<boolean>();
+	@Output() isTransactionCompleted = new EventEmitter<TransactionData>();
 
 	totalPriceSignal = inject(CartService).getTotalPriceSignal();
 
@@ -145,7 +146,6 @@ export class CardPaymentComponent implements OnInit {
 		this.transactionSuccess = false;
 		this.transactionError = true;
 		this.errorMessage = message;
-		this.isTransactionCompleted.emit(false);
 	}
 
 	returnToCheckout() {
@@ -154,9 +154,18 @@ export class CardPaymentComponent implements OnInit {
 		setTimeout(() => this.cerrar.emit(), 400);
 	}
 
+	returnToCheckoutWithError() {
+		this.closeMessage();
+		this.isFadingOut = true;
+		setTimeout(() => this.cerrar.emit(), 400);
+	}
+
 	returnToHome() {
 		this.closeMessage();
-		this.isTransactionCompleted.emit(true);
+		this.isTransactionCompleted.emit({
+			success: true,
+			message: 'Pago realizado con éxito',
+		});
 		this.router.navigate(["/home"]);
 	}
 

@@ -44,7 +44,6 @@ export class ShoppingCartComponent implements OnInit {
 
 	cerrar() {
 		this.modalVisible.set(false);
-		console.log(this.modalVisible());
 	}
 
 }
