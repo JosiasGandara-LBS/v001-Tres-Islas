@@ -2,6 +2,8 @@ import { CommonModule } from '@angular/common';
 import { Component, forwardRef, Input } from '@angular/core';
 import { NG_VALUE_ACCESSOR } from '@angular/forms';
 
+type VoidFunction = () => void;
+
 @Component({
 	selector: 'app-dropdown',
 	standalone: true,
@@ -22,22 +24,9 @@ export class DropdownComponent {
 	isDropdownOpen = false;
 	selectedOption: any = null;
 
-	options = [
-		{ name: 'Mesa 1', value: '1' },
-		{ name: 'Mesa 2', value: '2' },
-		{ name: 'Mesa 3', value: '3' },
-		{ name: 'Mesa 4', value: '4' },
-		{ name: 'Mesa 5', value: '5' },
-		{ name: 'Mesa 6', value: '6' },
-		{ name: 'Mesa 7', value: '7' },
-		{ name: 'Mesa 8', value: '8' },
-		{ name: 'Mesa 9', value: '9' },
-		{ name: 'Mesa 10', value: '10' },
-		{ name: 'Mesa 11', value: '11' },
-		{ name: 'Mesa 12', value: '12' },
-	];
+	@Input() options: string[] = [];
 
-	private onChange = (value: any) => {};
+	private onChange = (value: string) => {};
 	private onTouched = () => {};
 
 	toggleDropdown() {
@@ -46,24 +35,24 @@ export class DropdownComponent {
 		}
 	}
 
-	selectOption(option: any) {
+	selectOption(option: string, index: number) {
 		if (!this.disabled) {
 			this.selectedOption = option;
-			this.onChange(option.value);
+			this.onChange(option);
 			this.isDropdownOpen = false;
 		}
 	  }
 
 	// Métodos necesarios para ControlValueAccessor
-	writeValue(value: any): void {
-		this.selectedOption = this.options.find(opt => opt.value === value) || null;
+	writeValue(value: string): void {
+		this.selectedOption = value || null;
 	}
 
-	registerOnChange(fn: any): void {
+	registerOnChange(fn: VoidFunction): void {
 		this.onChange = fn;
 	}
 
-	registerOnTouched(fn: any): void {
+	registerOnTouched(fn: VoidFunction): void {
 		this.onTouched = fn;
 	}
 

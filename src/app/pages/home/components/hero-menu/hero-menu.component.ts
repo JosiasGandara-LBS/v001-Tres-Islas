@@ -53,7 +53,6 @@ export class HeroMenuComponent implements OnInit, OnDestroy {
 			this.promotions = promotions;
 		});
 
-		console.log(this.modalVisible());
 	}
 
 	ngOnDestroy(): void {
@@ -143,7 +142,6 @@ export class HeroMenuComponent implements OnInit, OnDestroy {
 
 	cerrar() {
 		this.modalVisible.set(false);
-		console.log(this.modalVisible());
 	}
 
 }

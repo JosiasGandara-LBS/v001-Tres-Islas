@@ -218,7 +218,7 @@ export class CartService {
 			// Agregar más reglas de promociones aquí en el futuro...
 
 			default:
-				console.log(`No hay reglas definidas para la promo: ${promo.id}`);
+				console.error(`No hay reglas definidas para la promo: ${promo.id}`);
 		}
 
 		return quantity;

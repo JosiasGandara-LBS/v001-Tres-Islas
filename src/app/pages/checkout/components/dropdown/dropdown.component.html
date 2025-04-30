@@ -11,7 +11,7 @@
 		>
 			<span class="col-start-1 row-start-1 flex items-center gap-3 pr-6">
 				<ng-container *ngIf="selectedOption; else defaultText">
-					<span class="block truncate">{{ selectedOption.name }}</span>
+					<span class="block truncate">Mesa {{ selectedOption }}</span>
 				</ng-container>
 				<ng-template #defaultText>
 					<span class="block truncate text-gray-400">Selecciona tu mesa:</span>
@@ -22,9 +22,9 @@
 			</svg>
 		</button>
 		<ul class="absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-md bg-white py-1 shadow-lg ring-1 ring-black/5 focus:outline-none text-sm" *ngIf="isDropdownOpen">
-			<li class="relative cursor-default select-none py-2 pl-3 pr-32 text-gray-800" *ngFor="let option of options; let i = index" [id]="'listbox-option-' + i" (click)="selectOption(option)">
+			<li class="relative cursor-default select-none py-2 pl-3 pr-32 text-gray-800" *ngFor="let option of options; let i = index" [id]="'listbox-option-' + i" (click)="selectOption(option, i)">
 				<div class="flex items-center">
-					<span class="block truncate font-normal" [ngClass]="{'text-orange-600 nunito-extra-bold': selectedOption === option}">{{ option.name }}</span>
+					<span class="block truncate font-normal" [ngClass]="{'text-orange-600 nunito-extra-bold': selectedOption === option}">Mesa {{ option }}</span>
 				</div>
 				<span *ngIf="selectedOption === option" class="absolute inset-y-0 right-0 flex items-center pr-4">
 					<span class="inline-flex items-center rounded-md bg-orange-100 px-2 py-1 text-xs font-medium text-orange-400 ring-1 ring-inset ring-red-600/10">Seleccionado</span>

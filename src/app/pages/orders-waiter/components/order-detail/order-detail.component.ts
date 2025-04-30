@@ -33,10 +33,9 @@ export class OrderDetailComponent implements OnInit {
 			return;
 		}
 		this._ordersService.updateOrderStatusField(orderID, 'status', this.orderStatus + 1).then(() => {
-			console.log('Status actualizado correctamente');
 			this.closeModal();
 		}).catch((err) => {
-			console.log('Error: ', err);
+			console.error('Error: ', err);
 		});
 	}
 
@@ -68,7 +67,7 @@ export class OrderDetailComponent implements OnInit {
 		}
 		).catch((err: any) => {
 			Swal.fire('Error', 'No se pudo cancelar el pedido', 'error');
-			console.log('Error: ', err);
+			console.error('Error: ', err);
 		}
 		);
 	}
@@ -97,7 +96,7 @@ export class OrderDetailComponent implements OnInit {
 		}
 		).catch((err: any) => {
 			Swal.fire('Error', 'No se pudo marcar como pagado el pedido', 'error');
-			console.log('Error: ', err);
+			console.error('Error: ', err);
 		}
 		);
 	}

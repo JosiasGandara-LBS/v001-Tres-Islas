@@ -50,7 +50,7 @@ export class OrdersService {
 		const orderDocRef = doc(this._firestore, `orders/${IDOrder}`);
 		return updateDoc(orderDocRef, { [fieldName]: newValue })
 		.then(() => {
-			console.log('Campo actualizado con éxito');
+			return;
 		})
 		.catch(error => {
 			console.error('Error actualizando el campo:', error);
@@ -61,7 +61,7 @@ export class OrdersService {
 		const orderDocRef = doc(this._firestore, `orders/${IDOrder}`);
 		return updateDoc(orderDocRef, { isChecked: 1 })
 		.then(() => {
-			console.log('Campo actualizado con éxito');
+			return;
 		})
 		.catch(error => {
 			console.error('Error actualizando el campo:', error);
@@ -72,7 +72,7 @@ export class OrdersService {
 		const orderDocRef = doc(this._firestore, `orders/${IDOrder}`);
 		return updateDoc(orderDocRef, { status: 0 })
 		.then(() => {
-			console.log('Pedido cancelado con éxito');
+			return;
 		})
 		.catch(error => {
 			console.error('Error cancelando el pedido:', error);

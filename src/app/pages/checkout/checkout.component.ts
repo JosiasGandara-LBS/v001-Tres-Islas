@@ -13,6 +13,7 @@ import { KitchenStatusService } from '@core/services/kitchen-status.service';
 import { OrdersClientService } from '@core/services/orders-client.service';
 import Swal from 'sweetalert2';
 import { DropdownTogoComponent } from './components/dropdown-togo/dropdown-togo.component';
+import { TransactionData } from '@core/models/transaction-data';
 
 @Component({
 	selector: 'app-checkout',
@@ -40,6 +41,8 @@ export class CheckoutComponent implements OnInit {
 	public errorsModal !: string;
 
 	paymentMethodDisabled: boolean = false;
+
+	public tables = signal<string[]>([]);
 
 	@ViewChild('cardPaymentModal', { read: ViewContainerRef }) container!: ViewContainerRef;
 
@@ -83,6 +86,10 @@ export class CheckoutComponent implements OnInit {
 			this.orderDetailForm.get('paymentMethod')?.setValue(null);
 		});
 
+		this.kitchenStatusService.getTables().subscribe((tables: string[]) => {
+			this.tables.set(tables);
+			this.orderDetailForm.get('assignedToTable')?.setValue(null);
+		});
 	}
 
 	get isTableDropdownDisabled(): boolean {
@@ -94,8 +101,13 @@ export class CheckoutComponent implements OnInit {
 			const componentRef = this.container.createComponent(CardPaymentComponent, { injector: this.injector });
 			componentRef.instance.phone_number = phone_number;
 
-			componentRef.instance.isTransactionCompleted.subscribe((valor: boolean) => {
-				resolve(valor);
+			componentRef.instance.isTransactionCompleted.subscribe((valor: TransactionData) => {
+				resolve(valor.success);
+				if (!valor.success) {
+					this.errorsModal = valor.message;
+					this.isModalVisible.set(true);
+					this.configModal = 4;
+				}
 				componentRef?.destroy();
 			});
 
@@ -186,7 +198,7 @@ export class CheckoutComponent implements OnInit {
 		this.orderDetailForm.patchValue({ createdDate: formattedDate, totalAmount, pendingPayment });
 
 		// Enviar orden
-		this.registrarOrden(cartItems, estimatedOrdersTime);
+		this.registrarOrden(cartItems, estimatedOrdersTime!);
 	}
 
 	private async validarPagoConTarjeta(): Promise<boolean> {
@@ -264,6 +276,5 @@ export class CheckoutComponent implements OnInit {
 
 	cerrar() {
 		this.modalVisible.set(false);
-		console.log(this.modalVisible());
 	}
 }
