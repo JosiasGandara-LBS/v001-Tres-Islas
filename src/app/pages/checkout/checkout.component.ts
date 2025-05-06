@@ -180,6 +180,12 @@ export class CheckoutComponent implements OnInit {
 			return;
 		}
 
+		if(this.orderDetailForm.get('orderToGo')?.value == 1) {
+			this.orderDetailForm.patchValue({
+				assignedToTable: 'PARA LLEVAR'
+			});
+		}
+
 		// Validar formulario antes de proceder
 		if (!this.orderDetailForm.valid) {
 			this.showModalBeforeOrder(2);
