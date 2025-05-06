@@ -120,10 +120,7 @@ export class CheckoutComponent implements OnInit {
 
 	showModalBeforeOrder(configNumber: number) {
 
-		if (this.kitchenStatusService.isKitchenOpen()) {
-			this.isModalVisible.set(true);
-			this.configModal = configNumber;
-		} else {
+		if (!this.kitchenStatusService.isKitchenOpen()) {
 			// Si la cocina está cerrada, mostrar un mensaje
 			alert('La cocina está cerrada. No puedes hacer el pedido ahora.');
 		}
@@ -145,13 +142,18 @@ export class CheckoutComponent implements OnInit {
 		if(!this.orderDetailForm.get("paymentMethod")?.valid) {
 			errorFields += "- Método de pago\n";
 		}
-		if(this.orderDetailForm.get("tenderedAmount")?.value < this.totalPriceSignal() || this.orderDetailForm.get("tenderedAmount")?.value === null) {
+		if(this.orderDetailForm.get("paymentMethod")?.value === "Dinero en efectivo" &&(this.orderDetailForm.get("tenderedAmount")?.value < this.totalPriceSignal() || this.orderDetailForm.get("tenderedAmount")?.value === null)) {
 			errorFields += "- Tu pago no puede ser menor al total\n"
 		}
 
 		this.isModalVisible.set(true);
-		this.configModal = configNumber;
-		this.errorsModal = errorFields;
+		if (errorFields === "") {
+			this.configModal = configNumber;
+			this.errorsModal = "";
+		} else {
+			this.configModal = 2;
+			this.errorsModal = errorFields;
+		}
 	}
 
 	async submitForm() {
@@ -167,13 +169,6 @@ export class CheckoutComponent implements OnInit {
 		const totalAmount = this.totalPriceSignal();
 		let pendingPayment = true;
 
-		// Validación de pago con tarjeta
-		if (paymentMethod === 'Tarjeta débito / crédito') {
-			const pagoValido = await this.validarPagoConTarjeta();
-			if (!pagoValido) return;
-			pendingPayment = false;
-		}
-
 		// Validación de pago en efectivo
 		if (paymentMethod === 'Dinero en efectivo' && tenderedAmount < totalAmount) {
 			this.showModalBeforeOrder(2);
@@ -186,11 +181,21 @@ export class CheckoutComponent implements OnInit {
 			});
 		}
 
-		// Validar formulario antes de proceder
-		if (!this.orderDetailForm.valid) {
-			this.showModalBeforeOrder(2);
-			return;
+		// Validación de pago con tarjeta
+		if (paymentMethod === 'Tarjeta débito / crédito') {
+			const pagoValido = await this.validarPagoConTarjeta();
+			if (!pagoValido) {
+				this.showModalBeforeOrder(4);
+				return;
+			}
+			pendingPayment = false;
 		}
+
+		// Validar formulario antes de proceder
+		// if (!this.orderDetailForm.valid) {
+		// 	this.showModalBeforeOrder(2);
+		// 	return;
+		// }
 
 		// Obtener datos para la orden
 		const cartItems = this.cartService.getCartItemsToOrder();
