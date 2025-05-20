@@ -12,8 +12,8 @@ export class FooterComponent {
 
 	descargarTerminosCondiciones() {
 		const link = document.createElement('a');
-		link.href = 'assets/documents/Términos y Condiciones de Uso, Aviso de Privacidad - Cervecería Tres Islas.pdf';
-		link.download = 'Términos y Condiciones de Uso, Aviso de Privacidad - Cervecería Tres Islas.pdf';
+		link.href = 'assets/documents/Terminos_y_Condiciones_Tres_Islas.pdf';
+		link.download = 'Terminos_y_Condiciones_Tres_Islas.pdf';
 		link.click();
 	}
 }
