@@ -133,7 +133,7 @@ export class CheckoutComponent implements OnInit {
 		if(!this.orderDetailForm.get("phoneNumber")?.valid) {
 			errorFields += "- Número de teléfono\n";
 		}
-		if(!this.orderDetailForm.get("assignedToTable")?.valid) {
+		if(!this.orderDetailForm.get("assignedToTable")?.valid && this.orderDetailForm.get("orderToGo")?.value === 0) {
 			errorFields += "- Número de mesa\n";
 		}
 		if(!this.orderDetailForm.get("orderToGo")?.valid) {
@@ -175,7 +175,7 @@ export class CheckoutComponent implements OnInit {
 			return;
 		}
 
-		if(this.orderDetailForm.get('orderToGo')?.value == 1) {
+		if(this.orderDetailForm.get('orderToGo')?.value === 1) {
 			this.orderDetailForm.patchValue({
 				assignedToTable: 'PARA LLEVAR'
 			});
