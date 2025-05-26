@@ -8,6 +8,8 @@ import { PagoService } from '@core/services/pago.service';
 import { CreditCardFormatPipe } from '@shared/pipes/credit-card-format.pipe';
 import { ExpirationDateFormatPipe } from '@shared/pipes/expiration-date-format.pipe';
 
+import { openpayConfig } from 'src/environment/openpay.config';
+
 declare var OpenPay: any;
 
 @Component({
@@ -55,9 +57,9 @@ export class CardPaymentComponent implements OnInit {
 	}
 
 	ngOnInit() {
-		OpenPay.setId('mheinovbagqf3nzxctrx');
-		OpenPay.setApiKey('pk_69ed8461123046469f2338a8419d3d95');
-		OpenPay.setSandboxMode(true);
+		OpenPay.setId(openpayConfig.openpayId);
+		OpenPay.setApiKey(openpayConfig.apiKey);
+		OpenPay.setSandboxMode(openpayConfig.sandboxMode);
 		this.deviceSessionId = OpenPay.deviceData.setup();
 	}
 

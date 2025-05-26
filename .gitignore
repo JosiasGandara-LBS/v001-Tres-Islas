@@ -9,6 +9,7 @@
 # ENV files
 src/environment/firebase.config.ts
 src/environment/functions.config.ts
+src/environment/openpay.config.ts
 
 # Node
 /node_modules
