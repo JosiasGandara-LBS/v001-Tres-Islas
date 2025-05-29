@@ -46,7 +46,7 @@
 
                         @if(item.image != '') {
                             <div class="relative">
-								<img src="{{ item.image }}" alt="{{ item.name }}" class="order-1 rounded-xl ml-4" width="128" height="128">
+								<img src="{{ item.image }}" alt="{{ item.name }}" class="w-32 h-32 order-1 rounded-xl ml-4" width="128" height="128">
                                 <span *ngIf="getQuantity(item.id) > 0" class="item-quantity nunito-extra-bold">{{ getQuantity(item.id) }}</span>
                             </div>
                         } @else {
