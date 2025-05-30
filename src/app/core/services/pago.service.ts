@@ -12,13 +12,12 @@ export class PagoService {
 
   	constructor(private http: HttpClient) { }
 
-	procesarPago(tokenId: string, deviceSessionId: string, amount: number, description: string, customer: any): Observable<any> {
+	procesarPago(tokenId: string, deviceSessionId: string, amount: number, description: string): Observable<any> {
 		const data = {
 		  	tokenId,
 		  	deviceSessionId,
 		  	amount,
 		  	description,
-			customer
 		};
 		return this.http.post(this.apiUrl, data);
 	}

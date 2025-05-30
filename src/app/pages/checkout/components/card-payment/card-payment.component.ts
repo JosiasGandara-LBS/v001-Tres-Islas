@@ -105,14 +105,9 @@ export class CardPaymentComponent implements OnInit {
 			OpenPay.token.create(cardData, (response: any) => {
 				const tokenId = response.data.id;
 
-				const customer = {
-					name: name,
-					lastname: lastname,
-					email: `${name}_${lastname}@example.com`,
-					phone_number: this.phone_number
-				};
+				// TODO: Hacer cargo sin customer para 3D Secure
 
-				this.pagoService.procesarPago(tokenId, this.deviceSessionId, amount, 'Pago concepto orden', customer).subscribe(
+				this.pagoService.procesarPago(tokenId, this.deviceSessionId, amount, 'Pago concepto orden').subscribe(
 					response => {
 						this.loadingTransaction = false;
 						this.transactionSuccess = true;
