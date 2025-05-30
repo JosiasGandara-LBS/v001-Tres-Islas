@@ -106,8 +106,14 @@ export class CardPaymentComponent implements OnInit {
 				const tokenId = response.data.id;
 
 				// TODO: Hacer cargo sin customer para 3D Secure
+				const customer = {
+					name: name,
+					lastname: lastname,
+					email: `${name}_${lastname}@example.com`,
+					phone_number: this.phone_number
+				};
 
-				this.pagoService.procesarPago(tokenId, this.deviceSessionId, amount, 'Pago concepto orden').subscribe(
+				this.pagoService.procesarPago(tokenId, this.deviceSessionId, amount, 'Pago concepto orden', customer).subscribe(
 					response => {
 						this.loadingTransaction = false;
 						this.transactionSuccess = true;

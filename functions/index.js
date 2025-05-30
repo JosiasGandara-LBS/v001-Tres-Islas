@@ -17,7 +17,11 @@ firebase_admin.initializeApp()
 exports.procesarPago = onRequest(async (req, res) => {
   cors(req, res, async () => {
     try {
-      const { tokenId, deviceSessionId, amount, description } = req.body;
+      const { tokenId, deviceSessionId, amount, description, customer } = req.body;
+
+      if (!customer) {
+        return res.status(400).json({ error: "Customer data is required" });
+      }
 
       console.log("Device Session ID:", deviceSessionId);
 
