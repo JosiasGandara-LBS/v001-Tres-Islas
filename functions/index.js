@@ -10,30 +10,28 @@ const cors = require('cors')({ origin: true });
 
 require('dotenv').config();
 
-const openpay = new Openpay(process.env.OPENPAY_MERCHANT_ID, process.env.OPENPAY_PRIVATE_KEY, false);
+const openpay = new Openpay(process.env.OPENPAY_MERCHANT_ID, process.env.OPENPAY_PRIVATE_KEY, process.env.OPENPAY_PRODUCTION_MODE);
 
 firebase_admin.initializeApp()
 
 exports.procesarPago = onRequest(async (req, res) => {
   cors(req, res, async () => {
     try {
-      const { tokenId, deviceSessionId, amount, description, customer } = req.body;
+      const { tokenID, deviceSessionID, amount, description, customer } = req.body;
 
       if (!customer) {
         return res.status(400).json({ error: "Customer data is required" });
       }
 
-      console.log("Device Session ID:", deviceSessionId);
-
       const chargeRequest = {
-        source_id: tokenId,
+        source_id: tokenID,
         method: "card",
         amount: amount,
         currency: "MXN",
         description: description,
-        device_session_id: deviceSessionId,
+        device_session_id: deviceSessionID,
 		use_3d_secure: true,
-		redirect_url: "https://example.com"
+		redirect_url: `https://tresislascocina.com/checkout`
       };
 
       // Convertir el callback en una promesa
@@ -143,3 +141,31 @@ exports.copyOrdersToHistory = onSchedule(
 		return null;
 	}
 );
+
+exports.checkPagoStatus = onRequest(async (req, res) => {
+  cors(req, res, async () => {
+    try {
+      const { transactionID } = req.query;
+
+      if (!transactionID) {
+        return res.status(400).json({ error: "transactionID is required" });
+      }
+
+      // Convertir el callback en una promesa
+      const transaction = await new Promise((resolve, reject) => {
+        openpay.charges.get(transactionID, (error, charge) => {
+          if (error) {
+            reject(error);
+          } else {
+            resolve(charge);
+          }
+        });
+      });
+
+      return res.status(200).json(transaction);
+    } catch (error) {
+      console.error("Error al consultar el estado del pago:", JSON.stringify(error, null, 2));
+      return res.status(500).json({ error: error });
+    }
+  });
+});

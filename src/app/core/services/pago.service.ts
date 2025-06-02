@@ -1,25 +1,30 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { procesarPagoUrl } from 'src/environment/functions.config';
+import { processPaymentURL } from 'src/environment/functions.config';
+import { openpayConfig } from 'src/environment/openpay.config';
 
 @Injectable({
-  providedIn: 'root'
+  	providedIn: 'root'
 })
-export class PagoService {
 
-	private apiUrl = procesarPagoUrl
+export class PagoService {
 
   	constructor(private http: HttpClient) { }
 
-	procesarPago(tokenId: string, deviceSessionId: string, amount: number, description: string, customer: any): Observable<any> {
+	processPayment(tokenID: string, deviceSessionID: string, amount: number, description: string, customer: any): Observable<any> {
 		const data = {
-		  	tokenId,
-		  	deviceSessionId,
+		  	tokenID,
+		  	deviceSessionID,
 		  	amount,
 		  	description,
 			customer
 		};
-		return this.http.post(this.apiUrl, data);
+		return this.http.post(processPaymentURL, data);
+	}
+
+	checkPaymentStatus(transactionID: string) {
+		// "charge_pending", "completed"
+		return this.http.get(`${openpayConfig.OPENPAY_CHECKOUTS_URL}/${transactionID}`);
 	}
 }

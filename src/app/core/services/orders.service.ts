@@ -1,6 +1,6 @@
 import { computed, effect, inject, Injectable, Signal, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { addDoc, collection, collectionData, doc, docData, Firestore, getDoc, onSnapshot, or, orderBy, query, updateDoc, where } from '@angular/fire/firestore';
+import { addDoc, collection, collectionData, doc, docData, Firestore, getDoc, onSnapshot, or, orderBy, query, setDoc, updateDoc, where } from '@angular/fire/firestore';
 import { map, Observable } from 'rxjs';
 
 @Injectable({
@@ -41,9 +41,15 @@ export class OrdersService {
 		}
 	}
 
-	addOrder(order : any[]) {
+	addOrder(order: any) {
 		const ordersCollection = collection(this._firestore, 'orders');
 		return addDoc(ordersCollection, order);
+	}
+
+	setOrderWithID(id: string, order: any) {
+		const ordersCollection = collection(this._firestore, 'orders');
+		const docRef = doc(ordersCollection, id);
+		return setDoc(docRef, order);
 	}
 
 	async updateOrderStatusField(IDOrder: string, fieldName: string, newValue: any): Promise<void> {

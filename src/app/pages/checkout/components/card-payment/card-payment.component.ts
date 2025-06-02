@@ -7,6 +7,7 @@ import { CartService } from '@core/services/cart.service';
 import { PagoService } from '@core/services/pago.service';
 import { CreditCardFormatPipe } from '@shared/pipes/credit-card-format.pipe';
 import { ExpirationDateFormatPipe } from '@shared/pipes/expiration-date-format.pipe';
+import { firstValueFrom } from 'rxjs';
 
 import { openpayConfig } from 'src/environment/openpay.config';
 
@@ -34,7 +35,8 @@ export class CardPaymentComponent implements OnInit {
 	cardNumber: string = '';
 	expirationDate: string = '';
 	cvv2: string = '';
-	deviceSessionId: string = '';
+	deviceSessionID: string = '';
+	transactionID: string = '';
 
 	isFadingOut: boolean = false;
 	showing: boolean = false;
@@ -57,13 +59,13 @@ export class CardPaymentComponent implements OnInit {
 	}
 
 	ngOnInit() {
-		OpenPay.setId(openpayConfig.openpayId);
-		OpenPay.setApiKey(openpayConfig.apiKey);
-		OpenPay.setSandboxMode(openpayConfig.sandboxMode);
-		this.deviceSessionId = OpenPay.deviceData.setup();
+		OpenPay.setId(openpayConfig.OPENPAY_MERCHANT_ID);
+		OpenPay.setApiKey(openpayConfig.OPENPAY_PUBLIC_KEY);
+		OpenPay.setSandboxMode(openpayConfig.OPENPAY_SANDBOX_MODE);
+		this.deviceSessionID = OpenPay.deviceData.setup();
 	}
 
-	onSubmit() {
+	async onSubmit() {
 		if(this.cardPaymentForm.valid) {
 
 			this.showing = true;
@@ -102,10 +104,35 @@ export class CardPaymentComponent implements OnInit {
 				cvv2: this.cvv2
 			};
 
-			OpenPay.token.create(cardData, (response: any) => {
-				const tokenId = response.data.id;
+			// OpenPay.token.create(cardData, (response: any) => {
+			// 	const tokenID = response.data.id;
 
-				// TODO: Hacer cargo sin customer para 3D Secure
+			// 	const customer = {
+			// 		name: name,
+			// 		lastname: lastname,
+			// 		email: `${name}_${lastname}@example.com`,
+			// 		phone_number: this.phone_number
+			// 	};
+
+			// 	this.pagoService.processPayment(tokenID, this.deviceSessionID, amount, 'Pago concepto orden', customer).subscribe(
+			// 		response => {
+			// 			this.transactionID = response.id;
+			// 			console.log("Respuesta Openpay: ", response);
+			// 			this.loadingTransaction = false;
+			// 			this.transactionSuccess = true;
+			// 		},
+			// 		error => {
+			// 			this.setError('Ocurrió un error en tu tarjeta');
+			// 		}
+			// 	);
+
+			// }, (error: any) => {
+			// 	this.setError('Error al generar el token de pago.');
+			// });
+
+			OpenPay.token.create(cardData, async (response: any) => {
+				const tokenID = response.data.id;
+
 				const customer = {
 					name: name,
 					lastname: lastname,
@@ -113,18 +140,22 @@ export class CardPaymentComponent implements OnInit {
 					phone_number: this.phone_number
 				};
 
-				this.pagoService.procesarPago(tokenId, this.deviceSessionId, amount, 'Pago concepto orden', customer).subscribe(
-					response => {
-						this.loadingTransaction = false;
-						this.transactionSuccess = true;
-					},
-					error => {
-						this.setError('Ocurrió un error en tu tarjeta');
-					}
-				);
+				try {
+					const paymentResponse = await firstValueFrom(
+						this.pagoService.processPayment(tokenID, this.deviceSessionID, amount, 'Pago concepto orden', customer)
+					);
 
+					this.transactionID = paymentResponse.id;
+					console.log("Respuesta Openpay: ", paymentResponse);
+					this.loadingTransaction = false;
+					this.transactionSuccess = true;
+
+				} catch (error) {
+					this.setError('Ocurrió un error en tu tarjeta');
+				}
 			}, (error: any) => {
 				this.setError('Error al generar el token de pago.');
+				console.log(error);
 			});
 		}
 	}
@@ -168,6 +199,7 @@ export class CardPaymentComponent implements OnInit {
 		this.isTransactionCompleted.emit({
 			success: true,
 			message: 'Pago realizado con éxito',
+			transactionID: this.transactionID
 		});
 		this.router.navigate(["/home"]);
 	}
