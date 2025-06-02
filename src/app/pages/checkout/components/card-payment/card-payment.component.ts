@@ -24,6 +24,7 @@ declare var OpenPay: any;
 export class CardPaymentComponent implements OnInit {
 
 	@Input() phone_number !: string;
+	@Input() orderID !: string;
 	@Output() cerrar = new EventEmitter<void>();
 	@Output() isTransactionCompleted = new EventEmitter<TransactionData>();
 
@@ -104,33 +105,7 @@ export class CardPaymentComponent implements OnInit {
 				cvv2: this.cvv2
 			};
 
-			// OpenPay.token.create(cardData, (response: any) => {
-			// 	const tokenID = response.data.id;
-
-			// 	const customer = {
-			// 		name: name,
-			// 		lastname: lastname,
-			// 		email: `${name}_${lastname}@example.com`,
-			// 		phone_number: this.phone_number
-			// 	};
-
-			// 	this.pagoService.processPayment(tokenID, this.deviceSessionID, amount, 'Pago concepto orden', customer).subscribe(
-			// 		response => {
-			// 			this.transactionID = response.id;
-			// 			console.log("Respuesta Openpay: ", response);
-			// 			this.loadingTransaction = false;
-			// 			this.transactionSuccess = true;
-			// 		},
-			// 		error => {
-			// 			this.setError('Ocurrió un error en tu tarjeta');
-			// 		}
-			// 	);
-
-			// }, (error: any) => {
-			// 	this.setError('Error al generar el token de pago.');
-			// });
-
-			OpenPay.token.create(cardData, async (response: any) => {
+			OpenPay.token.create(cardData, (response: any) => {
 				const tokenID = response.data.id;
 
 				const customer = {
@@ -140,19 +115,19 @@ export class CardPaymentComponent implements OnInit {
 					phone_number: this.phone_number
 				};
 
-				try {
-					const paymentResponse = await firstValueFrom(
-						this.pagoService.processPayment(tokenID, this.deviceSessionID, amount, 'Pago concepto orden', customer)
-					);
+				this.pagoService.processPayment(tokenID, this.deviceSessionID, this.orderID, amount, 'Pago concepto orden', customer).subscribe(
+					response => {
+						this.transactionID = response.id;
+						console.log("Respuesta Openpay: ", response);
+						this.loadingTransaction = false;
+						this.transactionSuccess = true;
+					},
+					error => {
+						this.setError('Ocurrió un error en tu tarjeta');
+						console.log(error);
+					}
+				);
 
-					this.transactionID = paymentResponse.id;
-					console.log("Respuesta Openpay: ", paymentResponse);
-					this.loadingTransaction = false;
-					this.transactionSuccess = true;
-
-				} catch (error) {
-					this.setError('Ocurrió un error en tu tarjeta');
-				}
 			}, (error: any) => {
 				this.setError('Error al generar el token de pago.');
 				console.log(error);

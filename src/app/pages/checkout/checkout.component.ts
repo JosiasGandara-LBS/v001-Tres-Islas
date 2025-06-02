@@ -14,6 +14,7 @@ import { OrdersClientService } from '@core/services/orders-client.service';
 import Swal from 'sweetalert2';
 import { DropdownTogoComponent } from './components/dropdown-togo/dropdown-togo.component';
 import { TransactionData } from '@core/models/transaction-data';
+import { v4 as uuidv4 } from 'uuid';
 
 @Component({
 	selector: 'app-checkout',
@@ -96,10 +97,11 @@ export class CheckoutComponent implements OnInit {
 		return (this.orderDetailForm.get('orderToGo')?.value == null || this.orderDetailForm.get('orderToGo')?.value == 1) ? true : false ;
 	}
 
-	insertarComponente(phoneNumber: string): Promise<TransactionData> {
+	insertarComponente(phoneNumber: string, orderID: string): Promise<TransactionData> {
 		return new Promise((resolve) => {
 			const componentRef = this.container.createComponent(CardPaymentComponent, { injector: this.injector });
 			componentRef.instance.phone_number = phoneNumber;
+			componentRef.instance.orderID = orderID;
 
 			componentRef.instance.isTransactionCompleted.subscribe((valor: TransactionData) => {
 				resolve(valor);
@@ -157,8 +159,7 @@ export class CheckoutComponent implements OnInit {
 	}
 
 	async submitForm() {
-
-		// Validación de si la cocina esta abierta
+		// Validar estado de la cocina
 		if (!this.kitchenStatusService.isKitchenOpen()) {
 			alert('La cocina está cerrada. No puedes hacer el pedido ahora.');
 			return;
@@ -169,26 +170,22 @@ export class CheckoutComponent implements OnInit {
 		const paymentMethod = this.orderDetailForm.get('paymentMethod')?.value;
 		const tenderedAmount = this.orderDetailForm.get('tenderedAmount')?.value;
 		const totalAmount = this.totalPriceSignal();
+		const orderID = uuidv4();
+		let transactionID: string | null = null;
 		let pendingPayment = true;
-		let transactionID = '';
 
-		// Validación de orden para llevar
-		if(this.orderDetailForm.get('orderToGo')?.value === 1) {
-			this.orderDetailForm.patchValue({
-				assignedToTable: 'PARA LLEVAR'
-			});
+		// Validar orden para llevar
+		if (this.orderDetailForm.get('orderToGo')?.value === 1) {
+			this.orderDetailForm.patchValue({assignedToTable: 'PARA LLEVAR'});
 		}
 
-		// Obtener datos para la orden
 		const cartItems = this.cartService.getCartItemsToOrder();
-		const estimatedOrdersTime = await firstValueFrom(this.tiempoEstimado);
+		const estimatedOrdersTime = await this.obtenerTiempoEstimadoOrden();
 		if (estimatedOrdersTime == null) return;
 
-		// Formatear fecha actual
-		const formattedDate = new Intl.DateTimeFormat('es-MX', { dateStyle: 'short', timeStyle: 'short' }).format(new Date());
+		const formattedDate = new Intl.DateTimeFormat('es-MX', {dateStyle: 'short', timeStyle: 'short'}).format(new Date());
 
-		// Actualizar valores en el formulario
-		this.orderDetailForm.patchValue({ createdDate: formattedDate, totalAmount, pendingPayment });
+		this.orderDetailForm.patchValue({createdDate: formattedDate, totalAmount, pendingPayment});
 
 		// Validación de pago en efectivo
 		if (paymentMethod === 'Dinero en efectivo' && tenderedAmount < totalAmount) {
@@ -199,28 +196,23 @@ export class CheckoutComponent implements OnInit {
 		// Validación de pago con tarjeta
 		if (paymentMethod === 'Tarjeta débito / crédito') {
 			const phoneNumber = this.orderDetailForm.get('phoneNumber')?.value;
-			const result = await this.validarPagoConTarjeta(phoneNumber);
 
-			if (!result.success) {
+			const result = await this.validarPagoConTarjeta(phoneNumber, orderID);
+
+			if (!result.success || !result.transactionID) {
 				this.showModalBeforeOrder(4);
 				return;
 			}
 
-			transactionID = result.transactionID ?? '';
-
-			// Función para registrar orden
-			await this.registrarOrden(cartItems, estimatedOrdersTime, transactionID);
-
-			pendingPayment = false;
+			transactionID = result.transactionID;
 		}
-		else {
-			// Función para registrar orden
-			await this.registrarOrden(cartItems, estimatedOrdersTime, transactionID);
-		}
+
+		await this.registrarOrden(cartItems, estimatedOrdersTime, orderID, transactionID);
 	}
 
-	private async validarPagoConTarjeta(phoneNumber: string): Promise<{ success: boolean, transactionID?: string }> {
-		return this.insertarComponente(phoneNumber);
+
+	private async validarPagoConTarjeta(phoneNumber: string, orderID: string): Promise<{ success: boolean, transactionID?: string }> {
+		return this.insertarComponente(phoneNumber, orderID);
 	}
 
 	async obtenerTiempoEstimadoOrden(): Promise<number | null> {
@@ -232,30 +224,23 @@ export class CheckoutComponent implements OnInit {
 		}
 	}
 
-	private async registrarOrden(cartItems: any[], estimatedOrdersTime: number, transactionID: string): Promise<void> {
+	private async registrarOrden(cartItems: any[], estimatedOrdersTime: number, orderID: string, transactionID: string | null): Promise<void> {
 		try {
 			const orderData = {
 				...this.orderDetailForm.value,
 				foodDishes: cartItems,
 				estimatedOrdersTime,
-				isChecked: 0,
+				transactionID: transactionID ?? '',
+				isChecked: 0
 			};
 
-			let orderId: string;
+			await this.ordersService.setOrderWithID(orderID, orderData);
 
-			if (transactionID && transactionID.trim() !== '') {
-				await this.ordersService.setOrderWithID(transactionID, orderData);
-				orderId = transactionID;
-				console.log("Openpay orderID: ", orderId);
-			} else {
-				const response = await this.ordersService.addOrder(orderData);
-				orderId = response.id;
-				console.log("Openpay responseID: ", orderId);
-			}
-
-			this.ordersClientService.addOrderIdToLocalStorage(orderId);
+			this.ordersClientService.addOrderIdToLocalStorage(orderID);
 			// this.cartService.clearCart();
 			// this.showModalBeforeOrder(3);
+
+			console.log("Orden registrada con ID:", orderID);
 		} catch (error) {
 			console.error("Error al registrar la orden:", error);
 			throw error;

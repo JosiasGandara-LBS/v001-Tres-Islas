@@ -10,14 +10,14 @@ const cors = require('cors')({ origin: true });
 
 require('dotenv').config();
 
-const openpay = new Openpay(process.env.OPENPAY_MERCHANT_ID, process.env.OPENPAY_PRIVATE_KEY, process.env.OPENPAY_PRODUCTION_MODE);
+const openpay = new Openpay(process.env.OPENPAY_MERCHANT_ID, process.env.OPENPAY_PRIVATE_KEY, false);
 
 firebase_admin.initializeApp()
 
 exports.procesarPago = onRequest(async (req, res) => {
   cors(req, res, async () => {
     try {
-      const { tokenID, deviceSessionID, amount, description, customer } = req.body;
+      const { tokenID, deviceSessionID, orderID, amount, description, customer } = req.body;
 
       if (!customer) {
         return res.status(400).json({ error: "Customer data is required" });
@@ -29,9 +29,10 @@ exports.procesarPago = onRequest(async (req, res) => {
         amount: amount,
         currency: "MXN",
         description: description,
+		customer: customer,
         device_session_id: deviceSessionID,
 		use_3d_secure: true,
-		redirect_url: `https://tresislascocina.com/checkout`
+		redirect_url: `https://tresislascocina.com/checkout?order_id=${orderID}`
       };
 
       // Convertir el callback en una promesa

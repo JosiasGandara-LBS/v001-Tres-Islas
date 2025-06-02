@@ -12,10 +12,11 @@ export class PagoService {
 
   	constructor(private http: HttpClient) { }
 
-	processPayment(tokenID: string, deviceSessionID: string, amount: number, description: string, customer: any): Observable<any> {
+	processPayment(tokenID: string, deviceSessionID: string, orderID: string, amount: number, description: string, customer: any): Observable<any> {
 		const data = {
 		  	tokenID,
 		  	deviceSessionID,
+			orderID,
 		  	amount,
 		  	description,
 			customer
