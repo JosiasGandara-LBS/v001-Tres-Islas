@@ -50,7 +50,7 @@ jobs:
           OPENPAY_MERCHANT_ID: "${{ secrets.OPENPAY_MERCHANT_ID }}",
           OPENPAY_PRODUCTION_MODE: ${{
             secrets.OPENPAY_PRODUCTION_MODE == 'true' && 'true' || 'false'
-          }}
+          }},
           OPENPAY_SANDBOX_MODE : ${{
             secrets.OPENPAY_SANDBOX_MODE == 'true' && 'true' || 'false'
           }}
