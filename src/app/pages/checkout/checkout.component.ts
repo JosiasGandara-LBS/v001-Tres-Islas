@@ -209,6 +209,8 @@ export class CheckoutComponent implements OnInit {
 			window.open(result.redirectURL, '_parent');
 		} else {
 			await this.registrarOrden(cartItems, estimatedOrdersTime, orderID, null);
+			localStorage.removeItem('cart');
+			this.returnToHome();
 		}
 
 	}

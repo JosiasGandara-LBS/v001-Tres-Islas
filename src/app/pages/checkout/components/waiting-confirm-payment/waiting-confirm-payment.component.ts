@@ -100,7 +100,7 @@ export class WaitingConfirmPaymentComponent implements OnInit {
 									confirmButtonText: 'Aceptar'
 								}).then(() => {
 									this.ordersService.setOrderAsPaid(orderId).then(() => {
-										localStorage.removeItem('cartItems');
+										localStorage.removeItem('cart');
 										this.router.navigate(['/home']);
 									});
 								});

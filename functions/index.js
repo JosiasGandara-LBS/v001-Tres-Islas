@@ -33,7 +33,7 @@ exports.procesarPago = onRequest(async (req, res) => {
         device_session_id: deviceSessionID,
 		use_3d_secure: true,
 		// redirect_url: `http://localhost:4200/confirm-payment?order_id=${orderID}`
-		redirect_url: `https://tresislascocina.com/checkout?order_id=${orderID}`
+		redirect_url: `https://tresislascocina.com/confirm-payment?order_id=${orderID}`
       };
 
       // Convertir el callback en una promesa
