@@ -99,7 +99,10 @@ export class WaitingConfirmPaymentComponent implements OnInit {
 									icon: 'success',
 									confirmButtonText: 'Aceptar'
 								}).then(() => {
-									this.router.navigate(['/home']);
+									this.ordersService.setOrderAsPaid(orderId).then(() => {
+										localStorage.removeItem('cartItems');
+										this.router.navigate(['/home']);
+									});
 								});
 							});
 						} else if (
