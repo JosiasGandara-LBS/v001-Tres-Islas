@@ -67,7 +67,7 @@ jobs:
         server: ${{ secrets.FTP_HOST }}
         username: ${{ secrets.FTP_USERNAME }}
         password: ${{ secrets.FTP_PASSWORD }}
-        local-dir: /home/runner/work/v001-Tres-Islas/v001-Tres-Islas/dist/browser/
+        local-dir: /home/runner/work/v001-Tres-Islas/v001-Tres-Islas/dist/
         server-dir: /
         protocol: ftps
 
