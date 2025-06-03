@@ -159,4 +159,9 @@ export class OrdersService {
 			return () => unsubscribe();
 		});
 	}
+
+	updateOrderPaymentStatus(orderId: string, pendingPayment: boolean): Promise<void> {
+		const orderDocRef = doc(this._firestore, `orders/${orderId}`);
+		return updateDoc(orderDocRef, { pendingPayment })
+	}
 }

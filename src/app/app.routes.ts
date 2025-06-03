@@ -20,6 +20,10 @@ export const routes: Routes = [
 		loadComponent: () => import('./pages/checkout/checkout.component').then(m => m.CheckoutComponent)
 	},
 	{
+		path: 'confirm-payment',
+		loadComponent: () => import('./pages/checkout/components/waiting-confirm-payment/waiting-confirm-payment.component').then(m => m.WaitingConfirmPaymentComponent)
+	},
+	{
 		path: 'login',
 		loadComponent: () => import('./pages/login/login.component').then(m => m.LoginComponent),
 		canActivate: [authGuard],

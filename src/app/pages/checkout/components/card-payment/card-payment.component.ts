@@ -1,3 +1,4 @@
+import { OpenPayResponse } from './../../../../shared/interfaces/open-pay-response.interface';
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, inject, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -38,6 +39,7 @@ export class CardPaymentComponent implements OnInit {
 	cvv2: string = '';
 	deviceSessionID: string = '';
 	transactionID: string = '';
+	redirectURL: string = '';
 
 	isFadingOut: boolean = false;
 	showing: boolean = false;
@@ -116,11 +118,13 @@ export class CardPaymentComponent implements OnInit {
 				};
 
 				this.pagoService.processPayment(tokenID, this.deviceSessionID, this.orderID, amount, 'Pago concepto orden', customer).subscribe(
-					response => {
+					(response: OpenPayResponse) => {
 						this.transactionID = response.id;
 						console.log("Respuesta Openpay: ", response);
 						this.loadingTransaction = false;
-						this.transactionSuccess = true;
+						this.redirectURL = response.payment_method.url;
+						// this.transactionSuccess = true;
+						this.returnToHome()
 					},
 					error => {
 						this.setError('Ocurrió un error en tu tarjeta');
@@ -170,13 +174,13 @@ export class CardPaymentComponent implements OnInit {
 	}
 
 	returnToHome() {
-		this.closeMessage();
+		// this.closeMessage();
 		this.isTransactionCompleted.emit({
 			success: true,
 			message: 'Pago realizado con éxito',
-			transactionID: this.transactionID
+			transactionID: this.transactionID,
+			redirectURL: this.redirectURL,
 		});
-		this.router.navigate(["/home"]);
 	}
 
 	closeMessage() {

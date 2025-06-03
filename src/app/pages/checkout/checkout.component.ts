@@ -199,19 +199,22 @@ export class CheckoutComponent implements OnInit {
 
 			const result = await this.validarPagoConTarjeta(phoneNumber, orderID);
 
-			if (!result.success || !result.transactionID) {
+			if (!result.success || !result.transactionID || !result.redirectURL) {
 				this.showModalBeforeOrder(4);
 				return;
 			}
 
 			transactionID = result.transactionID;
+			await this.registrarOrden(cartItems, estimatedOrdersTime, orderID, transactionID);
+			window.open(result.redirectURL, '_parent');
+		} else {
+			await this.registrarOrden(cartItems, estimatedOrdersTime, orderID, null);
 		}
 
-		await this.registrarOrden(cartItems, estimatedOrdersTime, orderID, transactionID);
 	}
 
 
-	private async validarPagoConTarjeta(phoneNumber: string, orderID: string): Promise<{ success: boolean, transactionID?: string }> {
+	private async validarPagoConTarjeta(phoneNumber: string, orderID: string): Promise<{ success: boolean, transactionID?: string, redirectURL?: string }> {
 		return this.insertarComponente(phoneNumber, orderID);
 	}
 

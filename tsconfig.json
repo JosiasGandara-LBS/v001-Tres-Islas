@@ -8,6 +8,7 @@
       "@shared/*": ["src/app/shared/*"],
       "@core/*": ["src/app/core/*"],
       "@env/*": ["src/environments/*"],
+	  "@assets/*": ["src/assets/*"],
     },
     "strict": true,
     "noImplicitOverride": true,

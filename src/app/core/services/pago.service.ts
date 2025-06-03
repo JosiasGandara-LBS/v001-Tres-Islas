@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { processPaymentURL } from 'src/environment/functions.config';
+import { processPaymentURL, checkpagostatus } from 'src/environment/functions.config';
 import { openpayConfig } from 'src/environment/openpay.config';
 
 @Injectable({
@@ -26,6 +26,7 @@ export class PagoService {
 
 	checkPaymentStatus(transactionID: string) {
 		// "charge_pending", "completed"
-		return this.http.get(`${openpayConfig.OPENPAY_CHECKOUTS_URL}/${transactionID}`);
+		const url = `${checkpagostatus}?transactionID=${encodeURIComponent(transactionID)}`;
+		return this.http.get(url);
 	}
 }

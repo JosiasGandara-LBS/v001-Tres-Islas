@@ -33,7 +33,8 @@ export class OrdersHistoryComponent implements OnInit {
 
 	getOrders() {
 		this.ordersService.getOrderHistoryByState(this.selectedState()).subscribe((data) => {
-			this._orders.set(data);
+			const filtered = data.filter(order => !(order.paymentMethod === 'card' && order.pendingPayment === true));
+			this._orders.set(filtered);
 		});
 	}
 

@@ -51,10 +51,15 @@ export class OrdersWaiterComponent implements OnInit, OnDestroy {
 
 	getOrdersForStatus(status: number): void {
 		const subscription = this._ordersService.getOrdersWithStatus(status).subscribe((data: any) => {
+			// Filtrar: excluir órdenes con pago con tarjeta y pago pendiente
+			const filteredData = data.filter((order: any) => {
+				// Asumiendo que order.paymentMethod === 'tarjeta' y order.paymentStatus === 'pendiente'
+				return !(order.paymentMethod === "Tarjeta débito / crédito" && order.pendingPayment === true);
+			});
 			const updatedOrders = [...this._orders()];
-			updatedOrders[status] = data;
+			updatedOrders[status] = filteredData;
 			this._orders.set(updatedOrders);
-			if (data.filter((order: any) => order.isChecked === 0).length > 0) {
+			if (filteredData.filter((order: any) => order.isChecked === 0).length > 0) {
 				this.statuses.find(s => s.n === status)!.hasChanges = true;
 			} else {
 				this.statuses.find(s => s.n === status)!.hasChanges = false;
