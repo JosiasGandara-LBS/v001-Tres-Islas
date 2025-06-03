@@ -25,10 +25,11 @@ jobs:
       run: npm run build --prod
 
     - name: Upload via FTP
-      uses: SamKirkland/FTP-Deploy-Action@v4
+      uses: SamKirkland/FTP-Deploy-Action@v4.3.5
       with:
-        server: ${{ secrets.FTP_HOST }}
-        username: ${{ secrets.FTP_USERNAME }}
-        password: ${{ secrets.FTP_PASSWORD }}
-        local-dir: ./dist/ # Asegúrate que el nombre del subdirectorio esté correcto
-        server-dir: ${{ secrets.FTP_TARGET_DIR }}/
+        server: ${{ secrets.CPANEL_FTP_HOST }}
+        username: ${{ secrets.CPANEL_FTP_USERNAME }}
+        password: ${{ secrets.CPANEL_FTP_PASSWORD }}
+        local-dir: ./dist/mi-app/
+        server-dir: ${{ secrets.CPANEL_FTP_TARGET_DIR }}/
+
