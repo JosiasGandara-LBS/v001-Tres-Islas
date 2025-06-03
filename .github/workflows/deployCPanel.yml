@@ -69,4 +69,5 @@ jobs:
         password: ${{ secrets.FTP_PASSWORD }}
         local-dir: /home/runner/work/v001-Tres-Islas/v001-Tres-Islas/dist/
         server-dir: ${{ secrets.FTP_TARGET_DIR }}
+        protocol: ftps
 
