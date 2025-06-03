@@ -38,18 +38,21 @@ jobs:
         EOF
 
         cat <<EOF > src/environment/functions.config.ts
-        export const crearUsuarioUrl = "${{ secrets.FUNC_CREAR_USUARIO_URL }}";
+        export const agregarUsuarioUrl = "${{ secrets.FUNC_CREAR_USUARIO_URL }}";
         export const eliminarUsuarioUrl = "${{ secrets.FUNC_ELIMINAR_USUARIO_URL }}";
         export const checkpagostatus = "${{ secrets.FUNC_CHECKPAGO_URL }}";
-        export const paymentURL = "${{ secrets.FUNC_PAGO_URL }}";
+        export const processPaymentURL = "${{ secrets.FUNC_PAGO_URL }}";
         EOF
 
         cat <<EOF > src/environment/openpay.config.ts
         export const openpayConfig = {
-          publicKey: "${{ secrets.OPENPAY_PUBLIC_KEY }}",
-          merchantId: "${{ secrets.OPENPAY_MERCHANT_ID }}",
-          productionMode: ${{
+          OPENPAY_PUBLIC_KEY: "${{ secrets.OPENPAY_PUBLIC_KEY }}",
+          OPENPAY_MERCHANT_ID: "${{ secrets.OPENPAY_MERCHANT_ID }}",
+          OPENPAY_PRODUCTION_MODE: ${{
             secrets.OPENPAY_PRODUCTION_MODE == 'true' && 'true' || 'false'
+          }}
+          OPENPAY_SANDBOX_MODE : ${{
+            secrets.OPENPAY_SANDBOX_MODE == 'true' && 'true' || 'false'
           }}
         };
         EOF
