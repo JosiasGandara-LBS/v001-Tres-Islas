@@ -206,10 +206,12 @@ export class CheckoutComponent implements OnInit {
 
 			transactionID = result.transactionID;
 			await this.registrarOrden(cartItems, estimatedOrdersTime, orderID, transactionID);
+			this.cartService.clearCart();
 			window.open(result.redirectURL, '_parent');
 		} else {
 			await this.registrarOrden(cartItems, estimatedOrdersTime, orderID, null);
 			localStorage.removeItem('cart');
+			this.cartService.clearCart();
 			this.returnToHome();
 		}
 
