@@ -20,7 +20,7 @@
 		<section class="w-full p-4 text-gray-700">
 			<div class="text-sm grid gap-4">
 				<p class="text-xl nunito-extra-bold">No. de pedido: <span class="uppercase">#{{ order.id | truncate:5 }}</span></p>
-				<p class="nunito-extra-bold" [ngClass]="{'text-yellow-500': order.status == 1, 'text-sky-700': order.status == 2, 'text-gray-400': (order.status == 3 || order.status == 4)}">
+				<p class="nunito-extra-bold" [ngClass]="{'text-yellow-500': order.status == 1, 'text-sky-700': order.status == 2,  'text-green-800': order.status == 3, 'text-red-800': order.status == 0}">
 					@switch (order.status) {
 						@case (1) {
 							Esperando pago
@@ -31,7 +31,7 @@
 						@case (3) {
 							Completado
 						}
-						@case (4) {
+						@case (0) {
 							Cancelado
 						}
 					}

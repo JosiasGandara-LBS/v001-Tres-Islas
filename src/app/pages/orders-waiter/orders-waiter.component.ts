@@ -25,7 +25,7 @@ export class OrdersWaiterComponent implements OnInit, OnDestroy {
 	statuses = [
 		{ n: 2, text: 'Preparando', color: 'yellow-600', icon: 'pi pi-clock', hasChanges: false },
 		{ n: 0, text: 'Cancelado', color: 'red-700', icon: 'pi pi-ban', hasChanges: false },
-		{ n: 3, text: 'Entregado', color: 'gray-500', icon: 'pi pi-check', hasChanges: false }
+		{ n: 3, text: 'Entregado', color: 'green-800', icon: 'pi pi-check', hasChanges: false }
 	];
 
 	showModal: boolean = false;
