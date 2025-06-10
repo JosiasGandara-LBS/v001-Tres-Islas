@@ -168,7 +168,7 @@ export class CheckoutComponent implements OnInit {
 		this.isModalVisible.set(false);
 
 		const paymentMethod = this.orderDetailForm.get('paymentMethod')?.value;
-		const tenderedAmount = this.orderDetailForm.get('tenderedAmount')?.value;
+		const tenderedAmount = this.orderDetailForm.get('tenderedAmount')?.value || 0;
 		const totalAmount = this.totalPriceSignal();
 		const orderID = uuidv4();
 		let transactionID: string | null = null;
@@ -204,12 +204,13 @@ export class CheckoutComponent implements OnInit {
 				return;
 			}
 
+			const tip = result.tip || 0;
 			transactionID = result.transactionID;
-			await this.registrarOrden(cartItems, estimatedOrdersTime, orderID, transactionID);
+			await this.registrarOrden(cartItems, estimatedOrdersTime, orderID, transactionID, tip);
 			this.cartService.clearCart();
 			window.open(result.redirectURL, '_parent');
 		} else {
-			await this.registrarOrden(cartItems, estimatedOrdersTime, orderID, null);
+			await this.registrarOrden(cartItems, estimatedOrdersTime, orderID, null, 0);
 			localStorage.removeItem('cart');
 			this.cartService.clearCart();
 			this.returnToHome();
@@ -218,7 +219,7 @@ export class CheckoutComponent implements OnInit {
 	}
 
 
-	private async validarPagoConTarjeta(phoneNumber: string, orderID: string): Promise<{ success: boolean, transactionID?: string, redirectURL?: string }> {
+	private async validarPagoConTarjeta(phoneNumber: string, orderID: string): Promise<{ success: boolean, transactionID?: string, redirectURL?: string, tip?: number }> {
 		return this.insertarComponente(phoneNumber, orderID);
 	}
 
@@ -231,13 +232,14 @@ export class CheckoutComponent implements OnInit {
 		}
 	}
 
-	private async registrarOrden(cartItems: any[], estimatedOrdersTime: number, orderID: string, transactionID: string | null): Promise<void> {
+	private async registrarOrden(cartItems: any[], estimatedOrdersTime: number, orderID: string, transactionID: string | null, tip: number): Promise<void> {
 		try {
 			const orderData = {
 				...this.orderDetailForm.value,
 				foodDishes: cartItems,
 				estimatedOrdersTime,
 				transactionID: transactionID ?? '',
+				tip: tip,
 				isChecked: 0
 			};
 
