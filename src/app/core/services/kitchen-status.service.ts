@@ -59,7 +59,7 @@ export class KitchenStatusService {
         const kitchenStatusCollection = collection(this.firestore, 'kitchenStatus');
         const kitchenStatusRef = doc(kitchenStatusCollection, 'kitchenStatus');
         return updateDoc(kitchenStatusRef, {
-            estimatedTime: estimatedTime
+            estimatedOrdersTime: estimatedTime
         });
     }
 

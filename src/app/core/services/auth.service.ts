@@ -180,4 +180,8 @@ export class AuthService {
 		this.logout();
 		}
 	}
+
+	public isUserAdmin = () => {
+		return this.user()?.role === 'ADMIN' || this.user()?.role === 'TI';
+	}
 }
