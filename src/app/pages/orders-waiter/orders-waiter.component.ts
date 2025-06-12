@@ -100,7 +100,7 @@ export class OrdersWaiterComponent implements OnInit, OnDestroy {
 	exportToExcel(): void {
 		Swal.fire({
 			title: 'Exportar órdenes',
-			text: '¿Estás seguro de que deseas exportar las órdenes a Excel?',
+			text: '¿Deseas exportar las órdenes a Excel?',
 			icon: 'warning',
 			showCancelButton: true,
 			confirmButtonText: 'Sí, exportar',

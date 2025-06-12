@@ -20,7 +20,8 @@ export class OrderDetailComponent implements OnInit {
 
 	statuses: { [key: number]: { text: string; color: string, textToChangeStatus: string} } = {
 		0 : { text: 'Cancelado', color: 'red-700', textToChangeStatus: 'Pedido cancelado'},
-		2 : { text: 'Preparando', color: 'yellow-600', textToChangeStatus: 'Entregado!'},
+		1 : { text: 'Recibido', color: 'blue-500', textToChangeStatus: 'Preparar pedido'},
+		2 : { text: 'Preparando', color: 'yellow-600', textToChangeStatus: 'Entregar pedido'},
 		3 : { text: 'Entregado', color: 'gray-500', textToChangeStatus: 'Pedido entregado'}
 	};
 
@@ -29,9 +30,13 @@ export class OrderDetailComponent implements OnInit {
 	ngOnInit(): void {}
 
 	updateStatus(orderID : string) {
-		if (this.orderStatus === 3 || this.orderStatus === 0) {
+		if (this.orderStatus === 3 || this.orderStatus === 0) return;
+
+		if (this.orderStatus === 2 && this.order.pendingPayment) {
+			Swal.fire('Acción denegada', 'El pedido no ha sido marcado como pagado', 'warning');
 			return;
 		}
+
 		this._ordersService.updateOrderStatusField(orderID, 'status', this.orderStatus + 1).then(() => {
 			this.closeModal();
 		}).catch((err) => {
