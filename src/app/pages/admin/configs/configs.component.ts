@@ -20,6 +20,7 @@ export class ConfigsComponent implements OnInit{
 
 	public configsForm = signal(this.fb.group({
 		CashPaymentToGoStatus: [false, [Validators.required]],
+		OnlinePaymentStatus: [false, [Validators.required]],
 		ProductDiscountEnabled: [false, [Validators.required]],
 		ProductDiscountStartTime: [null, [Validators.required]],
 		ProductDiscountEndTime: [null, [Validators.required]],
@@ -44,6 +45,7 @@ export class ConfigsComponent implements OnInit{
 	saveConfigs() {
 		const configs = {
 			CashPaymentToGoStatus: this.configsForm().get('CashPaymentToGoStatus')?.value,
+			OnlinePaymentStatus: this.configsForm().get('OnlinePaymentStatus')?.value,
 			ProductDiscountEnabled: this.configsForm().get('ProductDiscountEnabled')?.value,
 			ProductDiscountStartTime: this.configsForm().get('ProductDiscountStartTime')?.value,
 			ProductDiscountEndTime: this.configsForm().get('ProductDiscountEndTime')?.value,
@@ -94,6 +96,7 @@ export class ConfigsComponent implements OnInit{
 			if (configs) {
 				this.configsForm().patchValue({
 					CashPaymentToGoStatus: configs.CashPaymentToGoStatus,
+					OnlinePaymentStatus: configs.OnlinePaymentStatus,
 				});
 			}
 		});

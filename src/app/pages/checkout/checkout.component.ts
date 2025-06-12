@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Inject, inject, Injector, OnInit, signal, ViewChild, ViewContainerRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, Inject, inject, Injector, OnInit, signal, ViewChild, ViewContainerRef } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CartService } from '../../core/services/cart.service';
 import { Router } from '@angular/router';
@@ -36,6 +36,7 @@ export class CheckoutComponent implements OnInit {
 	modalVisible = this.cartService.modalVisible;
 
 	statusCashPaymentToGoStatus = this.kitchenStatusService.cashPaymentStatusSignal;
+	statusOnlinePaymentStatus = this.kitchenStatusService.onlinePaymentStatusSignal;
 
 	public isModalVisible = signal(false);
 	public configModal !: number;
@@ -68,6 +69,18 @@ export class CheckoutComponent implements OnInit {
 			createdDate:     ['01/01/1800, 00:00 a.m.'],
 			status:          [2]
 		});
+
+		effect(() => {
+			const isCashToGoEnabled = this.kitchenStatusService.cashPaymentStatusSignal();
+			const isOnlinePaymentEnabled = this.kitchenStatusService.onlinePaymentStatusSignal();
+
+			if (!isCashToGoEnabled && this.orderDetailForm.get('orderToGo')?.value === 1 && this.orderDetailForm.get('paymentMethod')?.value === 'Dinero en efectivo') {
+				this.orderDetailForm.get('paymentMethod')?.setValue(null);
+			}
+			if (!isOnlinePaymentEnabled && this.orderDetailForm.get('paymentMethod')?.value === 'Tarjeta débito / crédito') {
+				this.orderDetailForm.get('paymentMethod')?.setValue(null);
+			}
+		})
 	}
 
 	ngOnInit() {

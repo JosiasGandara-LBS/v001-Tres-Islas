@@ -1,4 +1,4 @@
-import { inject, Injectable, signal } from '@angular/core';
+import { inject, Injectable, Signal, signal, effect } from '@angular/core';
 import { collectionData, Firestore, addDoc, deleteDoc, docData } from '@angular/fire/firestore';
 import { Product } from '@shared/interfaces/product.interface';
 import { map, Observable} from 'rxjs';
@@ -11,6 +11,7 @@ export class KitchenStatusService {
     private firestore = inject(Firestore);
     public isKitchenOpen = signal<boolean>(true);
 	private statusSignal = signal<boolean>(false);
+	private olinePaymentStatus = signal<boolean>(false);
 
     constructor() {
         this.getKitchenStatus().subscribe(status => {
@@ -19,7 +20,10 @@ export class KitchenStatusService {
         });
 
 		this.cashPaymentToGoStatus();
+		this.onlinePaymentStatus();
     }
+
+	
 
     public selectedProduct = signal<Product | null>(null);
 
@@ -78,6 +82,7 @@ export class KitchenStatusService {
 
 		return updateDoc(kitchenStatusDoc, {
 			CashPaymentToGoStatus: configs.CashPaymentToGoStatus,
+			OnlinePaymentStatus: configs.OnlinePaymentStatus,
 		});
 	}
 
@@ -95,9 +100,27 @@ export class KitchenStatusService {
 		});
 	}
 
+	private onlinePaymentStatus() {
+		const docRef = doc(this.firestore, 'kitchenStatus', 'kitchenStatus');
+
+		// Escucha en tiempo real
+		onSnapshot(docRef, (docSnap) => {
+			if (docSnap.exists()) {
+				const data = docSnap.data();
+				this.olinePaymentStatus.set(data['OnlinePaymentStatus']);
+			} else {
+				this.olinePaymentStatus.set(false);
+			}
+		});
+	}
+
 	// Signal pública para acceder al valor reactivo
 	get cashPaymentStatusSignal() {
 		return this.statusSignal.asReadonly();
+	}
+
+	get onlinePaymentStatusSignal(): Signal<boolean> {
+		return this.olinePaymentStatus.asReadonly();
 	}
 
 	getTables() {
