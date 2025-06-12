@@ -67,7 +67,7 @@ export class CheckoutComponent implements OnInit {
 			pendingPayment:  [],
 			totalAmount:     [this.totalPriceSignal(), Validators.required],
 			createdDate:     ['01/01/1800, 00:00 a.m.'],
-			status:          [2]
+			status:          [1]
 		});
 
 		effect(() => {
