@@ -1,7 +1,7 @@
 import { Component, effect, inject, OnInit, signal } from '@angular/core';
 import { InputSwitchModule } from 'primeng/inputswitch';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, FormArray } from '@angular/forms';
 import { KitchenStatusService } from '@core/services/kitchen-status.service';
 import Swal from 'sweetalert2';
 import { PromotionsService } from '@core/services/promotions.service';
@@ -25,7 +25,18 @@ export class ConfigsComponent implements OnInit{
 		ProductDiscountStartTime: [null, [Validators.required]],
 		ProductDiscountEndTime: [null, [Validators.required]],
 		tableName: [null],
+		kitchenHours: this.fb.array([]) as FormArray, // Especificar tipo FormArray
 	}));
+
+	public daysOfWeek = [
+	  { label: 'Domingo', value: 0 },
+	  { label: 'Lunes', value: 1 },
+	  { label: 'Martes', value: 2 },
+	  { label: 'Miércoles', value: 3 },
+	  { label: 'Jueves', value: 4 },
+	  { label: 'Viernes', value: 5 },
+	  { label: 'Sábado', value: 6 },
+	];
 
 	editTableForm: FormGroup = this.fb.group({
 		name: ['', Validators.required]
@@ -35,12 +46,26 @@ export class ConfigsComponent implements OnInit{
 	public tables = signal<any[]>([]);
 
 	ngOnInit(): void {
-		this.getConfigs()
+		this.getConfigs();
+		this.initKitchenHoursForm();
 	}
 
-	constructor() {
+	initKitchenHoursForm() {
+		// Inicializa el formArray de kitchenHours con 7 días
+		const arr = this.fb.array<FormGroup>([]);
+		for (let i = 0; i < 7; i++) {
+		  arr.push(this.fb.group({
+			enabled: [false],
+			start: ['08:00'],
+			end: ['08:00']
+		  }));
+		}
+		this.configsForm().setControl('kitchenHours', arr);
 	}
 
+	get kitchenHoursFormArray() {
+		return this.configsForm().get('kitchenHours') as FormArray;
+	}
 
 	saveConfigs() {
 		const configs = {
@@ -49,6 +74,7 @@ export class ConfigsComponent implements OnInit{
 			ProductDiscountEnabled: this.configsForm().get('ProductDiscountEnabled')?.value,
 			ProductDiscountStartTime: this.configsForm().get('ProductDiscountStartTime')?.value,
 			ProductDiscountEndTime: this.configsForm().get('ProductDiscountEndTime')?.value,
+			kitchenHours: this.configsForm().get('kitchenHours')?.value,
 		};
 		try {
 			if (!this.configsForm().valid) {
@@ -98,6 +124,18 @@ export class ConfigsComponent implements OnInit{
 					CashPaymentToGoStatus: configs.CashPaymentToGoStatus,
 					OnlinePaymentStatus: configs.OnlinePaymentStatus,
 				});
+				if (configs.kitchenHours) {
+					const arr = this.fb.array<FormGroup>([]);
+					for (let i = 0; i < 7; i++) {
+					  arr.push(this.fb.group({
+						name: [this.daysOfWeek[i].label],
+						enabled: [configs.kitchenHours[i]?.enabled ?? false],
+						start: [configs.kitchenHours[i]?.start ?? '08:00'],
+						end: [configs.kitchenHours[i]?.end ?? '08:00']
+					  }));
+					}
+					this.configsForm().setControl('kitchenHours', arr);
+				}
 			}
 		});
 
@@ -190,4 +228,8 @@ export class ConfigsComponent implements OnInit{
 		}
 	}
 
+	getKitchenHourEnabled(i: number): boolean {
+		const arr = this.configsForm().get('kitchenHours') as FormArray;
+		return !!arr && !!arr.at(i)?.get('enabled')?.value;
+	}
 }

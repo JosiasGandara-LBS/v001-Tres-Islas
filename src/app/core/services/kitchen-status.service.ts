@@ -1,29 +1,141 @@
-import { inject, Injectable, Signal, signal, effect } from '@angular/core';
+import { inject, Injectable, Signal, signal, effect, computed } from '@angular/core';
 import { collectionData, Firestore, addDoc, deleteDoc, docData } from '@angular/fire/firestore';
 import { Product } from '@shared/interfaces/product.interface';
 import { map, Observable} from 'rxjs';
 import { collection, doc, getDoc, updateDoc, getDocFromServer, DocumentData, DocumentReference, onSnapshot } from 'firebase/firestore';
+import { KitchenHours } from '../models/kitchen-hours.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class KitchenStatusService {
     private firestore = inject(Firestore);
-    public isKitchenOpen = signal<boolean>(true);
-	private statusSignal = signal<boolean>(false);
+    private _now = signal<number>(Date.now());
+    // public isKitchenOpen = signal<boolean>(true);
+    public isKitchenOpen = computed(() => {
+        // Forzar reevaluación cada minuto
+        this._now();
+        const hours = this.kitchenHoursSignal();
+        const status = this.kitchenStatusSignal();
+        if (!hours || status === undefined) return false;
+        const now = new Date();
+        const day = now.getDay();
+        const prevDay = (day === 0) ? 6 : day - 1;
+        const currentTime = now.getHours() * 60 + now.getMinutes();
+        let isOpen = false;
+        const today = hours[day];
+        const yesterday = hours[prevDay];
+
+        // Si el día de hoy está activado, solo se considera el horario de hoy
+        if (today && today.enabled) {
+            const start = this.timeToMinutes(today.start);
+            const end = this.timeToMinutes(today.end);
+            if (start < end) {
+                isOpen = currentTime >= start && currentTime < end;
+            } else {
+                isOpen = currentTime >= start || currentTime < end;
+            }
+        } else if (yesterday && yesterday.enabled) {
+            // Si el día de hoy está desactivado, solo considerar la franja nocturna de ayer
+            const yStart = this.timeToMinutes(yesterday.start);
+            const yEnd = this.timeToMinutes(yesterday.end);
+            if (yStart > yEnd) {
+                if (currentTime < yEnd) {
+                    isOpen = true;
+                }
+            }
+        }
+        return isOpen && status;
+    });
+
+    private statusSignal = signal<boolean>(false);
 	private olinePaymentStatus = signal<boolean>(false);
 
-    constructor() {
-        this.getKitchenStatus().subscribe(status => {
-            if(status !== undefined)
-                this.isKitchenOpen.set(status);
-        });
+    // Signal reactivo para los horarios
+    private kitchenHoursSignal = signal<KitchenHours | null>(null);
 
+    // Signal reactivo para el status de cocina (isKitchenOpen de Firebase)
+    private kitchenStatusSignal = signal<boolean | undefined>(undefined);
+
+    // Signal computado: true si ambos (horario y status) permiten abrir
+    public isKitchenReallyOpen = computed(() => {
+        const hours = this.kitchenHoursSignal();
+        const status = this.kitchenStatusSignal();
+        if (!hours || status === undefined) return false;
+        const now = new Date();
+        const day = now.getDay();
+        const prevDay = (day === 0) ? 6 : day - 1;
+        const currentTime = now.getHours() * 60 + now.getMinutes();
+        let isOpen = false;
+        const today = hours[day];
+        const yesterday = hours[prevDay];
+
+        // Si el día de hoy está activado, solo se considera el horario de hoy
+        if (today && today.enabled) {
+            const start = this.timeToMinutes(today.start);
+            const end = this.timeToMinutes(today.end);
+            if (start < end) {
+                isOpen = currentTime >= start && currentTime < end;
+            } else {
+                isOpen = currentTime >= start || currentTime < end;
+            }
+        } else if (yesterday && yesterday.enabled) {
+            // Si el día de hoy está desactivado, solo considerar la franja nocturna de ayer
+            const yStart = this.timeToMinutes(yesterday.start);
+            const yEnd = this.timeToMinutes(yesterday.end);
+            if (yStart > yEnd) {
+                if (currentTime < yEnd) {
+                    isOpen = true;
+                }
+            }
+        }
+        return isOpen && status;
+    });
+
+    constructor() {
 		this.cashPaymentToGoStatus();
 		this.onlinePaymentStatus();
+        this.listenToKitchenHours();
+        this.listenToKitchenStatus();
+        // Timer para forzar reevaluación cada minuto
+        setInterval(() => {
+          this._now.set(Date.now());
+        }, 60000);
     }
 
-	
+    // Escuchar cambios en los horarios de cocina
+    private listenToKitchenHours() {
+        const docRef = doc(this.firestore, 'kitchenStatus', 'kitchenStatus');
+        onSnapshot(docRef, (docSnap) => {
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                this.kitchenHoursSignal.set(data['kitchenHours'] ?? null);
+            } else {
+                this.kitchenHoursSignal.set(null);
+            }
+        });
+    }
+
+    // Escuchar cambios en el status de cocina (isKitchenOpen de Firebase)
+    private listenToKitchenStatus() {
+        const kitchenStatusCollection = collection(this.firestore, 'kitchenStatus');
+        const kitchenStatusRef = doc(kitchenStatusCollection, 'kitchenStatus');
+        onSnapshot(kitchenStatusRef, (docSnap) => {
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                this.kitchenStatusSignal.set(data['status']);
+            } else {
+                this.kitchenStatusSignal.set(undefined);
+            }
+        });
+    }
+
+    private timeToMinutes(time: string): number {
+        const [h, m] = time.split(':').map(Number);
+        return h * 60 + m;
+    }
+
+
 
     public selectedProduct = signal<Product | null>(null);
 
@@ -83,6 +195,7 @@ export class KitchenStatusService {
 		return updateDoc(kitchenStatusDoc, {
 			CashPaymentToGoStatus: configs.CashPaymentToGoStatus,
 			OnlinePaymentStatus: configs.OnlinePaymentStatus,
+			kitchenHours: configs.kitchenHours,
 		});
 	}
 

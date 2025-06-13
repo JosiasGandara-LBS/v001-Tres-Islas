@@ -84,13 +84,17 @@
 							<p class="text-xs inline-flex justify-end items-center">Subtotal</p>
 							<p class="text-xs">MX {{ order.totalAmount | currency }}</p>
 						</div>
+						<div *ngIf="order.tip && order.tip > 0" class="flex flex-row items-center justify-between mb-2 min-w-40">
+							<p class="text-xs inline-flex justify-end items-center">Propina</p>
+							<p class="text-xs">MX {{ order.tip | currency }}</p>
+						</div>
 						<div *ngIf="order.tenderedAmount && order.tenderedAmount > 0" class="flex flex-row items-center justify-between min-w-40 mb-2">
 							<p class="text-xs inline-flex justify-end items-center">Pago</p>
 							<p class="text-xs">MX {{ order.tenderedAmount | currency }}</p>
 						</div>
 						<div class="flex flex-row items-center justify-between min-w-40 mb-2">
 							<p class="text-sm font-bold inline-flex justify-between items-center">Total</p>
-							<p class="text-sm font-bold">MX {{ order.totalAmount | currency }}</p>
+							<p class="text-sm font-bold">MX {{ order.totalAmount + (order.tip ?? 0) | currency }}</p>
 						</div>
 						<div *ngIf="order.tenderedAmount && order.tenderedAmount > 0" class="flex flex-row items-center justify-between min-w-40">
 							<p class="text-sm font-bold inline-flex justify-end items-center">Cambio</p>

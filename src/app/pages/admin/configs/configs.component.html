@@ -8,13 +8,13 @@
 		<form [formGroup]="configsForm()" class="nunito-regular">
 			<hr class="my-2">
 			<!-- To Go Cash Payment -->
-			<div class="flex flex-row gap-4 items-center justify-start">
-				<div class="flex flex-col gap-4">
+			<div class="flex flex-row gap-4 items-center justify-start w-full">
+				<div class="flex flex-col gap-4 w-full">
 					<div class="nunito-bold text-lg md:text-start text-center">
 					<h3>Pago con efectivo en pedidos para llevar</h3>
-					</div>
-				<div class="flex gap-2 items-center justify-center md:justify-start">
-					<p-inputSwitch formControlName="CashPaymentToGoStatus" [ngModel]="configsForm().get('CashPaymentToGoStatus')?.value" class="h-full flex items-center"></p-inputSwitch>
+				</div>
+				<div class="flex gap-2 items-center justify-center md:justify-start w-full">
+					<p-inputSwitch formControlName="CashPaymentToGoStatus" class="h-full flex items-center"></p-inputSwitch>
 					<label for="CashPaymentToGoStatus" class="flex w-auto text-center h-full text-nowrap items-center"><span class="text-center flex items-center text-nowrap text text-sm">{{ configsForm().get('CashPaymentToGoStatus')?.getRawValue() ? 'Disponible' : 'No Disponible' }}</span></label>
 				</div>
 				</div>
@@ -35,7 +35,7 @@
 						<h3>Estatus de pago en línea</h3>
 					</div>
 					<div class="flex gap-2 items-center justify-center md:justify-start">
-						<p-inputSwitch formControlName="OnlinePaymentStatus" [ngModel]="configsForm().get('OnlinePaymentStatus')?.value" class="h-full flex items-center"></p-inputSwitch>
+						<p-inputSwitch formControlName="OnlinePaymentStatus" class="h-full flex items-center"></p-inputSwitch>
 						<label for="OnlinePaymentStatus" class="flex w-auto text-center h-full text-nowrap items-center"><span class="text-center flex items-center text-nowrap text text-sm">{{ configsForm().get('OnlinePaymentStatus')?.getRawValue() ? 'Disponible' : 'No Disponible' }}</span></label>
 					</div>
 				</div>
@@ -58,7 +58,7 @@
 				</div>
 				<div class="flex md:flex-row flex-col gap-8 items-center justify-start">
 					<div class="flex gap-2 items-center justify-start">
-						<p-inputSwitch formControlName="ProductDiscountEnabled" [ngModel]="configsForm().get('ProductDiscountEnabled')?.value" class="h-full flex items-center"></p-inputSwitch>
+						<p-inputSwitch formControlName="ProductDiscountEnabled" class="h-full flex items-center"></p-inputSwitch>
 						<label for="ProductDiscountEnabled" class="flex w-auto text-center h-full text-nowrap items-center"><span class="text-center flex items-center text-nowrap text text-sm">{{ configsForm().get('ProductDiscountEnabled')?.getRawValue() ? 'Habilitada' : 'No Habilitada' }}</span></label>
 					</div>
 					<div class="flex flex-row gap-4 align-center justify-start">
@@ -83,7 +83,42 @@
 
 			<hr class="my-2">
 
-			 <!-- Mesas config -->
+			<!-- Horarios de cocina -->
+			<div class="flex flex-col gap-4">
+				<div class="nunito-bold text-lg md:text-start text-center">
+					<h3>Horarios de cocina</h3>
+				</div>
+				<div class="flex flex-col gap-2">
+					<div formArrayName="kitchenHours">
+						<div *ngFor="let day of daysOfWeek; let i = index" [formGroupName]="i" class="flex flex-col md:flex-row gap-4 items-center justify-between w-full border-b pb-2">
+							<div class="flex md:flex-row flex-col md:justify-start justify-between gap-4 py-4 w-full items-center">
+								<div class="flex items-center gap-2 w-40 justify-between">
+									<span class="text-base nunito-bold">{{ day.label }}</span>
+									<p-inputSwitch formControlName="enabled"></p-inputSwitch>
+								</div>
+								<div class="flex h-full md:flex-row flex-col gap-2 items-center" *ngIf="getKitchenHourEnabled(i)">
+									<div class="flex w-full gap-2 items-center justify-center md:justify-start md:flex-row flex-col">
+										<div class="flex flex-col gap-2 w-full">
+											<label class="text-sm">Inicio:</label>
+											<input type="time" class="border rounded px-2 py-1 text-sm" formControlName="start">
+										</div>
+										<div class="flex flex-col gap-2 w-full">
+											<label class="text-sm">Cierre:</label>
+											<input type="time" class="border rounded px-2 py-1 text-sm" formControlName="end">
+										</div>
+									</div>
+									<div class="flex w-full gap-2 items-center justify-center md:justify-start">
+										<span class="text-xs text-gray-400">(Hasta 08:00 del día siguiente)</span>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<hr class="my-2">
+			<!-- Mesas config -->
 
 			<div class="flex flex-col gap-4">
 				<div class="nunito-bold text-lg text-center md:text-start">
@@ -138,13 +173,13 @@
 				</div>
 			</div>
 
-			 <hr class="my-2">
+			<hr class="my-2">
 
-			 <!-- Save configs -->
-			 <div class="flex gap-2 items-center justify-end mb-2">
-				 <button type="button" (click)="saveConfigs()" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Guardar</button>
-				 <button type="button" (click)="resetConfigs()" class="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400">Restablecer</button>
-			 </div>
+			<!-- Save configs -->
+			<div class="flex gap-2 items-center justify-end mb-2">
+				<button type="button" (click)="saveConfigs()" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Guardar</button>
+				<button type="button" (click)="resetConfigs()" class="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400">Restablecer</button>
+			</div>
 		</form>
 	</div>
 </div>

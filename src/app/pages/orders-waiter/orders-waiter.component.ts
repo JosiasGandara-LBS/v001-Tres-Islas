@@ -58,7 +58,7 @@ export class OrdersWaiterComponent implements OnInit, OnDestroy {
 
 	showModal: boolean = false;
 	showTimeModal = signal<boolean>(false);
-	public selectedOrder = signal<number>(2);
+	public selectedOrder = signal<number>(1);
 	public sortDirection = signal<'asc' | 'desc'>('desc');
 
 
