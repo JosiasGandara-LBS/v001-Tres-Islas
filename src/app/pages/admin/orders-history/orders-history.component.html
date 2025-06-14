@@ -33,7 +33,7 @@
 	<div class="w-full h-auto mt-16">
 		<div *ngFor="let tab of statuses;">
 			<div *ngIf="selectedOrder() === tab.n">
-				<app-orders [orders]="filteredOrders()" [orderStatus]="selectedOrder()"></app-orders>
+				<app-orders [orders]="filteredOrders()" [orderStatus]="selectedOrder()" [isHistory]="true"></app-orders>
 			</div>
 		</div>
 
