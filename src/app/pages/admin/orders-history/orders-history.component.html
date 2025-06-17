@@ -1,23 +1,41 @@
 <div class="p-4 w-full min-h-screen h-full bg-white">
 	<p-divider></p-divider>
 	<div class="w-full flex flex-col md:flex-row align-center mb-8 gap-4">
-		<div *ngFor="let tab of statuses" class="tab w-full flex items-center cursor-pointer border-c-orange-100 rounded-md" style="border-width: 1px;" (click)="changeSelectedState(tab.n)">
-			<div class="flex items-center w-full justify-center flex-col">
+		<div *ngFor="let tab of statuses"
+			class="tab w-full flex items-center shadow-lg cursor-pointer rounded-md py-3 border transition delay-150 duration-300 ease-in-out"
+			[ngClass]="[tab.n === selectedOrder() ? tab.classes + ' text-white bg-'+ tab.color : 'border-'+tab.color]"
+			style="border-width: 1px;"
+			(click)="changeTab(tab.n)">
+			<div class="flex items-center w-full justify-center flex-col transition delay-150 duration-300 ease-in-out">
 				<div class="flex justify-center items-center gap-1">
-					<i [class]="tab.icon" [ngClass]="['text-' + tab.color]"></i>
+					<i [class]="tab.icon + ' transition delay-150 duration-300 ease-in-out'" [ngClass]="[tab.n === selectedOrder() ? 'text-white' : 'text-' + tab.color]"></i>
 					<span>{{ tab.text }}</span>
 					<span *ngIf="tab.hasChanges" class="badge bg-red-500 text-white rounded-full animate-ping px-1 py-1 w-1 h-1"></span>
 				</div>
-				@if (selectedState() === tab.n) {
+				<!-- @if (selectedOrder() === tab.n) {
 					<div class="w-full rounded-full h-2 bg-c-orange-100"></div>
-				}
+				} -->
 			</div>
 		</div>
 	</div>
 	<div class="w-full rounded-full h-2 bg-c-beige-100 mb-4"></div>
-	<div *ngFor="let tab of statuses;">
-		<div *ngIf="selectedState() === tab.n">
-			<app-orders [orders]="filteredOrders()" [orderStatus]="selectedState()" [isHistory]="true"></app-orders>
+	<div class="w-full flex justify-between items-center mb-4">
+		<div></div>
+		<div class="flex gap-2 items-center">
+			<button (click)="setSortDirection('desc')" [ngClass]="{'bg-c-orange-100 text-white': sortDirection() === 'desc', 'bg-gray-200': sortDirection() !== 'desc'}" class="px-3 py-1 rounded-md shadow text-xs flex items-center gap-1 transition delay-150 duration-300 ease-in-out">
+				<i class="pi pi-sort-amount-down"></i> Más recientes
+			</button>
+			<button (click)="setSortDirection('asc')" [ngClass]="{'bg-c-orange-100 text-white': sortDirection() === 'asc', 'bg-gray-200': sortDirection() !== 'asc'}" class="px-3 py-1 rounded-md shadow text-xs flex items-center gap-1 transition delay-150 duration-300 ease-in-out">
+				<i class="pi pi-sort-amount-up"></i> Más antiguos
+			</button>
 		</div>
+	</div>
+	<div class="w-full h-auto mt-16">
+		<div *ngFor="let tab of statuses;">
+			<div *ngIf="selectedOrder() === tab.n">
+				<app-orders [orders]="filteredOrders()" [orderStatus]="selectedOrder()" [isHistory]="true"></app-orders>
+			</div>
+		</div>
+
 	</div>
 </div>

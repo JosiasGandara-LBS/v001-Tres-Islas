@@ -1,6 +1,6 @@
 import { OpenPayResponse } from './../../../../shared/interfaces/open-pay-response.interface';
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, inject, Input, OnInit, Output } from '@angular/core';
+import { Component, computed, EventEmitter, inject, Input, OnInit, Output, signal } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { TransactionData } from '@core/models/transaction-data';
@@ -31,6 +31,13 @@ export class CardPaymentComponent implements OnInit {
 
 	totalPriceSignal = inject(CartService).getTotalPriceSignal();
 
+	tip = signal<number>(0);
+	customTip = signal<number>(0);
+
+	readonly totalWithTip = computed(() => {
+		return this.totalPriceSignal() + (this.tip() || 0);
+	});
+
 	cardPaymentForm: FormGroup;
 
 	holderName: string = '';
@@ -47,6 +54,19 @@ export class CardPaymentComponent implements OnInit {
 	transactionSuccess: boolean = false;
 	transactionError: boolean = false;
 	errorMessage: string = '';
+
+	isDropdownOpen = false;
+	selectedOption: any = null;
+
+	options = [
+		{ name: '10%', value: 0.10 },
+		{ name: '15%', value: 0.15 },
+		{ name: '20%', value: 0.20 },
+		{ name: 'Otra cantidad', value: 1 },
+	];
+
+	private onChange = (value: any) => {};
+	private onTouched = () => {};
 
 	constructor(
 		private pagoService: PagoService,
@@ -78,7 +98,7 @@ export class CardPaymentComponent implements OnInit {
 
 			const name = this.holderName.split(" ")[0];
 			const lastname = this.holderName.split(" ")[1];
-			const amount = this.totalPriceSignal();
+			const amount = this.totalWithTip();
 
 			const cardNumber = this.cardNumber.replace(/\D/g, '').slice(0, 16);
 			const expirationMonth = this.expirationDate.split("/")[0];
@@ -178,6 +198,7 @@ export class CardPaymentComponent implements OnInit {
 		this.isTransactionCompleted.emit({
 			success: true,
 			message: 'Pago realizado con éxito',
+			tip: this.tip(),
 			transactionID: this.transactionID,
 			redirectURL: this.redirectURL,
 		});
@@ -187,5 +208,45 @@ export class CardPaymentComponent implements OnInit {
 		this.transactionError = false;
 		this.transactionSuccess = false;
 		this.showing = false;
+	}
+
+	toggleDropdown() {
+		this.isDropdownOpen = !this.isDropdownOpen;
+	}
+
+	selectOption(option: any) {
+		this.selectedOption = option;
+		this.onChange(option.value);
+		this.isDropdownOpen = false;
+
+		if (option.value === 1) {
+			this.customTip.set(0);
+			this.tip.set(0);
+		} else {
+			const base = this.totalPriceSignal();
+			this.tip.set(base * option.value);
+		}
+	}
+
+	onCustomTipChange(value: number) {
+		this.customTip.set(value);
+		this.tip.set(value);
+	}
+
+	// Métodos necesarios para ControlValueAccessor
+	writeValue(value: any): void {
+		this.selectedOption = this.options.find(opt => opt.value === value) || null;
+	}
+
+	registerOnChange(fn: any): void {
+		this.onChange = fn;
+	}
+
+	registerOnTouched(fn: any): void {
+		this.onTouched = fn;
+	}
+
+	setDisabledState?(isDisabled: boolean): void {
+		// Manejar el estado deshabilitado si es necesario
 	}
 }
