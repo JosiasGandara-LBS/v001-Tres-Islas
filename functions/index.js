@@ -10,7 +10,7 @@ const cors = require('cors')({ origin: true });
 
 require('dotenv').config();
 
-const openpay = new Openpay(process.env.OPENPAY_MERCHANT_ID, process.env.OPENPAY_PRIVATE_KEY, false);
+const openpay = new Openpay(process.env.OPENPAY_MERCHANT_ID, process.env.OPENPAY_PRIVATE_KEY, true);
 
 firebase_admin.initializeApp()
 
