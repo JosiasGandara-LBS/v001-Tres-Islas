@@ -25,7 +25,7 @@ export class OrdersComponent {
 
 	statuses: { [key: number] : { text: string; color: string } } = {
 		0: { text: 'Cancelado', color: 'red-700'},
-		1: { text: 'Por pagar', color: 'blue-700'},
+		1: { text: 'Recibido', color: 'blue-700'},
 		2: { text: 'Preparando', color: 'yellow-600'},
 		3: { text: 'Entregado', color: 'gray-500'}
 	};
