@@ -9,7 +9,9 @@ export const waiterGuard: CanActivateFn = async () => {
 	const userRole = authService.getRole();
 	const accessToken = localStorage.getItem('accessToken');
 	if (accessToken) {
-		const res = await authService.validateToken(accessToken);
+		// Renovar token antes de validar
+		await authService.renewAccessToken();
+		const res = await authService.validateToken(localStorage.getItem('accessToken')!);
 		if (!res) {
 			localStorage.removeItem('accessToken');
 			router.navigate(['/login']);

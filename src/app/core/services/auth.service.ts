@@ -24,8 +24,10 @@ export class AuthService {
 		this.Auth.onAuthStateChanged((firebaseUser) => {
 		if (firebaseUser) {
 			this.actualizarUsuario(firebaseUser);
+			this.scheduleTokenRenewal();
 		} else {
 			this.user.set(null);
+			if (this.tokenRenewalTimeout) clearTimeout(this.tokenRenewalTimeout);
 		}
 		});
 	}
@@ -183,5 +185,41 @@ export class AuthService {
 
 	public isUserAdmin = () => {
 		return this.user()?.role === 'ADMIN' || this.user()?.role === 'TI';
+	}
+
+	/**
+	 * Fuerza la renovación del accessToken y lo guarda en localStorage
+	 */
+	public async renewAccessToken(): Promise<string | null> {
+		const currentUser = this.auth.currentUser;
+		if (!currentUser) return null;
+		try {
+			const newToken = await currentUser.getIdToken(true);
+			localStorage.setItem('accessToken', newToken);
+			return newToken;
+		} catch (error) {
+			console.error('Error al renovar el accessToken:', error);
+			return null;
+		}
+	}
+
+	/**
+	 * Programa la renovación automática del accessToken antes de que expire
+	 */
+	private tokenRenewalTimeout: any = null;
+
+	public scheduleTokenRenewal() {
+		const token = localStorage.getItem('accessToken');
+		if (!token) return;
+		const payload = this.decodeToken(token);
+		if (!payload || !payload.exp) return;
+		const expiresIn = (payload.exp * 1000) - Date.now();
+		// Renueva 1 minuto antes de expirar
+		const renewIn = Math.max(expiresIn - 60 * 1000, 5000);
+		if (this.tokenRenewalTimeout) clearTimeout(this.tokenRenewalTimeout);
+		this.tokenRenewalTimeout = setTimeout(async () => {
+			await this.renewAccessToken();
+			this.scheduleTokenRenewal();
+		}, renewIn);
 	}
 }

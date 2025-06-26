@@ -7,7 +7,9 @@ export const authGuard: CanActivateFn = async () => {
 	const authService = inject(AuthService);
 	const token = localStorage.getItem('accessToken');
 	if (token) {
-		const isValidToken = await authService.validateToken(token);
+		// Renovar token antes de validar
+		await authService.renewAccessToken();
+		const isValidToken = await authService.validateToken(localStorage.getItem('accessToken')!);
 		if (!isValidToken) {
 			localStorage.removeItem('accessToken');
 			return true;
