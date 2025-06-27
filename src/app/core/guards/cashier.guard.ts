@@ -1,29 +1,33 @@
-import { CanActivateFn, Router } from '@angular/router';
+import { CanActivateFn, Router, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { inject } from '@angular/core';
-import { AuthService } from '../services/auth.service';
+import { AuthBaseGuard } from './auth-base.guard';
 
-export const cashierGuard: CanActivateFn = async () => {
-	const authService = inject(AuthService);
+export const cashierGuard: CanActivateFn = async (route, state) => {
+	const authBaseGuard = inject(AuthBaseGuard);
 	const router = inject(Router);
-	const accessToken = localStorage.getItem('accessToken');
-	if (accessToken) {
-		const res = await authService.validateToken(accessToken);
-		if (!res) {
-			localStorage.removeItem('accessToken');
-			router.navigate(['/login']);
-			return false;
-		}
+
+	// Validar autenticación de forma optimizada
+	const isAuthenticated = await authBaseGuard.validateUserAuth();
+	if (!isAuthenticated) {
+		return false;
 	}
 
-	const userRole = authService.getRole();
+	const userRole = authBaseGuard.getUserRole();
 	if (!userRole) {
 		router.navigate(['/login']);
 		return false;
 	}
-	if (userRole === 'CAJA' || userRole === 'ADMIN' || userRole === 'TI') {
+
+	// Permitir acceso a roles autorizados
+	if (['CAJA', 'ADMIN', 'TI', 'MESERO'].includes(userRole)) {
+		// Si es un mesero y está intentando acceder directamente a /admin (no a orders-waiter)
+		if (userRole === 'MESERO' && state.url === '/admin') {
+			router.navigate(['/admin/orders-waiter']);
+			return false;
+		}
 		return true;
 	} else {
-		router.navigate(['/admin/orders-waiter']);
+		router.navigate(['/home']);
 		return false;
 	}
 };

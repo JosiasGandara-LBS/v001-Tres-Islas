@@ -1,27 +1,26 @@
 import { Injectable } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 import { inject } from '@angular/core';
-import { AuthService } from '../services/auth.service';
+import { AuthBaseGuard } from './auth-base.guard';
 
 export const waiterGuard: CanActivateFn = async () => {
-	const authService = inject(AuthService);
+	const authBaseGuard = inject(AuthBaseGuard);
 	const router = inject(Router);
-	const userRole = authService.getRole();
-	const accessToken = localStorage.getItem('accessToken');
-	if (accessToken) {
-		const res = await authService.validateToken(accessToken);
-		if (!res) {
-			localStorage.removeItem('accessToken');
-			router.navigate(['/login']);
-			return false;
-		}
+
+	// Validar autenticación de forma optimizada
+	const isAuthenticated = await authBaseGuard.validateUserAuth();
+	if (!isAuthenticated) {
+		return false;
 	}
 
+	const userRole = authBaseGuard.getUserRole();
 	if (!userRole) {
 		router.navigate(['/login']);
 		return false;
 	}
-	if (userRole === 'MESERO'|| userRole === 'CAJA' || userRole === 'ADMIN' || userRole === 'TI') {
+
+	// Permitir acceso a roles que pueden ver pedidos
+	if (['MESERO', 'CAJA', 'ADMIN', 'TI'].includes(userRole)) {
 		return true;
 	} else {
 		router.navigate(['/home']);

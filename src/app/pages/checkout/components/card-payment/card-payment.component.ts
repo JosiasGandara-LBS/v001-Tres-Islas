@@ -133,7 +133,7 @@ export class CardPaymentComponent implements OnInit {
 				const customer = {
 					name: name,
 					lastname: lastname,
-					email: `${name}_${lastname}@example.com`,
+					email: `customer@example.com`,
 					phone_number: this.phone_number
 				};
 

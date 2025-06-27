@@ -44,7 +44,7 @@ export class EmployeesService {
       modal: true,
       keepInViewport: true,
       width: '80%',
-      style: { 'max-height': '80%', 'height': 'auto' },
+      style: { 'max-height': '80%', 'height': 'auto', 'min-height': '65%' },
       contentStyle: { overflow: 'auto' },
     });
 

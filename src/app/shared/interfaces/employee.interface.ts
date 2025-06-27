@@ -3,6 +3,7 @@ export interface Employee {
     name: string;
     email: string;
     role: Role;
+    password?: string; // Optional for updates
 }
 
 export enum Role {
