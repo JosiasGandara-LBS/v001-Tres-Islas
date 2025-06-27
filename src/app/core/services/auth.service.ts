@@ -6,6 +6,7 @@ import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import { Firestore, doc, getDoc } from '@angular/fire/firestore';
 import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
+import { AuthBaseGuard } from '@core/guards/auth-base.guard';
 
 @Injectable({
   providedIn: 'root'
@@ -52,8 +53,10 @@ export class AuthService {
 			const currentRole = this.user()?.role;
 			if (currentRole === 'ADMIN' || currentRole === 'TI') {
 				this._router.navigate(['/admin']);
+			} else if (currentRole === 'CAJA' || currentRole === 'MESERO') {
+				this._router.navigate(['/admin/orders-waiter']);
 			} else {
-				this._router.navigate(['/orders-waiter']);
+				this._router.navigate(['/home']);
 			}
 			return true;
 		} catch (error) {
@@ -70,14 +73,34 @@ export class AuthService {
 	}
 
 	logout() {
+		// Limpiar inmediatamente el estado para evitar validaciones durante el logout
 		this.user.set(null);
-		this.auth.signOut();
 		localStorage.removeItem('accessToken');
-		this._router.navigate(['/login']);
+		
+		// Limpiar el timeout de renovación de token
+		if (this.tokenRenewalTimeout) {
+			clearTimeout(this.tokenRenewalTimeout);
+			this.tokenRenewalTimeout = null;
+		}
+		
+		// Sign out de Firebase
+		this.auth.signOut().then(() => {
+			// Navegar después de que se complete el sign out
+			this._router.navigate(['/login']);
+		}).catch((error) => {
+			console.error('Error during logout:', error);
+			// Navegar de todas formas
+			this._router.navigate(['/login']);
+		});
 	}
 
 	getRole(): Role | null {
-		return this.user()?.role as Role;
+		const user = this.user();
+		// Durante el logout o si no hay usuario, retornar null sin mostrar errores
+		if (!user || user === null) {
+			return null;
+		}
+		return user.role as Role;
 	}
 
 	async setRole() {
@@ -97,6 +120,12 @@ export class AuthService {
 
 	getNavItems() {
 		const role = this.getRole();
+		
+		// Si no hay rol (usuario no logueado o en proceso de logout), retornar array vacío
+		if (!role) {
+			return [];
+		}
+		
 		if (role === 'ADMIN' || role === 'TI') {
 		return [
 			{ name: 'Pedidos', route: 'orders-waiter', icon: 'pi-list' },
@@ -110,37 +139,56 @@ export class AuthService {
 			{ name: 'Pedidos', route: 'orders-waiter', icon: 'pi-list' },
 			{ name: 'Productos', route: 'products', icon: 'pi-box' },
 		];
+		} else if (role === 'MESERO') {
+			return [
+				{ name: 'Pedidos', route: 'orders-waiter', icon: 'pi-list' },
+			];
 		}
-		return [
-		{ name: 'Pedidos', route: 'orders-waiter', icon: 'pi-list' },
-		];
+		
+		// Si el rol no es reconocido, mostrar error solo si hay un usuario activo
+		const user = this.user();
+		if (user && user !== null) {
+			Swal.fire({
+				icon: 'error',
+				title: 'Error de rol',
+				text: 'Rol de usuario no reconocido',
+				showConfirmButton: false,
+				timer: 1500
+			});
+			this.logout(); // Llamar logout sin return
+		}
+		return []; // Retornar array vacío
 	}
 
 	async validateToken(token: string) {
 		const payload = this.decodeToken(token);
 		if (!payload) {
-		localStorage.removeItem('accessToken');
-		this._router.navigate(['/login']);
-		return false;
+			console.error("Invalid token format");
+			localStorage.removeItem('accessToken');
+			this._router.navigate(['/login']);
+			return false;
 		}
 		// Verifica que el token no haya expirado
 		if (payload.exp < Date.now() / 1000) {
-		localStorage.removeItem('accessToken');
-		this._router.navigate(['/login']);
-		return false;
+			console.error("Token has expired");
+			localStorage.removeItem('accessToken');
+			this._router.navigate(['/login']);
+			return false;
 		}
 		const userDoc = doc(this._firestore, `employees/${payload.user_id}`);
 		const userDocData = await getDoc(userDoc);
 		if (!userDocData.exists()) {
-		localStorage.removeItem('accessToken');
-		this._router.navigate(['/login']);
-		return false;
+			console.error("User not found in Firestore");
+			localStorage.removeItem('accessToken');
+			this._router.navigate(['/login']);
+			return false;
 		}
+		console.log("Token is valid, user found:", userDocData.data());
 		this.user.set({
-		uid: payload.user_id,
-		email: payload.email,
-		name: userDocData.get('name'),
-		role: userDocData.get('role')
+			uid: payload.user_id,
+			email: payload.email,
+			name: userDocData.get('name'),
+			role: userDocData.get('role')
 		});
 		return true;
 	}

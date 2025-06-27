@@ -70,6 +70,6 @@ export class EmployeesComponent implements OnInit {
     }
 
     deleteEmployee(user: any) {
-      this.empService.deleteEmployee(user.id);
+      this.empService.deleteEmployee(user);
     }
 }
