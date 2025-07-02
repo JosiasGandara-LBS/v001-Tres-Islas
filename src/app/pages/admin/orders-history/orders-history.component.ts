@@ -3,6 +3,7 @@ import { OrdersComponent } from '../../orders-waiter/components/orders/orders.co
 import { CommonModule } from '@angular/common';
 import { OrdersService } from '@core/services/orders.service';
 import { DividerModule } from 'primeng/divider';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-orders-history',
@@ -83,5 +84,20 @@ export class OrdersHistoryComponent implements OnInit, OnDestroy {
 
   setSortDirection(direction: 'asc' | 'desc') {
     this.sortDirection.set(direction);
+  }
+
+  exportToExcel(): void {
+	Swal.fire({
+		title: 'Exportar órdenes',
+		text: '¿Deseas exportar el historial de ordenes a Excel?',
+		icon: 'warning',
+		showCancelButton: true,
+		confirmButtonText: 'Sí, exportar',
+		cancelButtonText: 'Cancelar'
+	}).then((result) => {
+		if (result.isConfirmed) {
+			this.ordersService.exportOrdersToExcel(true);
+		}
+	});
   }
 }
