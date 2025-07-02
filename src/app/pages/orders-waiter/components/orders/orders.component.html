@@ -85,4 +85,4 @@
 	</p>
 }
 
-<app-order-detail *ngIf="showModal" [order]="selectedOrder" [orderStatus]="orderStatus" (close)="closeModal()"></app-order-detail>
+<app-order-detail *ngIf="showModal" [order]="selectedOrder" [orderStatus]="orderStatus" [isHistory]="isHistory" (close)="closeModal()"></app-order-detail>

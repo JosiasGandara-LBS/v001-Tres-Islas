@@ -16,6 +16,7 @@ export class OrderDetailComponent implements OnInit {
 
 	@Input() order: any = null;
 	@Input() orderStatus: any = 0;
+	@Input() isHistory: boolean = false;
 	@Output() close = new EventEmitter<void>();
 
 	statuses: { [key: number]: { text: string; color: string, textToChangeStatus: string} } = {
@@ -37,7 +38,7 @@ export class OrderDetailComponent implements OnInit {
 			return;
 		}
 
-		this._ordersService.updateOrderStatusField(orderID, 'status', this.orderStatus + 1).then(() => {
+		this._ordersService.updateOrderStatusField(orderID, 'status', this.orderStatus + 1, this.isHistory).then(() => {
 			this.closeModal();
 		}).catch((err) => {
 			console.error('Error: ', err);
@@ -66,7 +67,7 @@ export class OrderDetailComponent implements OnInit {
 	}
 
 	cancelOrderConfirmed(orderID : string) {
-		this._ordersService.cancelOrder(orderID).then(() => {
+		this._ordersService.cancelOrder(orderID, this.isHistory).then(() => {
 			Swal.fire('Pedido cancelado', 'El pedido ha sido cancelado', 'success');
 			this.closeModal();
 		}
@@ -95,7 +96,7 @@ export class OrderDetailComponent implements OnInit {
 	}
 
 	payOrderConfirmed(orderID : string) {
-		this._ordersService.setOrderAsPaid(orderID).then(() => {
+		this._ordersService.setOrderAsPaid(orderID, this.isHistory).then(() => {
 			Swal.fire('Pedido pagado', 'El pedido ha sido marcado como pagado', 'success');
 			this.closeModal();
 		}

@@ -18,18 +18,18 @@ export class OrdersService {
 	// Escucha en tiempo real los cambios en la colección
 	getOrdersWithStatus(status : number): Observable<any[]> {
 		const ordersCollection = collection(this._firestore, 'orders');
-		// Filtrar por status igual a 1 y ordenar por fecha de creación
+		// Filtrar por status y ordenar por fecha de creación (más nuevas primero)
 		const ordersQuery = query(
-			ordersCollection, where('status', '==', status), orderBy('createdDate', 'asc')
+			ordersCollection, where('status', '==', status), orderBy('createdDate', 'desc')
 		);
 		return collectionData(ordersQuery, { idField: 'id' }) as Observable<any[]>;
 	}
 
 	getOrdersWithAnyParameter(): Observable<any[]> {
 		const ordersCollection = collection(this._firestore, 'orders');
-		// Filtrar por status igual a 1 y ordenar por fecha de creación
+		// Ordenar por fecha de creación (más nuevas primero)
 		const ordersQuery = query(
-			ordersCollection, orderBy('createdDate', 'asc')
+			ordersCollection, orderBy('createdDate', 'desc')
 		);
 		return collectionData(ordersQuery, { idField: 'id' }) as Observable<any[]>;
 	}
@@ -55,8 +55,8 @@ export class OrdersService {
 		return setDoc(docRef, order);
 	}
 
-	async updateOrderStatusField(IDOrder: string, fieldName: string, newValue: any): Promise<void> {
-		const orderDocRef = doc(this._firestore, `orders/${IDOrder}`);
+	async updateOrderStatusField(IDOrder: string, fieldName: string, newValue: any, isHistory: boolean = false): Promise<void> {
+		const orderDocRef = isHistory ? doc(this._firestore, `orderHistory/${IDOrder}`) : doc(this._firestore, `orders/${IDOrder}`);
 		return updateDoc(orderDocRef, { [fieldName]: newValue })
 		.then(() => {
 			return;
@@ -77,8 +77,8 @@ export class OrdersService {
 		});
 	}
 
-	async cancelOrder(IDOrder: string): Promise<void> {
-		const orderDocRef = doc(this._firestore, `orders/${IDOrder}`);
+	async cancelOrder(IDOrder: string, isHistory: boolean = false): Promise<void> {
+		const orderDocRef = isHistory ? doc(this._firestore, `orderHistory/${IDOrder}`) : doc(this._firestore, `orders/${IDOrder}`);
 		return updateDoc(orderDocRef, { status: 0 })
 		.then(() => {
 			return;
@@ -88,8 +88,8 @@ export class OrdersService {
 		});
 	}
 
-	async setOrderAsPaid(IDOrder: string): Promise<void> {
-		const orderDocRef = doc(this._firestore, `orders/${IDOrder}`);
+	async setOrderAsPaid(IDOrder: string, isHistory: boolean = false): Promise<void> {
+		const orderDocRef = isHistory ? doc(this._firestore, `orderHistory/${IDOrder}`) : doc(this._firestore, `orders/${IDOrder}`);
 		return updateDoc(orderDocRef, { pendingPayment: false })
 			.then(() => {
 			})
@@ -104,7 +104,7 @@ export class OrdersService {
 	  const queryByState = query(
 		ordersCollection,
 		where('status', '==', state),
-		orderBy('createdDate', 'asc')
+		orderBy('createdDate', 'desc')
 	  );
 	  return collectionData(queryByState, { idField: 'id' }) as Observable<any[]>;
 	}
@@ -150,7 +150,7 @@ export class OrdersService {
 	// Método para escuchar en tiempo real los cambios en la colección "orders"
 	listenForOrdersChanges(): Observable<any[]> {
 		const ordersCollection = collection(this._firestore, 'orders');
-		const ordersQuery = query(ordersCollection, orderBy('createdDate', 'asc'));
+		const ordersQuery = query(ordersCollection, orderBy('createdDate', 'desc'));
 
 		return new Observable<any[]>((observer) => {
 			const unsubscribe = onSnapshot(ordersQuery, (snapshot) => {
@@ -168,7 +168,7 @@ export class OrdersService {
 		return updateDoc(orderDocRef, { pendingPayment })
 	}
 
-	async exportOrdersToExcel() {
+	async exportOrdersToExcel(isHistory: boolean = false): Promise<void> {
 		const today = new Date();
 		const yyyy = today.getFullYear();
 		const mm = String(today.getMonth() + 1).padStart(2, '0');
@@ -182,8 +182,8 @@ export class OrdersService {
 			3: 'Entregado'
 		};
 
-		const ordersCollection = collection(this._firestore, 'orders');
-		const ordersQuery = query(ordersCollection, orderBy('createdDate', 'asc'));
+		const ordersCollection = isHistory ? collection(this._firestore, 'orderHistory') : collection(this._firestore, 'orders');
+		const ordersQuery = query(ordersCollection, orderBy('createdDate', 'desc'));
 
 		// Obtener los datos una sola vez (no en tiempo real)
 		const snapshot = await getDocs(ordersQuery);
@@ -209,11 +209,42 @@ export class OrdersService {
 			});
 			return;
 		}
+		// Función helper para convertir diferentes formatos de fecha a timestamp
+		const getTimestamp = (dateValue: any): number => {
+			if (!dateValue) return 0;
 
+			// Si es un timestamp de Firestore con seconds
+			if (dateValue.seconds) {
+				return dateValue.seconds * 1000 + (dateValue.nanoseconds || 0) / 1000000;
+			}
+
+			// Si es un número (timestamp)
+			if (typeof dateValue === 'number') {
+				return dateValue;
+			}
+
+			// Si es una string, intentar convertir a Date
+			if (typeof dateValue === 'string') {
+				const parsed = new Date(dateValue);
+				return isNaN(parsed.getTime()) ? 0 : parsed.getTime();
+			}
+
+			// Si es un objeto Date
+			if (dateValue instanceof Date) {
+				return dateValue.getTime();
+			}
+
+			return 0;
+		};
+
+		// Ordenar las órdenes
 		orders.sort((a, b) => {
-			const dateA = a.createdDate?.seconds ? a.createdDate.seconds * 1000 : a.createdDate;
-			const dateB = b.createdDate?.seconds ? b.createdDate.seconds * 1000 : b.createdDate;
-			return dateA - dateB;
+			const timestampA = getTimestamp(a.createdDate);
+			const timestampB = getTimestamp(b.createdDate);
+
+			// Para historial: ascendente (más antiguas primero)
+			// Para órdenes actuales: descendente (más nuevas primero)
+			return isHistory ? timestampA - timestampB : timestampB - timestampA;
 		});
 
 		const workbook = new ExcelJS.Workbook();
@@ -233,6 +264,7 @@ export class OrdersService {
 		];
 
 		orders.forEach(order => {
+			if (order.status === 0) return; // Ignorar órdenes canceladas
 			const createdDate = order.createdDate;
 			let fechaHora = '';
 
