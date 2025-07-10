@@ -30,6 +30,8 @@ export class HeroMenuComponent implements OnInit, OnDestroy {
 	kitchenStatusService = inject(KitchenStatusService);
 	isKitchenOpen = computed(() => this.kitchenStatusService.isKitchenOpen());
 
+	orderedCategories = ['Dips', 'Vegetales', 'Tostadas', 'Ordenes', 'Fritos', 'Tacos', 'Sandwiches'];
+
 	private ordersSubscription!: Subscription;
 
 	@ViewChild('modalContainer', { read: ViewContainerRef }) container!: ViewContainerRef;
@@ -52,6 +54,8 @@ export class HeroMenuComponent implements OnInit, OnDestroy {
 		this.promotions2Service.promotions$.subscribe(promotions => {
 			this.promotions = promotions;
 		});
+
+		console.log("menu tres islas: ");
 
 	}
 
@@ -83,8 +87,10 @@ export class HeroMenuComponent implements OnInit, OnDestroy {
 	}
 
 	// Método para organizar los platillos por categoría
-	organizeByCategory(items: MenuItem[]): { [key: string]: MenuItem[] } {
-		return items.reduce((acc: { [key: string]: MenuItem[] }, item: MenuItem) => {
+	organizeByCategory(items: MenuItem[]): { category: string; items: MenuItem[] }[] {
+
+		// Agrupar los platillos en su categoria
+		const grouped = items.reduce((acc: { [key: string]: MenuItem[] }, item: MenuItem) => {
 			const { category } = item;
 
 			if (!acc[category]) acc[category] = [];
@@ -93,7 +99,21 @@ export class HeroMenuComponent implements OnInit, OnDestroy {
 
 			return acc;
 		}, {});
+
+		const result: { category: string; items: MenuItem[] }[] = [];
+
+		// Agregar las categorías en el orden definido
+		for (const cat of this.orderedCategories) {
+			if (grouped[cat]) {
+				result.push({ category: cat, items: grouped[cat] });
+				delete grouped[cat];
+			}
+		}
+
+		return result;
 	}
+
+
 
 	goToOrders() {
 		this.router.navigate(['/orders-client']);
