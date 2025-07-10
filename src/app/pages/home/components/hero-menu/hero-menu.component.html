@@ -17,13 +17,13 @@
 
 <section id="menuSection" class="bg-white">
     @if (_menuService()) {
-        <section *ngFor="let category of organizeByCategory(_menuService()) | keyvalue; let i = index" class="p-6 flex flex-col items-start justify-center text-gray-800 bg-inherit" [ngClass]="{ 'border-t-4': i != 0, 'border-gray-300': i != 0 }">
+        <section *ngFor="let category of organizeByCategory(_menuService()); let i = index" class="p-6 flex flex-col items-start justify-center text-gray-800 bg-inherit" [ngClass]="{ 'border-t-4': i != 0, 'border-gray-300': i != 0 }">
             <p class="text-center nunito-extra-bold mb-2 uppercase flex flex-row items-center justify-center" style="font-size: 24px;">
-				{{ category.key | titlecase }}
+				{{ category.category | titlecase }}
 
 				<!-- Promociones -->
-				@if (hasPromotion(category.key)) {
-					@for (promo of getActivePromotions(category.key); track $index) {
+				@if (hasPromotion(category.category)) {
+					@for (promo of getActivePromotions(category.category); track $index) {
 						<span class="inline-flex items-center rounded-md bg-green-500 shadow-lg text-white text-sm px-2 py-0.5 ml-6 nunito-extra-bold">
 							{{ promo.description }}
 						</span>
@@ -31,7 +31,7 @@
 				}
 			</p>
 
-            @for (item of category.value; track $index) {
+            @for (item of category.items; track $index) {
                 @if (item.available) {
                     <div
                         (click)="isKitchenOpen() ? insertarComponente(item.id) : null"

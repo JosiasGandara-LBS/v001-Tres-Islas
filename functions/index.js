@@ -190,31 +190,6 @@ exports.sendOrdersReport = onSchedule(
 
 		const startOfYesterday = new Date(yesterday.setHours(0, 0, 0, 0));
 
-		// 2. Hacer la consulta filtrando por createdDate
-		const ordersSnapshot = await db.collection("orders").orderBy("createdDate", "asc").get();
-
-		if (ordersSnapshot.empty) {
-			console.log("No hay órdenes para el día anterior.");
-			return;
-		}
-
-		const workbook = new ExcelJS.Workbook();
-		const worksheet = workbook.addWorksheet("Orders");
-
-		worksheet.columns = [
-			{ header: "Cliente", key: "cliente", width: 25 },
-			{ header: "Mesa/Para llevar", key: "mesa", width: 18 },
-			{ header: "Fecha y hora", key: "fecha", width: 22 },
-			{ header: "Total sin propina", key: "totalSinPropina", width: 18 },
-			{ header: "Propina", key: "propina", width: 10 },
-			{ header: "Total con propina", key: "totalConPropina", width: 18 },
-			{ header: "Método de pago", key: "metodoPago", width: 20 },
-			{ header: "Status", key: "status", width: 15 },
-			{ header: "Teléfono", key: "telefono", width: 15 },
-			{ header: "Para llevar", key: "paraLlevar", width: 12 },
-			{ header: "Items", key: "items", width: 40 },
-		];
-
 		const statusMap = {
 			1: 'Recibido',
 			2: 'Preparando',
@@ -222,39 +197,77 @@ exports.sendOrdersReport = onSchedule(
 			3: 'Entregado'
 		};
 
-		ordersSnapshot.forEach((doc) => {
-			const order = doc.data();
+		const snapshot = await db.collection('orders').orderBy('createdDate', 'asc').get();
+		let orders = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
+		// Filtrar órdenes de tarjeta no confirmadas
+		orders = orders.filter(order => {
+			return !(order.paymentMethod?.toLowerCase().includes('tarjeta') && order.pendingPayment === true);
+		});
+
+		if (!orders.length) {
+			console.log("No hay órdenes para el día anterior.");
+			return;
+		}
+
+		orders.sort((a, b) => {
+			const dateA = a.createdDate?.seconds ? a.createdDate.seconds * 1000 : a.createdDate;
+			const dateB = b.createdDate?.seconds ? b.createdDate.seconds * 1000 : b.createdDate;
+			return dateA - dateB;
+		});
+
+		const workbook = new ExcelJS.Workbook();
+		const worksheet = workbook.addWorksheet('Órdenes');
+
+		worksheet.columns = [
+			{ header: 'Cliente', key: 'cliente', width: 25 },
+			{ header: 'Mesa/Para llevar', key: 'mesa', width: 18 },
+			{ header: 'Fecha y hora', key: 'fecha', width: 22 },
+			{ header: 'Total sin propina', key: 'totalSinPropina', width: 18 },
+			{ header: 'Propina', key: 'propina', width: 10 },
+			{ header: 'Total con propina', key: 'totalConPropina', width: 18 },
+			{ header: 'Método de pago', key: 'metodoPago', width: 20 },
+			{ header: 'Status', key: 'status', width: 15 },
+			{ header: 'Teléfono', key: 'telefono', width: 15 },
+			{ header: 'Para llevar', key: 'paraLlevar', width: 12 },
+			{ header: 'Items', key: 'items', width: 40 },
+		];
+
+		orders.forEach(order => {
 			const createdDate = order.createdDate;
-			let fechaHora = "";
+			let fechaHora = '';
 
-			if (createdDate && createdDate.toDate) {
-				fechaHora = createdDate.toDate().toLocaleString("es-MX", { timeZone: "America/Mazatlan", });
+			if (createdDate) {
+				if (typeof createdDate === 'string') {
+					// Si es string, intenta parsear con Date
+					const parsed = new Date(createdDate);
+					fechaHora = isNaN(parsed.getTime()) ? createdDate : parsed.toLocaleString();
+				} else if (createdDate.seconds) {
+					// Si es timestamp de Firestore
+					fechaHora = new Date(createdDate.seconds * 1000).toLocaleString();
+				} else {
+					// Otro formato (por si acaso)
+					const parsed = new Date(createdDate);
+					fechaHora = isNaN(parsed.getTime()) ? '' : parsed.toLocaleString();
+				}
 			}
 
-			const totalSinPropina = order.totalAmount ?? "";
+			const totalSinPropina = order.totalAmount ?? '';
 			const propina = order.tip ?? 0;
-			const totalConPropina = (order.totalAmount ?? 0) + propina;
-			const metodoPago = order.paymentMethod ?? "";
+			const totalConPropina = (order.totalAmount ?? 0) + (order.tip ?? 0);
+			const metodoPago = order.paymentMethod ?? '';
 			const status = statusMap[order.status] ?? order.status;
-			const telefono = order.phoneNumber ?? "";
-			const paraLlevar = order.orderToGo === 1 ? "Sí" : "No";
-			const mesa = order.assignedToTable ?? (order.orderToGo === 1 ? "PARA LLEVAR" : "");
+			const telefono = order.phoneNumber ?? '';
+			const paraLlevar = order.orderToGo === 1 ? 'Sí' : 'No';
+			const mesa = order.assignedToTable ?? (order.orderToGo === 1 ? 'PARA LLEVAR' : '');
 			const items = Array.isArray(order.foodDishes)
-				? order.foodDishes
-					.map(
-					(item) =>
-						`${item.quantity}x ${item.name}${
-						item.additionalInstructions
-							? " (" + item.additionalInstructions + ")"
-							: ""
-						}`
-					)
-					.join(", ")
-				: "";
+				? order.foodDishes.map((item) =>
+					`${item.quantity}x ${item.name}${item.additionalInstructions ? ' (' + item.additionalInstructions + ')' : ''}`
+				).join(', ')
+				: '';
 
 			worksheet.addRow({
-				cliente: order.client ?? order.customerName ?? "",
+				cliente: order.client ?? order.customerName ?? '',
 				mesa,
 				fecha: fechaHora,
 				totalSinPropina,
