@@ -30,7 +30,7 @@ export class HeroMenuComponent implements OnInit, OnDestroy {
 	kitchenStatusService = inject(KitchenStatusService);
 	isKitchenOpen = computed(() => this.kitchenStatusService.isKitchenOpen());
 
-	orderedCategories = ['Dips', 'Vegetales', 'Tostadas', 'Ordenes', 'Fritos', 'Tacos', 'Sandwiches'];
+	orderedCategories = ['Dips', 'Vegetales', 'Especiales', 'Tostadas', 'Ordenes', 'Fritos', 'Tacos', 'Sandwiches'];
 
 	private ordersSubscription!: Subscription;
 

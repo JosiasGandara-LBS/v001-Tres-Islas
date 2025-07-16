@@ -149,6 +149,43 @@ exports.copyOrdersToHistory = onSchedule(
 	}
 );
 
+exports.resetAllMenuItems = onSchedule(
+	{
+		schedule: "0 8 * * *",
+		timeZone: "America/Mazatlan",
+	},
+	async (event) => {
+		const db = firebase_admin.firestore();
+
+		try {
+			const menuRef = db.collection("menu");
+			const snapshot = await menuRef.get();
+
+			if (snapshot.empty) {
+				console.log("No hay items en el menú.");
+				return null;
+			}
+
+			// Iteramos sobre cada documento y actualizamos
+			const batch = db.batch();
+
+			snapshot.forEach((doc) => {
+				const docRef = doc.ref;
+				batch.update(docRef, { available: true });
+			});
+
+			await batch.commit();
+			console.log("Todos los items del menú fueron actualizados a available: true");
+
+		} catch (error) {
+			console.error("Error al resetear los items del menú:", error);
+		}
+
+		return null;
+	}
+);
+
+
 exports.checkPagoStatus = onRequest(async (req, res) => {
   cors(req, res, async () => {
     try {
