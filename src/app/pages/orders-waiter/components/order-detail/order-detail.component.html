@@ -39,22 +39,37 @@
 							'w-auto text-sm font-medium inline-flex items-center justify-center gap-1 px-3.5 py-0.5 rounded border'
 						]">
 							@if (order.pendingPayment) {
-								<i class="pi pi-exclamation-circle text-yellow-600" style="font-size: 1.125rem;"></i>
+								<i class="pi pi-dollar text-yellow-600" style="font-size: 1rem;"></i>
 							}
 							@else {
-								<i class="pi pi-check-circle text-green-800" style="font-size: 1.125rem;"></i>
+								<i class="pi pi-check-circle text-green-800" style="font-size: 1rem;"></i>
 							}
 							<p class="nunito-extra-bold" [ngClass]="[order.pendingPayment ? 'text-yellow-600' : 'text-green-600',]">
 								{{ order.pendingPayment ? 'Pago Pendiente' : 'Pagado' }}
 							</p>
+						</span>
+
+						<span class="">
+
 						</span>
 					</div>
 				</div>
 				<p class="text-sm text-gray-500">{{ order.createdDate }}</p>
 			</div>
 
+			@if (order.actionRequired !== "") {
+				<div class="py-3 px-4 flex flex-row justify-between items-center border-b border-gray-200"
+					[ngClass]="[
+						order.status === 3 ? 'text-gray-600' : 'text-orange-500',
+						order.status === 3 ? 'bg-gray-100' : 'bg-orange-100'
+					]"
+				>
+					<p class="text-sm font-bold leading-relaxed">** {{ order.actionRequired }}</p>
+				</div>
+			}
+
 			<!-- Modal body -->
-			<div class="py-3 px-4 flex flex-row justify-between items-center">
+			<div class="py-3 px-4 flex flex-row justify-between items-center ">
 				<p class="text-sm font-bold leading-relaxed">{{ order.foodDishes | keysLength }} Platillos</p>
 				<p class="text-xs font-bold px-8 py-1 rounded-full bg-gray-300">Mesa {{ order.assignedToTable }}</p>
 			</div>
@@ -109,10 +124,21 @@
 				@if (order.status !== 0 && order.status !== 3) {
 					<button (click)="cancelOrder(order.id)" type="button"
 						class="text-slate-800 border-2 border-slate-800 focus:outline-none rounded-lg text-sm p-[14px] text-center box-border hover:bg-slate-800 hover:text-white">
-						<!-- <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 512 512"><path d="M128 0C92.7 0 64 28.7 64 64l0 96 64 0 0-96 226.7 0L384 93.3l0 66.7 64 0 0-66.7c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0L128 0zM384 352l0 32 0 64-256 0 0-64 0-16 0-16 256 0zm64 32l32 0c17.7 0 32-14.3 32-32l0-96c0-35.3-28.7-64-64-64L64 192c-35.3 0-64 28.7-64 64l0 96c0 17.7 14.3 32 32 32l32 0 0 64c0 35.3 28.7 64 64 64l256 0c35.3 0 64-28.7 64-64l0-64zM432 248a24 24 0 1 1 0 48 24 24 0 1 1 0-48z"/></svg> -->
 						 <i class="pi pi-ban flex items-center justify-center"></i>
 					</button>
 				}
+
+				@if(order.status !== 0 && order.status !== 3 && order.status !== 4) {
+					<button (click)="openSweetModal(order.id)" type="button"
+						class="text-slate-800 border-2 border-slate-800 focus:outline-none rounded-lg text-sm p-[14px] text-center box-border hover:bg-slate-800 hover:text-white">
+						<i class="pi pi-exclamation-circle flex items-center justify-center"></i>
+					</button>
+				}
+
+				<button (click)="chatOnWhatsapp(order.phoneNumber)" type="button"
+					class="text-slate-800 border-2 border-slate-800 focus:outline-none rounded-lg text-sm p-[14px] text-center box-border hover:bg-slate-800 hover:text-white">
+					<i class="pi pi-whatsapp flex items-center justify-center"></i>
+				</button>
 
 				<button (click)="updateStatus(order.id)" type="button"
 					class="p-4 w-full text-sm font-bold text-white focus:outline-none bg-slate-800 rounded-lg hover:bg-slate-700" [ngClass]="{'!bg-transparent !border-2 border-slate-5-00 !text-slate-500': order.status === 0 || order.status === 3}">
@@ -136,3 +162,47 @@
 		</div>
 	</div>
 </div>
+
+<!-- @if (showModal) {
+	<div class="fixed top-0 left-0 px-8 w-full h-screen bg-black bg-opacity-30 flex flex-col justify-center items-center" style="z-index: 60;">
+		<div class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl">
+			<div class="bg-white p-4">
+				<div>
+					<div class="mx-auto flex size-12 shrink-0 items-center justify-center rounded-full bg-orange-100">
+						<i class="pi pi-exclamation-circle text-2xl text-orange-500"></i>
+					</div>
+					<div class="mt-3 text-center">
+						<h3 class="text-base font-semibold text-gray-900" id="modal-title">¡Acción requerida!</h3>
+
+						<div class="mt-4 flex flex-col items-start justify-center gap-4">
+							<p class="text-sm">¿Cuál acción requerida se ajusta más al problema?</p>
+
+							<ng-container *ngFor="let actionRequired of actionsRequired; index as i">
+								<div class="flex items-center">
+									<input
+										type="radio"
+										[id]="'action-' + actionRequired.value"
+										name="actionRequiredGroup"
+										[value]="actionRequired.value"
+										[(ngModel)]="selectedAction"
+										class="w-4 h-4 text-orange-600 bg-gray-100 border-gray-300 focus:ring-orange-500"
+									/>
+									<label
+										[for]="'action-' + actionRequired.value"
+										class="ms-2 text-sm font-light text-gray-900"
+									>
+									{{ actionRequired.description }}
+									</label>
+								</div>
+							</ng-container>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="bg-gray-50 p-4">
+				<button type="button" class="inline-flex w-full mb-2 justify-center rounded-md bg-orange-600 px-3 py-2 text-sm font-semibold text-white shadow-xs">Solicitar</button>
+				<button type="button" (click)="closeModalActionRequired()" class="inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 shadow-xs ring-gray-300 ring-inset">Regresar</button>
+			</div>
+		</div>
+	</div>
+} -->

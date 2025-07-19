@@ -66,6 +66,17 @@ export class OrdersService {
 		});
 	}
 
+	async updateOrderStatusAndActionRequiredField(IDOrder: string, status: number, actionRequidred: string): Promise<void> {
+		const orderDocRef = doc(this._firestore, `orders/${IDOrder}`);
+		return updateDoc(orderDocRef, { status: status, actionRequired: actionRequidred })
+		.then(() => {
+			return;
+		})
+		.catch(error => {
+			console.error('Error actualizando el campo:', error);
+		});
+	}
+
 	async setOrderAsChecked(IDOrder: string): Promise<void> {
 		const orderDocRef = doc(this._firestore, `orders/${IDOrder}`);
 		return updateDoc(orderDocRef, { isChecked: 1 })

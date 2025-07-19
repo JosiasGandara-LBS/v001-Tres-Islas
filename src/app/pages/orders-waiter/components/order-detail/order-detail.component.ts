@@ -4,11 +4,13 @@ import { TruncatePipe } from '@shared/pipes/truncate.pipe';
 import { KeysLengthPipe } from '@shared/pipes/keys-length.pipe';
 import { CommonModule } from '@angular/common';
 import Swal from 'sweetalert2';
+import { DropdownActionRequiredComponent } from '../dropdown-action-required/dropdown-action-required.component';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-order-detail',
   standalone: true,
-  imports: [CommonModule, KeysLengthPipe, TruncatePipe],
+  imports: [CommonModule, KeysLengthPipe, TruncatePipe, FormsModule],
   templateUrl: './order-detail.component.html',
   styleUrl: './order-detail.component.scss'
 })
@@ -18,12 +20,23 @@ export class OrderDetailComponent implements OnInit {
 	@Input() orderStatus: any = 0;
 	@Output() close = new EventEmitter<void>();
 
+	showModal = false;
+
 	statuses: { [key: number]: { text: string; color: string, textToChangeStatus: string} } = {
 		0 : { text: 'Cancelado', color: 'red-700', textToChangeStatus: 'Pedido cancelado'},
 		1 : { text: 'Recibido', color: 'blue-500', textToChangeStatus: 'Preparar pedido'},
 		2 : { text: 'Preparando', color: 'yellow-600', textToChangeStatus: 'Entregar pedido'},
-		3 : { text: 'Entregado', color: 'gray-500', textToChangeStatus: 'Pedido entregado'}
+		3 : { text: 'Entregado', color: 'gray-500', textToChangeStatus: 'Pedido entregado'},
+		4 : { text: 'Acción requerida', color: 'orange-500', textToChangeStatus: 'Entregar pedido'}
 	};
+
+	actionsRequired = [
+		{ value: 0, description: 'No se encontró su mesa, favor de pasar a cocina.' },
+		{ value: 1, description: 'Cliente se retiró del lugar sin recoger el pedido.' },
+		{ value: 2, description: 'Mesa vacía, sin rastro del cliente.' },
+	];
+
+	selectedAction: number | null = null;
 
 	constructor(private _ordersService : OrdersService) {}
 
@@ -37,7 +50,14 @@ export class OrderDetailComponent implements OnInit {
 			return;
 		}
 
-		this._ordersService.updateOrderStatusField(orderID, 'status', this.orderStatus + 1).then(() => {
+		if (this.orderStatus === 4 && this.order.pendingPayment) {
+			Swal.fire('Acción denegada', 'El pedido no ha sido marcado como pagado', 'warning');
+			return;
+		}
+
+		(this.orderStatus === 4) ? this.orderStatus-- : this.orderStatus++;
+
+		this._ordersService.updateOrderStatusField(orderID, 'status', this.orderStatus).then(() => {
 			this.closeModal();
 		}).catch((err) => {
 			console.error('Error: ', err);
@@ -104,5 +124,67 @@ export class OrderDetailComponent implements OnInit {
 			console.error('Error: ', err);
 		}
 		);
+	}
+
+	chatOnWhatsapp(phoneNumber: string) {
+		const message = `Hola, tengo una consulta sobre tu pedido.`;
+		const url = `https://wa.me/52${phoneNumber}?text=${encodeURIComponent(message)}`;
+		window.open(url, '_blank');
+	}
+
+	openModalActionRequired() {
+    	this.showModal = true;
+	}
+
+	closeModalActionRequired() {
+		this.showModal = false;
+	}
+
+	async openSweetModal(orderID: string) {
+
+		const optionsHtml = this.actionsRequired.map(
+			(a) =>
+			`<div class="flex items-center my-2 text-base font-light">
+				<input type="radio" name="action" value="${a.value}" id="radio-${a.value}" class="mr-2">
+				<label for="radio-${a.value}">${a.description}</label>
+			</div>`
+		).join('');
+
+		const { isConfirmed } = await Swal.fire({
+			title: '¡Acción requerida!',
+			icon: 'warning',
+			html: `
+				<p class="text-lg mb-5 font-medium">¿Cuál acción se ajusta más al problema?</p>
+				${optionsHtml}
+			`,
+			width: '28rem',
+			showCancelButton: true,
+			cancelButtonText: 'Regresar',
+			confirmButtonText: 'Solicitar acción requerida',
+			confirmButtonColor: 'orange',
+			reverseButtons: true,
+
+			preConfirm: () => {
+				const selected = (document.querySelector('input[name="action"]:checked') as HTMLInputElement)?.value;
+				if (!selected) Swal.showValidationMessage('Debes seleccionar una opción');
+				return selected;
+			},
+		});
+
+		if (isConfirmed) {
+			const selectedValue = (document.querySelector('input[name="action"]:checked') as HTMLInputElement)?.value;
+
+			const selectedNumber = parseInt(selectedValue, 10);
+			const selectedAction = this.actionsRequired.find(a => a.value === selectedNumber);
+			const description = selectedAction?.description ?? 'Descripción no encontrada';
+
+			this._ordersService.updateOrderStatusAndActionRequiredField(orderID, 4, description).then(() => {
+				this.closeModal();
+				Swal.fire('Hecho!', 'Se envió la acción requerida.', 'success');
+			}).catch((err) => {
+				console.error('Error: ', err);
+			});
+
+		}
 	}
 }

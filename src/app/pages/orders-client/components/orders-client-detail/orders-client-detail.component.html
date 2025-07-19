@@ -20,7 +20,7 @@
 		<section class="w-full p-4 text-gray-700">
 			<div class="text-sm grid gap-4">
 				<p class="text-xl nunito-extra-bold">No. de pedido: <span class="uppercase">#{{ order.id | truncate:5 }}</span></p>
-				<p class="nunito-extra-bold" [ngClass]="{'text-yellow-500': order.status == 1, 'text-sky-700': order.status == 2,  'text-green-800': order.status == 3, 'text-red-800': order.status == 0}">
+				<p class="nunito-extra-bold" [ngClass]="{'text-yellow-500': order.status == 1, 'text-sky-700': order.status == 2,  'text-green-800': order.status == 3, 'text-orange-500': order.status == 4, 'text-red-800': order.status == 0}">
 					@switch (order.status) {
 						@case (1) {
 							Esperando pago
@@ -31,12 +31,18 @@
 						@case (3) {
 							Completado
 						}
+						@case (4) {
+							Acción requerida
+						}
 						@case (0) {
 							Cancelado
 						}
 					}
 					<span class="text-black nunito-regular uppercase"> - {{ order.createdDate }}</span>
 				</p>
+				@if (order.actionRequired !== "" && order.status === 4) {
+					<p class="text-sm text-orange-500 bg-orange-100 p-2 rounded-lg text-center nunito-extra-bold">{{ order.actionRequired }}</p>
+				}
 				<p>Estimado: {{ order.estimatedOrdersTime }} minutos</p>
 				<p>Total: {{ order.totalAmount | currency }} MXN</p>
 

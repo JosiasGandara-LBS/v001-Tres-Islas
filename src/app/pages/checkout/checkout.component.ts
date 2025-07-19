@@ -67,6 +67,7 @@ export class CheckoutComponent implements OnInit {
 			pendingPayment:  [],
 			totalAmount:     [this.totalPriceSignal(), Validators.required],
 			createdDate:     ['01/01/1800, 00:00 a.m.'],
+			actionRequired:  [''],
 			status:          [1]
 		});
 
@@ -103,6 +104,14 @@ export class CheckoutComponent implements OnInit {
 		this.kitchenStatusService.getTables().subscribe((tables: string[]) => {
 			this.tables.set(tables);
 			this.orderDetailForm.get('assignedToTable')?.setValue(null);
+		});
+
+		this.orderDetailForm.get('assignedToTable')?.valueChanges.subscribe((newValue) => {
+			if (newValue !== null && newValue !== undefined) {
+				console.log('assignedToTable cambió a:', newValue);
+				this.isModalVisible.set(true);
+				this.configModal = 5;
+			}
 		});
 	}
 
