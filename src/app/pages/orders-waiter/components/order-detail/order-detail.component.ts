@@ -18,6 +18,7 @@ export class OrderDetailComponent implements OnInit {
 
 	@Input() order: any = null;
 	@Input() orderStatus: any = 0;
+	@Input() isHistory: boolean = false;
 	@Output() close = new EventEmitter<void>();
 
 	showModal = false;
@@ -86,7 +87,7 @@ export class OrderDetailComponent implements OnInit {
 	}
 
 	cancelOrderConfirmed(orderID : string) {
-		this._ordersService.cancelOrder(orderID).then(() => {
+		this._ordersService.cancelOrder(orderID, this.isHistory).then(() => {
 			Swal.fire('Pedido cancelado', 'El pedido ha sido cancelado', 'success');
 			this.closeModal();
 		}
@@ -115,7 +116,7 @@ export class OrderDetailComponent implements OnInit {
 	}
 
 	payOrderConfirmed(orderID : string) {
-		this._ordersService.setOrderAsPaid(orderID).then(() => {
+		this._ordersService.setOrderAsPaid(orderID, this.isHistory).then(() => {
 			Swal.fire('Pedido pagado', 'El pedido ha sido marcado como pagado', 'success');
 			this.closeModal();
 		}
