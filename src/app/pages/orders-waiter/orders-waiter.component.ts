@@ -52,6 +52,7 @@ export class OrdersWaiterComponent implements OnInit, OnDestroy {
 	statuses = [
 		{ n: 1, text: 'Recibido', color: 'blue-500', classes: 'border-blue-500 shadow-blue-500/50', icon: 'pi pi-inbox', hasChanges: false },
 		{ n: 2, text: 'Preparando', color: 'yellow-600', classes: 'border-yellow-600 shadow-yellow-600/50', icon: 'pi pi-clock', hasChanges: false },
+		{ n: 4, text: 'Acción requerida', color: 'orange-500', classes: 'border-orange-500 shadow-orange-500/50', icon: 'pi pi-exclamation-circle', hasChanges: false },
 		{ n: 0, text: 'Cancelado', color: 'red-500', classes: 'border-red-500 shadow-red-500/50', icon: 'pi pi-ban', hasChanges: false },
 		{ n: 3, text: 'Entregado', color: 'green-800', classes: 'border-green-800 shadow-green-800/50', icon: 'pi pi-check', hasChanges: false }
 	];

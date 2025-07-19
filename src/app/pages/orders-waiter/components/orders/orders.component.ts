@@ -27,7 +27,8 @@ export class OrdersComponent {
 		0: { text: 'Cancelado', color: 'red-700'},
 		1: { text: 'Recibido', color: 'blue-700'},
 		2: { text: 'Preparando', color: 'yellow-600'},
-		3: { text: 'Entregado', color: 'gray-500'}
+		3: { text: 'Entregado', color: 'gray-500'},
+		4: { text: 'Acción requerida', color: 'orange-500'},
 	};
 
 	constructor(private _ordersService: OrdersService) {}
