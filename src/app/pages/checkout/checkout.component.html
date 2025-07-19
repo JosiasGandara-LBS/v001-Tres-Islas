@@ -37,6 +37,7 @@
 				(keypress)="onlyNumbers($event)"
   				(input)="limitPhoneNumberLength()"
 				placeholder="Ej. 6691220932"
+				maxlength="10"
 				required
 				/>
 			<div *ngIf="orderDetailForm.get('phoneNumber')?.invalid && (orderDetailForm.get('phoneNumber')?.dirty || orderDetailForm.get('phoneNumber')?.touched)" class="text-red-600 fill-red-600 text-sm flex flex-row justify-start items-center mt-2">

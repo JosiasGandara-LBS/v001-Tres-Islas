@@ -305,11 +305,20 @@ export class CheckoutComponent implements OnInit {
 	}
 
 	limitPhoneNumberLength() {
-		let phoneControl = this.orderDetailForm.get('phoneNumber');
-		if (phoneControl?.value.length > 10) {
-		  	phoneControl?.setValue(phoneControl.value.slice(0, 10));
+		const phoneControl = this.orderDetailForm.get('phoneNumber');
+		if (!phoneControl) return;
+
+		let value = phoneControl.value?.toString() || '';
+		// Elimina cualquier carácter no numérico
+		value = value.replace(/\D/g, '');
+
+		if (value.length > 10) {
+			value = value.slice(0, 10);
 		}
+
+		phoneControl.setValue(value, { emitEvent: false });
 	}
+
 
 	limitDigits(event: Event) {
 		const input = event.target as HTMLInputElement;
